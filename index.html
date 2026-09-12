@@ -23,13 +23,13 @@
   <link rel="preload" href="/assets/fonts/Unbounded-Variable.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="/assets/fonts/Inter-Variable.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="/assets/hero/losy-hero-poster.jpg" as="image" />
-  <link rel="preload" href="/dist/shell.bundle.css?v=63" as="style" />
-  <link rel="modulepreload" href="/dist/app.bundle.js?v=63" />
+  <link rel="preload" href="/dist/shell.bundle.css?v=64" as="style" />
+  <link rel="modulepreload" href="/dist/app.bundle.js?v=64" />
 
   <!-- Фоновая предзагрузка режимов игр -->
-  <link rel="prefetch" href="/modes/losy-upgrade-v24.html?v=63" />
-  <link rel="prefetch" href="/modes/losy-bombs.html?v=63" />
-  <link rel="prefetch" href="/modes/losy-rocket.html?v=63" />
+  <link rel="prefetch" href="/modes/losy-upgrade-v24.html?v=64" />
+  <link rel="prefetch" href="/modes/losy-bombs.html?v=64" />
+  <link rel="prefetch" href="/modes/losy-rocket.html?v=64" />
   <link rel="prefetch" href="/assets/hero/losy-hero-916.mp4" as="video" />
 
   <!-- Critical Inline CSS: мгновенный темный фон и скелет за 0.05 сек -->
@@ -41,7 +41,7 @@
   </style>
 
   <!-- Единый оптимизированный CSS бандл оболочки -->
-  <link rel="stylesheet" href="/dist/shell.bundle.css?v=63" />
+  <link rel="stylesheet" href="/dist/shell.bundle.css?v=64" />
 </head>
 <body>
 
@@ -244,11 +244,11 @@
   </div>
 
   <!-- Оболочка: единый высокоскоростной бандл -->
-  <script type="module" src="/dist/app.bundle.js?v=63"></script>
+  <script type="module" src="/dist/app.bundle.js?v=64"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function () {
-        navigator.serviceWorker.register('/sw.js?v=63').catch(function () {});
+        navigator.serviceWorker.register('/sw.js?v=64').catch(function () {});
       });
     }
   </script>

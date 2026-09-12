@@ -1952,16 +1952,28 @@ body {
   cursor: default !important;
 }
 
-/* Выигранная ракета на платформе */
-.machine-rocket.rocket-right.won {
-  box-shadow: 0 0 35px rgba(61, 255, 167, 0.75), inset 0 0 20px rgba(61, 255, 167, 0.35);
-  border-color: rgba(61, 255, 167, 0.8) !important;
-  animation: rocketWonHalo 1.5s ease-in-out infinite alternate;
+/* ===================================================
+   ПОБЕДА: CASE-BATTLE & UPGRADER СТИЛЬ ДЛЯ КАРТОЧКИ
+   =================================================== */
+
+/* Карточка цели в момент победы: сочный изумрудно-золотой ореол */
+.ug-card--target.won {
+  z-index: 10;
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-@keyframes rocketWonHalo {
-  0% { filter: drop-shadow(0 0 16px rgba(61, 255, 167, 0.6)); }
-  100% { filter: drop-shadow(0 0 32px rgba(61, 255, 167, 0.95)) drop-shadow(0 0 14px rgba(59, 233, 244, 0.8)); }
+.ug-card--target.won .ug-card__frame-box {
+  filter: drop-shadow(0 0 22px rgba(61, 255, 167, 0.95)) drop-shadow(0 0 38px rgba(46, 213, 115, 0.65)) !important;
+  animation: wonCardPulse 1.4s ease-in-out infinite alternate;
+}
+
+@keyframes wonCardPulse {
+  0% {
+    filter: drop-shadow(0 0 16px rgba(61, 255, 167, 0.8)) drop-shadow(0 0 28px rgba(46, 213, 115, 0.5));
+  }
+  100% {
+    filter: drop-shadow(0 0 28px rgba(61, 255, 167, 1)) drop-shadow(0 0 45px rgba(59, 232, 255, 0.75));
+  }
 }
 
 @media (max-width: 480px) {
@@ -1975,25 +1987,109 @@ body {
   white-space: nowrap;
 }
 
-/* Победа: ракета-приз выпрыгивает и светится */
-.machine-rocket.won img {
-  animation: rocketWin 1s cubic-bezier(0.34, 1.56, 0.64, 1);
+/* Выигранный предмет: упругий Pop & Punch с ярким неоновым свечением */
+.ug-card--target.won .ug-card__item img {
+  animation: rocketWinPunch 1.1s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards !important;
 }
 
-@keyframes rocketWin {
-  0% { transform: scale(0.3) rotate(-40deg); opacity: 0; }
-  55% { transform: scale(1.3) rotate(10deg); opacity: 1; }
-  100% { transform: scale(1) rotate(0deg); }
+@keyframes rocketWinPunch {
+  0% {
+    transform: scale(0.85);
+    filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.5));
+  }
+  35% {
+    transform: scale(1.18);
+    filter: drop-shadow(0 0 26px rgba(61, 255, 167, 1)) drop-shadow(0 0 14px rgba(255, 255, 255, 0.9));
+  }
+  70% {
+    transform: scale(1.04);
+    filter: drop-shadow(0 0 18px rgba(61, 255, 167, 0.85));
+  }
+  100% {
+    transform: scale(1.08);
+    filter: drop-shadow(0 0 22px rgba(61, 255, 167, 0.9));
+  }
 }
 
-.machine-rocket.won {
-  filter: drop-shadow(0 0 26px rgba(61, 255, 167, 0.75));
-  animation: glowPulse 1.4s ease-in-out 0.2s 2;
+/* Диагональный световой блик (Case-Battle Shimmer Sweep) */
+.ug-card--target.has-win-shimmer .ug-card__frame-box {
+  position: relative;
+  overflow: hidden;
+  border-radius: 18px;
 }
 
-@keyframes glowPulse {
-  0%, 100% { filter: drop-shadow(0 0 14px rgba(61, 255, 167, 0.4)); }
-  50% { filter: drop-shadow(0 0 34px rgba(61, 255, 167, 0.95)); }
+.ug-card--target.has-win-shimmer .ug-card__frame-box::after {
+  content: '';
+  position: absolute;
+  inset: -60%;
+  background: linear-gradient(
+    115deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.65) 50%,
+    rgba(61, 255, 167, 0.45) 58%,
+    transparent 70%
+  );
+  transform: translateX(-120%) rotate(25deg);
+  animation: winShimmerSweep 1.1s 0.15s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  pointer-events: none;
+  z-index: 5;
+}
+
+@keyframes winShimmerSweep {
+  0% { transform: translateX(-120%) rotate(25deg); }
+  100% { transform: translateX(120%) rotate(25deg); }
+}
+
+/* Бейдж «ВЫИГРАНО!» на карточке */
+.ug-card__tag.tag--won {
+  background: linear-gradient(135deg, #3de8a0, #2ed573) !important;
+  color: #052416 !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.08em;
+  border-color: #3de8a0 !important;
+  box-shadow: 0 0 16px rgba(61, 255, 167, 0.9), 0 2px 6px rgba(0, 0, 0, 0.4) !important;
+  animation: tagWonPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards !important;
+}
+
+@keyframes tagWonPop {
+  0% { transform: scale(0.65); opacity: 0; }
+  100% { transform: scale(1.08); opacity: 1; }
+}
+
+/* Старая ставка слева во время победы цели слегка затихает */
+.ug-card--stake.stake--spent {
+  opacity: 0.45;
+  filter: grayscale(0.4);
+  transition: opacity 0.4s ease, filter 0.4s ease;
+}
+
+/* Новая выигранная ставка встаёт на левую платформу со вспышкой */
+.ug-card--stake.stake--updated .ug-card__frame-box {
+  animation: stakeArrival 0.75s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+}
+
+@keyframes stakeArrival {
+  0% {
+    transform: scale(0.92);
+    filter: drop-shadow(0 0 24px rgba(59, 232, 255, 0.95));
+  }
+  40% {
+    transform: scale(1.08);
+    filter: drop-shadow(0 0 34px rgba(61, 255, 167, 0.95)) drop-shadow(0 0 18px rgba(59, 232, 255, 0.8));
+  }
+  100% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 16px rgba(59, 232, 255, 0.32));
+  }
+}
+
+/* Кнопка апгрейда во время победы */
+.machine-upgrade.btn--won {
+  background: linear-gradient(135deg, #2ed573, #10ac84) !important;
+  color: #052416 !important;
+  box-shadow: 0 0 24px rgba(46, 213, 115, 0.75) !important;
+  border-color: rgba(61, 255, 167, 0.9) !important;
+  cursor: default !important;
 }
 
 /* Поражение: изящная динамичная анимация угасания и мягкой отдачи на 1 секунду */
@@ -6069,8 +6165,17 @@ function clearLostState() {
   clearLostStateTimer();
   clearRoundTimers();
   document.querySelectorAll('.machine-rocket, .ug-card').forEach(r => {
-    r.classList.remove('lost', 'won', 'is-loss-gray');
+    r.classList.remove('lost', 'won', 'is-loss-gray', 'has-win-shimmer', 'stake--spent', 'stake--updated');
   });
+  const targetTag = document.querySelector('.ug-card--target .ug-card__tag');
+  if (targetTag) {
+    targetTag.textContent = 'Цель';
+    targetTag.classList.remove('tag--won');
+  }
+  const upgradeBtn = document.getElementById('upgradeBtn');
+  if (upgradeBtn) {
+    upgradeBtn.classList.remove('btn--won');
+  }
   const stakeImg = document.getElementById('stakeImg');
   if (stakeImg) {
     stakeImg.style.animation = 'none';
@@ -6227,9 +6332,6 @@ function doUpgrade() {
 
   const finishRound = () => {
     LosyAudio.stopWheelTicks();
-    spinning = false; // Крутка завершена: управление мгновенно возвращается игроку!
-    el.catalogList.style.pointerEvents = '';
-    el.targetList.style.pointerEvents = '';
     document.querySelector('.catalog-cols')?.classList.remove('is-spinning');
     document.querySelector('.ug-wheel')?.classList.remove('is-spinning');
 
@@ -6238,50 +6340,94 @@ function doUpgrade() {
 
     if (!stakeEl || !targetEl) {
       console.error('Элементы ракет не найдены!');
+      spinning = false;
+      el.catalogList.style.pointerEvents = '';
+      el.targetList.style.pointerEvents = '';
       render();
       return;
     }
 
     if (willWin) {
       clearLostState();
-      owned.push(target.id);
-      stakeId = target.id;      // выигранная ракета встаёт на платформу
-      targetId = null;          // СТРОГО сбрасываем цель, чтобы нельзя было выиграть тот же скин!
-      activeX = null;
+      const wonItem = target;
+      owned.push(wonItem.id);
       save();
 
       // Подсветить каталожную строку выигранного скина и показать бейдж «ПОЛУЧЕНО»
-      lastWonSkinId = target.id;
+      lastWonSkinId = wonItem.id;
       clearTimeout(lastWonTimer);
-      lastWonTimer = setTimeout(() => { lastWonSkinId = null; render(); }, 3500);
+      lastWonTimer = setTimeout(() => { lastWonSkinId = null; renderCatalog(); renderTargets(); }, 3500);
 
-      // Синхронизируем карточки и кнопку: targetId === null -> кнопка СТРОГО отключена («ВЫБЕРИ ЦЕЛЬ»)
-      renderUpgrade();
-
-      // Приз: ракета-приз выпрыгивает на правой платформе + салют вокруг неё
-      targetEl.classList.add('won');
       playResult('win');
-      spawnCenterSalute(chance, target.name);
-      spawnInventoryPop(target.id);
-      showToast(`Апгрейд удался: ${target.name}!`);
+      spawnCenterSalute(chance, wonItem.name);
+      spawnInventoryPop(wonItem.id);
+      showToast(`Апгрейд удался: ${wonItem.name}!`);
+
+      // ВАЖНО (Case-Battle стиль): Карточка цели НЕ очищается сразу!
+      // Предмет остаётся на правой карточке во всей красе с сочной победной анимацией
+      targetEl.classList.add('won', 'has-win-shimmer');
+      stakeEl.classList.add('stake--spent');
+
+      const targetTag = targetEl.querySelector('.ug-card__tag');
+      const originalTagText = targetTag ? targetTag.textContent : 'Цель';
+      if (targetTag) {
+        targetTag.textContent = 'ВЫИГРАНО!';
+        targetTag.classList.add('tag--won');
+      }
+
+      // Кнопка переходит в победное состояние
+      if (el.upgradeBtn) {
+        el.upgradeBtn.disabled = true;
+        el.upgradeBtn.textContent = 'УСПЕХ!';
+        el.upgradeBtn.classList.add('btn--won');
+      }
 
       clearRoundTimers();
       roundHoldTimer = setTimeout(() => {
         roundHoldTimer = null;
+        spinning = false;
+        el.catalogList.style.pointerEvents = '';
+        el.targetList.style.pointerEvents = '';
+
+        // Празднование окончено: выигранный предмет встаёт на платформу ставки
+        stakeId = wonItem.id;
+        targetId = null;
         activeX = null;
-        render();
+        save();
+
+        targetEl.classList.remove('won', 'has-win-shimmer');
+        stakeEl.classList.remove('stake--spent');
+        if (targetTag) {
+          targetTag.textContent = originalTagText;
+          targetTag.classList.remove('tag--won');
+        }
+        if (el.upgradeBtn) {
+          el.upgradeBtn.classList.remove('btn--won');
+        }
+
+        // Анимация вспышки установки новой ставки на левой платформе
+        stakeEl.classList.add('stake--updated');
+        setTimeout(() => stakeEl.classList.remove('stake--updated'), 800);
+
+        renderUpgrade();
+        renderCatalog();
+        renderTargets();
         returnToTop();
+
         roundResetTimer = setTimeout(() => {
           roundResetTimer = null;
           if (spinning) return;
           el.chanceValue.className = 'gauge-value';
           if (el.gaugeWin) el.gaugeWin.style.filter = '';
-          targetEl.classList.remove('won');
           clearCelebration();
           renderUpgrade();
-        }, 2000);
-      }, 2500);
+        }, 1200);
+      }, 2200);
     } else {
+      spinning = false;
+      el.catalogList.style.pointerEvents = '';
+      el.targetList.style.pointerEvents = '';
+
       // ПРОИГРЫШ:
       // Если предмет сгорел и его больше нет в инвентаре, откатываем ставку на бесплатную ручку
       if (stakeId !== 'pen' && !owned.includes(stakeId)) {
@@ -6290,8 +6436,6 @@ function doUpgrade() {
         save();
       }
 
-      // Не стираем textContent вручную: CSS сам прячет текст пока loseBanner активен.
-      // Мгновенный рендер гарантирует, что при быстрых кликах шанс всегда на месте!
       renderUpgrade();
 
       // Накладываем серую анимацию на левую карточку
