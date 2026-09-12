@@ -152,7 +152,7 @@ export function initGlobalTapSounds() {
   document.addEventListener('click', (e) => {
     if (e.target.closest('[data-no-tap-sound], .has-custom-sound')) return;
     const clickable = e.target.closest(
-      'button, a, [role="button"], input[type="button"], input[type="submit"], input[type="checkbox"], .gcard, .bottomnav__item, .hero__cta, .hero__about, .sheet__close, .topbar__brand, .topbar__balance, .topbar__avatar, .offer, .xpill, .filter-opt'
+      'button, a, [role="button"], input[type="button"], input[type="submit"], input[type="checkbox"], .gcard, .bottomnav__item, .hero__cta, .hero__about, .sheet__close, .topbar__brand, .topbar__balance, .topbar__avatar, .offer, .xpill, .filter-opt, .play-btn, .start-btn, [data-play], .back-btn'
     );
     if (clickable) {
       playTapSound();
@@ -167,7 +167,7 @@ let fadeInterval = null;
 export function initHomeMusic() {
   if (homeAudio) return;
   try {
-    homeAudio = new Audio('/assets/sounds/losy-home-theme.mp3?v=70');
+    homeAudio = new Audio('/assets/sounds/losy-ambient-soft-v71.mp3');
     homeAudio.loop = true;
     homeAudio.volume = 0;
     homeAudio.preload = 'auto';
@@ -177,7 +177,7 @@ export function initHomeMusic() {
       const curView = location.hash.replace('#', '') || 'home';
       if (curView === 'home' && isMusicEnabled()) {
         homeAudio.play().then(() => {
-          fadeTo(0.24, 800);
+          fadeTo(0.20, 800);
         }).catch(() => {});
       }
     };

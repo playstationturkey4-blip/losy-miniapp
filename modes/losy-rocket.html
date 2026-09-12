@@ -1793,7 +1793,7 @@ button, .btn, .bet-btn, .bet-quick-btn {
         <span class="balance-value" id="spaceBalance">200000</span>
       </div>
       <div class="rocket-nav-actions">
-        <button class="btn btn--ghost btn--sm back-btn" onclick="playTapSound(); setTimeout(() => { window.location.href='/'; }, 80);" aria-label="Назад">
+        <button class="btn btn--ghost btn--sm back-btn" onclick="goBack(event)" aria-label="Назад">
           ← Назад
         </button>
         <button class="btn btn--ghost btn--sm sound-toggle" id="soundToggle" aria-label="Звук" title="Звук">🔊</button>
@@ -2218,15 +2218,27 @@ function bindEvents() {
     });
   });
 
-  bindFastTap(el.playBtn, startCountdown);
-  bindFastTap(el.cashoutBtn, () => cashOut(false));
-  bindFastTap(el.newGameBtn, backToIdle);
-  bindFastTap(el.newGameBtnLoss, backToIdle);
+  bindFastTap(el.playBtn, () => {
+    playTapSound();
+    startCountdown();
+  });
+  bindFastTap(el.cashoutBtn, () => {
+    playTapSound();
+    cashOut(false);
+  });
+  bindFastTap(el.newGameBtn, () => {
+    playTapSound();
+    backToIdle();
+  });
+  bindFastTap(el.newGameBtnLoss, () => {
+    playTapSound();
+    backToIdle();
+  });
 
   const cw = document.getElementById('closeWinOverlayBtn');
-  if (cw) bindFastTap(cw, backToIdle);
+  if (cw) bindFastTap(cw, () => { playTapSound(); backToIdle(); });
   const cl = document.getElementById('closeLossOverlayBtn');
-  if (cl) bindFastTap(cl, backToIdle);
+  if (cl) bindFastTap(cl, () => { playTapSound(); backToIdle(); });
 
   el.overlay.addEventListener('click', (e) => {
     if (e.target === el.overlay) backToIdle();
@@ -2242,7 +2254,7 @@ function bindEvents() {
         if (el.overlay && el.overlay.classList.contains('is-visible')) {
           backToIdle();
         } else {
-          location.href = '/';
+          goBack();
         }
       });
     }
@@ -2252,7 +2264,24 @@ function bindEvents() {
   window.backToIdle = backToIdle;
 }
 
+function goBack(e) {
+  if (e && e.preventDefault) e.preventDefault();
+  playTapSound();
+  try {
+    if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.BackButton) {
+      window.Telegram.WebApp.BackButton.hide();
+    }
+  } catch (_) {}
+  if (window.history.length > 1) {
+    window.history.back();
+  } else {
+    window.location.replace('/');
+  }
+}
+window.goBack = goBack;
+
 function playTapSound() {
+  if (window.__onTapSound) window.__onTapSound();
   if (!soundEnabled) return;
   try {
     const tg = window.Telegram?.WebApp?.HapticFeedback;

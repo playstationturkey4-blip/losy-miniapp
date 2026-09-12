@@ -58,7 +58,7 @@
    ======================================== */
 
 :root {
-  --mines-board-size: min(85vw, 420px);
+  --mines-board-size: min(92vw, 360px);
   --cell-size: calc((var(--mines-board-size) - (12 * 4)) / 5);
 }
 
@@ -1342,7 +1342,7 @@ html, body {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 0.4rem 1rem max(0.75rem, env(safe-area-inset-bottom, 12px));
+  padding: 0.25rem 0.65rem max(0.5rem, env(safe-area-inset-bottom, 8px));
   max-width: 500px;
   margin: 0 auto;
   width: 100%;
@@ -1352,15 +1352,15 @@ html, body {
 
 /* Header & Controls compact */
 .mines-header {
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.15rem;
   flex-shrink: 0;
   width: 100%;
 }
 
 .mines-title {
-  font-size: clamp(1.2rem, 4.5vw, 1.6rem);
+  font-size: clamp(1.2rem, 4.5vw, 1.5rem);
   letter-spacing: 0.12em;
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.15rem;
   line-height: 1;
 }
 
@@ -1407,12 +1407,12 @@ html, body {
   font-size: 1.35rem;
 }
 
-/* BOARD CONTAINER: fits screen height dynamically */
+/* BOARD CONTAINER: fits screen height dynamically, wider & harmonious */
 .mines-board-container {
   width: var(--mines-board-size);
   height: var(--mines-board-size);
-  --mines-board-size: min(84vw, 36vh, 320px);
-  margin: 0.25rem auto;
+  --mines-board-size: min(94vw, 42.5vh, 356px);
+  margin: 0.15rem auto;
   flex-shrink: 1;
 }
 
@@ -1594,7 +1594,7 @@ button, .btn, .cell, .bet-btn, .selector-btn, .bet-quick-btn {
         <span class="balance-value" id="coinBalance">200000</span>
       </div>
       <div class="mines-nav-actions">
-        <button class="btn btn--ghost btn--sm back-btn" onclick="playTapSound(); setTimeout(() => { window.location.href='/'; }, 80);" aria-label="Назад">
+        <button class="btn btn--ghost btn--sm back-btn" onclick="goBack(event)" aria-label="Назад">
           ← Назад
         </button>
         <button class="btn btn--ghost btn--sm sound-toggle" id="soundToggle" aria-label="Звук" title="Звук">🔊</button>
@@ -1837,6 +1837,7 @@ window.playSound = playSound;
 document.addEventListener('pointerdown', () => { unlockAudio(); }, { once: true });
 
 function playTapSound() {
+  if (window.__onTapSound) window.__onTapSound();
   if (!soundEnabled) return;
   try {
     const tg = window.Telegram?.WebApp?.HapticFeedback;
@@ -2068,10 +2069,22 @@ function bindEvents() {
   });
   
   // Game actions
-  bindFastTap(elements.playBtn, startGame);
-  bindFastTap(elements.cashoutBtn, cashOut);
-  elements.newGameBtn.addEventListener('click', showNewGameMenu);
-  elements.newGameBtnLoss.addEventListener('click', showNewGameMenu);
+  bindFastTap(elements.playBtn, () => {
+    playTapSound();
+    startGame();
+  });
+  bindFastTap(elements.cashoutBtn, () => {
+    playTapSound();
+    cashOut();
+  });
+  elements.newGameBtn.addEventListener('click', () => {
+    playTapSound();
+    showNewGameMenu();
+  });
+  elements.newGameBtnLoss.addEventListener('click', () => {
+    playTapSound();
+    showNewGameMenu();
+  });
   
   // Close overlay on click
   elements.resultOverlay.addEventListener('click', (e) => {
@@ -2079,7 +2092,36 @@ function bindEvents() {
       showNewGameMenu();
     }
   });
+
+  try {
+    if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.BackButton) {
+      window.Telegram.WebApp.BackButton.show();
+      window.Telegram.WebApp.BackButton.onClick(() => {
+        if (elements.resultOverlay && elements.resultOverlay.classList.contains('is-visible')) {
+          showNewGameMenu();
+        } else {
+          goBack();
+        }
+      });
+    }
+  } catch (e) {}
 }
+
+function goBack(e) {
+  if (e && e.preventDefault) e.preventDefault();
+  playTapSound();
+  try {
+    if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.BackButton) {
+      window.Telegram.WebApp.BackButton.hide();
+    }
+  } catch (_) {}
+  if (window.history.length > 1) {
+    window.history.back();
+  } else {
+    window.location.replace('/');
+  }
+}
+window.goBack = goBack;
 
 // ========================================
 // GAME CONTROLS
@@ -2161,6 +2203,7 @@ function renderBoard() {
 // ========================================
 
 function startGame() {
+  playTapSound();
   if (gameState.status !== 'idle' && gameState.status !== 'finished') return;
 
   if (gameState.betAmount > gameState.coinBalance) {

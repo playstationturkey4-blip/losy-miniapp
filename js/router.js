@@ -48,6 +48,7 @@ export function initRouter() {
   }
   // Telegram BackButton: sheet открыт → закрыть его; иначе — на главную
   setBackHandler(() => {
+    playTapSound();
     if (isOpen()) closeCurrent();
     else if (currentView() !== "home") location.hash = "#/";
   });

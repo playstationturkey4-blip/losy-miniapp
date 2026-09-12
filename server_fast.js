@@ -482,7 +482,7 @@ try {
     'assets/wheel-frame-blue.webp',
     'assets/bg-nebula.webp',
     'assets/coin.png',
-    'assets/space-coin.png',
+    'assets/sounds/losy-ambient-soft-v71.mp3',
     'assets/result-card-bg.webp',
     'modes/losy-upgrade-v24.html',
     'modes/losy-rocket.html',
@@ -524,7 +524,6 @@ server.listen(PORT, '0.0.0.0', async () => {
     console.log(`======================================================\n`);
 
     const info = `LOCAL: http://localhost:${PORT}\nPUBLIC: ${publicUrl}\n`;
-    fs.writeFileSync(path.join(ROOT_DIR, 'current-urls.txt'), info, 'utf8');
 
     // Автоматически синхронизируем кнопку 'Играть' в Telegram боте
     try {

@@ -4465,16 +4465,12 @@ body {
           }
         } catch (_) {}
 
-        var cameFromApp = (window.history.length > 1) &&
-          (sessionStorage.getItem('losy_from_app') === '1' || (document.referrer && document.referrer.indexOf(location.host) !== -1));
-
-        setTimeout(function() {
-          if (cameFromApp) {
-            window.history.back();
-          } else {
-            window.location.replace('/');
-          }
-        }, 60);
+        var cameFromApp = (window.history.length > 1);
+        if (cameFromApp) {
+          window.history.back();
+        } else {
+          window.location.replace('/');
+        }
       }
       try {
         if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.BackButton) {
