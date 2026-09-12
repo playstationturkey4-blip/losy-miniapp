@@ -1,21 +1,21 @@
-/* LOSY Turbo SW v64: Network-First for HTML + Stale-While-Revalidate for Assets
+/* LOSY Turbo SW v65: Network-First for HTML + Stale-While-Revalidate for Assets
    Гарантирует 100% свежесть игровых режимов и оболочки без устаревшего кэша. */
 
-const CACHE = 'losy-turbo-cache-v64';
+const CACHE = 'losy-turbo-cache-v65';
 
 const PRECACHE_ASSETS = [
   '/',
-  '/dist/shell.bundle.css?v=64',
-  '/dist/app.bundle.js?v=64',
+  '/dist/shell.bundle.css?v=65',
+  '/dist/app.bundle.js?v=65',
   '/assets/fonts/Unbounded-Variable.woff2',
   '/assets/fonts/Inter-Variable.woff2',
   '/logo/losyvpn-logo.png',
   '/assets/covers/bombs.webp',
   '/assets/covers/rocket.webp',
   '/assets/covers/upgrade.webp',
-  '/modes/losy-upgrade-v24.html?v=64',
-  '/modes/losy-bombs.html?v=64',
-  '/modes/losy-rocket.html?v=64'
+  '/modes/losy-upgrade-v24.html?v=65',
+  '/modes/losy-bombs.html?v=65',
+  '/modes/losy-rocket.html?v=65'
 ];
 
 self.addEventListener('install', (event) => {
