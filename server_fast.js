@@ -12,7 +12,7 @@ const crypto = require('crypto');
 const { tunnelmole } = require('tunnelmole');
 
 const BOT_TOKEN = '8873699108:AAExuaVHd3bKOj-3mWdGw2So94U7so2fxcM';
-const PORT = 8123;
+const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 8123;
 const ROOT_DIR = __dirname;
 const DB_FILE = path.join(ROOT_DIR, 'server_db.json');
 
@@ -503,17 +503,27 @@ try {
 
 server.listen(PORT, '0.0.0.0', async () => {
   console.log(`\n======================================================`);
-  console.log(`🚀 [ACCELERATED SERVER RUNNING]: http://localhost:${PORT}`);
+  console.log(`🚀 [ACCELERATED SERVER RUNNING]: http://0.0.0.0:${PORT}`);
   console.log(`======================================================\n`);
 
-  try {
-    console.log('📡 Подключение к HTTPS Tunnelmole...');
-    const tmoleUrl = await tunnelmole({ port: PORT });
+  let publicUrl = process.env.RENDER_EXTERNAL_URL || process.env.APP_URL;
+
+  if (!publicUrl) {
+    try {
+      console.log('📡 Подключение к HTTPS Tunnelmole...');
+      publicUrl = await tunnelmole({ port: PORT });
+    } catch (e) {
+      console.error('Tunnel error:', e.message);
+    }
+  }
+
+  if (publicUrl) {
+    publicUrl = publicUrl.replace(/\/$/, '');
     console.log(`\n======================================================`);
-    console.log(`📱 [PUBLIC TELEGRAM MINI APP URL]: ${tmoleUrl}`);
+    console.log(`📱 [PUBLIC TELEGRAM MINI APP URL]: ${publicUrl}`);
     console.log(`======================================================\n`);
 
-    const info = `LOCAL: http://localhost:${PORT}\nPUBLIC: ${tmoleUrl}\n`;
+    const info = `LOCAL: http://localhost:${PORT}\nPUBLIC: ${publicUrl}\n`;
     fs.writeFileSync(path.join(ROOT_DIR, 'current-urls.txt'), info, 'utf8');
 
     // Автоматически синхронизируем кнопку 'Играть' в Telegram боте
@@ -523,7 +533,7 @@ server.listen(PORT, '0.0.0.0', async () => {
         menu_button: {
           type: 'web_app',
           text: '🚀 Играть',
-          web_app: { url: tmoleUrl }
+          web_app: { url: publicUrl }
         }
       });
       const req = https.request({
@@ -545,8 +555,6 @@ server.listen(PORT, '0.0.0.0', async () => {
     } catch (btnErr) {
       console.error('Menu button update error:', btnErr.message);
     }
-  } catch (e) {
-    console.error('Tunnel error:', e.message);
   }
 });
 

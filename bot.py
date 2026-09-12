@@ -17,16 +17,20 @@ URL_FILE = os.path.join(os.path.dirname(__file__), 'current-urls.txt')
 import re
 
 def get_app_url():
+    if os.environ.get("RENDER_EXTERNAL_URL"):
+        return os.environ.get("RENDER_EXTERNAL_URL").rstrip('/')
+    if os.environ.get("APP_URL"):
+        return os.environ.get("APP_URL").rstrip('/')
     if os.path.exists(URL_FILE):
         try:
             with open(URL_FILE, 'r', encoding='utf-8') as f:
                 content = f.read()
-                m = re.search(r'https://[a-zA-Z0-9.-]+\.tunnelmole\.net', content)
+                m = re.search(r'https://[^\s]+', content)
                 if m:
-                    return m.group(0)
+                    return m.group(0).rstrip('/')
         except Exception:
             pass
-    return "https://cwvaqg-ip-196-17-171-227.tunnelmole.net"
+    return "https://t9soxm-ip-196-17-171-227.tunnelmole.net"
 
 print(f"[*] Bot @{bot.get_me().username} успешно запущен!")
 
