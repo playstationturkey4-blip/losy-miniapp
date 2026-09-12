@@ -46,8 +46,8 @@ function getOrCreateUser(userData) {
       id: tid,
       username: userData.username || '',
       firstName: userData.first_name || 'Игрок',
-      balance: 1000,
-      spaceCoins: 100,
+      balance: 200000,
+      spaceCoins: 0,
       owned: ['pen'],
       updatedAt: Date.now()
     };

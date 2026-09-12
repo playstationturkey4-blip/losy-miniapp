@@ -1591,10 +1591,10 @@ button, .btn, .cell, .bet-btn, .selector-btn, .bet-quick-btn {
       </a>
       <div class="mines-balance">
         <img src="/assets/coin.png" alt="Coins" width="18" height="18" aria-hidden="true" style="vertical-align:middle;display:inline-block;">
-        <span class="balance-value" id="coinBalance">100000</span>
+        <span class="balance-value" id="coinBalance">200000</span>
       </div>
       <div class="mines-nav-actions">
-        <button class="btn btn--ghost btn--sm back-btn" onclick="window.location.href='/'" aria-label="Назад">
+        <button class="btn btn--ghost btn--sm back-btn" onclick="playTapSound(); setTimeout(() => { window.location.href='/'; }, 80);" aria-label="Назад">
           ← Назад
         </button>
         <button class="btn btn--ghost btn--sm sound-toggle" id="soundToggle" aria-label="Звук" title="Звук">🔊</button>
@@ -1835,9 +1835,49 @@ function playSound(name, volume = 0.8) {
 }
 document.addEventListener('pointerdown', () => { unlockAudio(); }, { once: true });
 
-// Золотые монеты — валюта «Бомб» (у «Ракеты» своя валюта — космо-монеты)
+function playTapSound() {
+  if (!soundEnabled) return;
+  try {
+    const tg = window.Telegram?.WebApp?.HapticFeedback;
+    if (tg) tg.impactOccurred('light');
+  } catch (e) {}
+
+  const ctx = getCtx();
+  if (!ctx) return;
+  try {
+    const now = ctx.currentTime;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(620, now);
+    osc.frequency.exponentialRampToValueAtTime(240, now + 0.035);
+
+    gain.gain.setValueAtTime(0.24, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.045);
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    osc.start(now);
+    osc.stop(now + 0.05);
+  } catch (e) {}
+}
+window.playTapSound = playTapSound;
+
+document.addEventListener('click', (e) => {
+  const clickable = e.target.closest('button, a, [role="button"], .quick-bet-btn, .selector-btn, .back-btn, .sound-toggle, .btn');
+  if (clickable) {
+    playTapSound();
+  }
+}, { capture: true, passive: true });
+
+// Золотые монеты — единая валюта
 function saveBalance() {
   localStorage.setItem('losyBalance', String(gameState.coinBalance));
+  try {
+    window.dispatchEvent(new CustomEvent('losy:balance'));
+  } catch (e) {}
 }
 
 // Внутриигровой тост вместо alert (в Telegram WebView системные диалоги чужие)
@@ -1871,7 +1911,7 @@ let gameState = {
   multiplier: 1.00,
   currentWinnings: 0,
   winningsCredited: false,
-  coinBalance: 100000,
+  coinBalance: 200000,
   diamondBalance: 300
 };
 
@@ -1899,6 +1939,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const savedBalance = parseInt(localStorage.getItem('losyBalance'), 10);
   if (!isNaN(savedBalance) && savedBalance >= 0) {
     gameState.coinBalance = savedBalance;
+  } else {
+    gameState.coinBalance = 200000;
   }
 
   updateUI();

@@ -23,13 +23,13 @@
   <link rel="preload" href="/assets/fonts/Unbounded-Variable.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="/assets/fonts/Inter-Variable.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="/assets/hero/losy-hero-poster.jpg" as="image" />
-  <link rel="preload" href="/dist/shell.bundle.css?v=68" as="style" />
-  <link rel="modulepreload" href="/dist/app.bundle.js?v=68" />
+  <link rel="preload" href="/dist/shell.bundle.css?v=69" as="style" />
+  <link rel="modulepreload" href="/dist/app.bundle.js?v=69" />
 
   <!-- Фоновая предзагрузка режимов игр -->
-  <link rel="prefetch" href="/modes/losy-upgrade-v24.html?v=68" />
-  <link rel="prefetch" href="/modes/losy-bombs.html?v=68" />
-  <link rel="prefetch" href="/modes/losy-rocket.html?v=68" />
+  <link rel="prefetch" href="/modes/losy-upgrade-v24.html?v=69" />
+  <link rel="prefetch" href="/modes/losy-bombs.html?v=69" />
+  <link rel="prefetch" href="/modes/losy-rocket.html?v=69" />
   <link rel="prefetch" href="/assets/hero/losy-hero-916.mp4" as="video" />
 
   <!-- Critical Inline CSS: мгновенный темный фон и скелет за 0.05 сек -->
@@ -38,10 +38,83 @@
     body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
     .topbar{position:fixed;top:0;left:0;right:0;height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;z-index:100;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);background:rgba(5,7,10,0.7)}
     .hero{position:relative;width:100%;min-height:92vh;display:flex;flex-direction:column;justify-content:flex-end;padding:0 20px 32px;box-sizing:border-box;background:#05070a}
+
+    /* Settings List & Toggle Switch */
+    .settings-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .setting-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 14px;
+      padding: 14px 16px;
+      transition: background 0.2s ease, border-color 0.2s ease;
+    }
+    .setting-item__info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .setting-item__title {
+      font-size: 15px;
+      font-weight: 600;
+      color: #fff;
+    }
+    .setting-item__desc {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.5);
+    }
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 48px;
+      height: 28px;
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+      position: absolute;
+    }
+    .toggle-slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: rgba(255, 255, 255, 0.16);
+      transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      border-radius: 28px;
+    }
+    .toggle-slider:before {
+      position: absolute;
+      content: "";
+      height: 22px;
+      width: 22px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      border-radius: 50%;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    }
+    .toggle-switch input:checked + .toggle-slider {
+      background: linear-gradient(135deg, #3be8ff, #0077ff);
+      box-shadow: 0 0 12px rgba(59, 232, 255, 0.35);
+    }
+    .toggle-switch input:checked + .toggle-slider:before {
+      transform: translateX(20px);
+    }
   </style>
 
   <!-- Единый оптимизированный CSS бандл оболочки -->
-  <link rel="stylesheet" href="/dist/shell.bundle.css?v=68" />
+  <link rel="stylesheet" href="/dist/shell.bundle.css?v=69" />
 </head>
 <body>
 
@@ -184,15 +257,11 @@
         </div>
 
         <h2 class="section-title" style="margin-bottom:12px;">Экономика <em>LOSY</em></h2>
-        <p class="section-sub">Играй в режимы — зарабатывай валюту и предметы. Обмен на награды появится позже.</p>
+        <p class="section-sub">Играй в режимы — зарабатывай золотые монеты. Обмен на награды появится позже.</p>
         <div class="econ">
           <div class="econ__cell">
-            <span class="econ__label">Монеты (Бомбы)</span>
-            <span class="econ__value" id="profileGold">0</span>
-          </div>
-          <div class="econ__cell">
-            <span class="econ__label">Космо-монеты</span>
-            <span class="econ__value" id="profileSpace">0</span>
+            <span class="econ__label">Золотые монеты</span>
+            <span class="econ__value" id="profileGold">200 000</span>
           </div>
           <div class="econ__cell">
             <span class="econ__label">Обмен на VPN</span>
@@ -204,7 +273,32 @@
           </div>
         </div>
 
-        <button class="hero__about" type="button" style="margin-top:22px;" data-open-sheet="aboutSheet">Что такое LOSY?</button>
+        <h2 class="section-title" style="margin-top:28px; margin-bottom:12px;">Настройки</h2>
+        <p class="section-sub">Управление звуковыми эффектами и фоновой музыкой.</p>
+        <div class="settings-list">
+          <div class="setting-item">
+            <div class="setting-item__info">
+              <span class="setting-item__title">Фоновая музыка</span>
+              <span class="setting-item__desc">Приятная мелодия на главной</span>
+            </div>
+            <label class="toggle-switch" aria-label="Включить или выключить фоновую музыку">
+              <input type="checkbox" id="settingMusicToggle" checked>
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div class="setting-item">
+            <div class="setting-item__info">
+              <span class="setting-item__title">Звуки интерфейса</span>
+              <span class="setting-item__desc">Тактильный клик при нажатиях</span>
+            </div>
+            <label class="toggle-switch" aria-label="Включить или выключить звуки интерфейса">
+              <input type="checkbox" id="settingSoundToggle" checked>
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <button class="hero__about" type="button" style="margin-top:24px;" data-open-sheet="aboutSheet">Что такое LOSY?</button>
       </div>
     </section>
   </main>
@@ -244,11 +338,11 @@
   </div>
 
   <!-- Оболочка: единый высокоскоростной бандл -->
-  <script type="module" src="/dist/app.bundle.js?v=68"></script>
+  <script type="module" src="/dist/app.bundle.js?v=69"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function () {
-        navigator.serviceWorker.register('/sw.js?v=68').catch(function () {});
+        navigator.serviceWorker.register('/sw.js?v=69').catch(function () {});
       });
     }
   </script>

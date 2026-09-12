@@ -4388,16 +4388,60 @@ body {
         <span class="nav__wordmark">LOSY<span>VPN</span></span>
       </a>
       <div class="rocket-nav-actions nav-balances">
-        <span class="nav-chip nav-chip--gold" title="Золото"><img class="nav-chip__coin" src="/assets/coin.png?v=1" alt=""><b id="navGold">0</b></span>
-        <span class="nav-chip nav-chip--space" title="Космо-монеты"><img class="nav-chip__coin" src="/assets/spacecoin.png?v=1" alt=""><b id="navSpace">0</b></span>
+        <span class="nav-chip nav-chip--gold" title="Золотые монеты"><img class="nav-chip__coin" src="/assets/coin.png?v=1" alt=""><b id="navGold">200 000</b></span>
         <button class="btn btn--ghost btn--sm back-btn" onclick="exitMode(event)" aria-label="Назад">
           ← Назад
         </button>
       </div>
     </header>
     <script>
+      function playTapSound() {
+        if (typeof soundEnabled !== 'undefined' && !soundEnabled) return;
+        try {
+          const tg = window.Telegram?.WebApp?.HapticFeedback;
+          if (tg) tg.impactOccurred('light');
+        } catch (e) {}
+
+        const AC = window.AudioContext || window.webkitAudioContext;
+        if (!AC) return;
+        if (!window._tapAudioCtx) {
+          try { window._tapAudioCtx = new AC(); } catch (e) {}
+        }
+        const ctx = window._tapAudioCtx;
+        if (!ctx) return;
+        if (ctx.state === 'suspended') {
+          ctx.resume().catch(() => {});
+        }
+        try {
+          const now = ctx.currentTime;
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(620, now);
+          osc.frequency.exponentialRampToValueAtTime(240, now + 0.035);
+
+          gain.gain.setValueAtTime(0.24, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.045);
+
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+
+          osc.start(now);
+          osc.stop(now + 0.05);
+        } catch (e) {}
+      }
+
+      document.addEventListener('click', (e) => {
+        const clickable = e.target.closest('button, a, [role="button"], .skin-card, .tab-btn, .shop-item, .chip, .back-btn');
+        if (clickable) {
+          playTapSound();
+        }
+      }, { capture: true, passive: true });
+
       function exitMode(e) {
         if (e && e.preventDefault) e.preventDefault();
+        playTapSound();
         try {
           if (window.Telegram && window.Telegram.WebApp) {
             if (window.Telegram.WebApp.HapticFeedback) {
@@ -4412,11 +4456,13 @@ body {
         var cameFromApp = (window.history.length > 1) &&
           (sessionStorage.getItem('losy_from_app') === '1' || (document.referrer && document.referrer.indexOf(location.host) !== -1));
 
-        if (cameFromApp) {
-          window.history.back();
-        } else {
-          window.location.replace('/');
-        }
+        setTimeout(function() {
+          if (cameFromApp) {
+            window.history.back();
+          } else {
+            window.location.replace('/');
+          }
+        }, 60);
       }
       try {
         if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.BackButton) {
@@ -5492,14 +5538,17 @@ function readBalance(key) {
 }
 
 let gold = readBalance(STORE.gold);
-let space = readBalance(STORE.space);
+let space = 0;
 
-// СТАРТОВЫЙ БОНУС: разово начисляем 100 000 золотых и 100 000 космо-монет
+// СТАРТОВЫЙ БОНУС (v69): разово начисляем 200 000 золотых монет
 try {
-  if (!localStorage.getItem('losyStartBonus')) {
-    localStorage.setItem('losyStartBonus', '1');
-    if (gold < 100000) { gold = 100000; localStorage.setItem(STORE.gold, String(gold)); }
-    if (space < 100000) { space = 100000; localStorage.setItem(STORE.space, String(space)); }
+  if (!localStorage.getItem('losyStartBonus_v69')) {
+    localStorage.setItem('losyStartBonus_v69', '1');
+    if (gold < 200000) { gold = 200000; localStorage.setItem(STORE.gold, String(gold)); }
+    localStorage.removeItem(STORE.space);
+  } else if (!localStorage.getItem(STORE.gold) || gold < 200000) {
+    gold = 200000;
+    localStorage.setItem(STORE.gold, String(gold));
   }
 } catch (e) {}
 let owned = [];                                    // все ракеты игрока (купил + выиграл)
@@ -5587,7 +5636,10 @@ const byId = id => SKINS.find(s => s.id === id);
 
 function save() {
   localStorage.setItem(STORE.gold, String(gold));
-  localStorage.setItem(STORE.space, String(space));
+  try {
+    localStorage.removeItem(STORE.space);
+    window.dispatchEvent(new CustomEvent('losy:balance'));
+  } catch (e) {}
   localStorage.setItem(STORE.owned, JSON.stringify(owned));
   localStorage.setItem(STORE.bought, JSON.stringify(bought));
   if (stakeId) localStorage.setItem(STORE.stake, stakeId);
@@ -5681,9 +5733,7 @@ try {
 
 function renderBalances() {
   const g = document.getElementById('navGold');
-  const sp = document.getElementById('navSpace');
   if (g) g.textContent = gold.toLocaleString('ru-RU');
-  if (sp) sp.textContent = space.toLocaleString('ru-RU');
   window.dispatchEvent(new CustomEvent('losy:balance'));
 }
 
@@ -6177,9 +6227,7 @@ function closeShop() {
 
 function updateShopBalances() {
   const sg = document.getElementById('shopGoldVal');
-  const ss = document.getElementById('shopSpaceVal');
   if (sg) sg.textContent = gold.toLocaleString();
-  if (ss) ss.textContent = space.toLocaleString();
 }
 
 function renderShopGrid() {
@@ -6213,10 +6261,6 @@ function renderShopGrid() {
       actionsHtml = `
         <button class="shop-buy-btn shop-buy-btn--gold" data-skin="${skin.id}" data-curr="gold" title="Купить за золотые монеты">
           <img src="/assets/coin.png?v=1" alt="coin">
-          <span>${skin.value.toLocaleString()}</span>
-        </button>
-        <button class="shop-buy-btn shop-buy-btn--space" data-skin="${skin.id}" data-curr="space" title="Купить за космо-монеты">
-          <img src="/assets/spacecoin.png?v=1" alt="space">
           <span>${skin.value.toLocaleString()}</span>
         </button>
       `;
@@ -7396,13 +7440,9 @@ document.addEventListener('DOMContentLoaded', () => {
           МАГАЗИН СКИНОВ
         </div>
         <div class="shop-balances">
-          <div class="shop-balance-chip" title="Золото">
+          <div class="shop-balance-chip" title="Золотые монеты">
             <img src="/assets/coin.png?v=1" alt="gold">
             <span id="shopGoldVal">0</span>
-          </div>
-          <div class="shop-balance-chip" title="Космо-монеты">
-            <img src="/assets/spacecoin.png?v=1" alt="space">
-            <span id="shopSpaceVal">0</span>
           </div>
         </div>
         <button class="shop-close-btn" id="closeShopBtn" type="button" aria-label="Закрыть магазин">✕</button>

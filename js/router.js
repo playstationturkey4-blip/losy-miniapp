@@ -4,6 +4,7 @@ import { setBackHandler, showBack, hideBack, haptic } from "./telegram.js";
 import { isOpen, closeCurrent, onSheetChange } from "./sheet.js";
 import { revealScan } from "./reveal.js";
 import { safePlayHeroVideo, safePauseHeroVideo } from "./views/home.js";
+import { updateHomeMusic, isMusicEnabled, setMusicEnabled, isSoundEnabled, setSoundEnabled, playTapSound } from "./sound-settings.js";
 
 const VIEWS = ["home", "games", "offers", "profile"];
 
@@ -37,6 +38,7 @@ function renderView() {
   } else {
     safePauseHeroVideo();
   }
+  updateHomeMusic(view);
 }
 
 export function initRouter() {
@@ -88,37 +90,41 @@ export function initCarouselHints() {
   }
 }
 
-/* ПРОФИЛЬ: реальные балансы из игр (losyBalance — Бомбы, losySpaceCoins — Ракета/Апгрейд).
+/* ПРОФИЛЬ: баланс единой валюты — золотые монеты (200 000 по умолчанию).
    Оболочка и игры живут на одном origin — localStorage общий. */
 export function initProfileBalances() {
   const read = (k) => {
-    try { const v = parseInt(localStorage.getItem(k), 10); return isNaN(v) ? 0 : v; } catch (e) { return 0; }
+    try {
+      const v = localStorage.getItem(k);
+      if (v === null) return 200000;
+      const n = parseInt(v, 10);
+      return isNaN(n) ? 200000 : n;
+    } catch (e) { return 200000; }
   };
   const fill = () => {
     const g = document.getElementById("profileGold");
-    const sp = document.getElementById("profileSpace");
     if (g) g.textContent = read("losyBalance").toLocaleString("ru-RU");
-    if (sp) sp.textContent = read("losySpaceCoins").toLocaleString("ru-RU");
   };
   fill();
   window.addEventListener("pageshow", fill);
-  // игры диспатчат losy:balance после раунда — обновляемся живьём
   window.addEventListener("losy:balance", fill);
   window.addEventListener("storage", fill);
 }
-/* Баланс — UI foundation. Игры (отдельные standalone-страницы) могут писать
-   localStorage.losy_balance; оболочка подхватывает значение при возврате. */
+
+/* Баланс в топбаре — единая валюта (200 000 на старте). */
 export function initBalance() {
-  let balance = 0;
+  let balance = 200000;
   const read = () => {
-    try { return Number(localStorage.getItem("losyBalance") || 0) || 0; }
-    catch (e) { return 0; }
+    try {
+      const v = localStorage.getItem("losyBalance");
+      if (v === null) return 200000;
+      const n = Number(v);
+      return isNaN(n) ? 200000 : n;
+    } catch (e) { return 200000; }
   };
   const el = document.querySelector("[data-balance]");
   if (!el) return;
-  balance = read();
-  el.textContent = balance.toLocaleString("ru-RU");
-  window.addEventListener("pageshow", () => {
+  const updateUI = () => {
     const v = read();
     if (v !== balance) {
       balance = v;
@@ -128,8 +134,36 @@ export function initBalance() {
       void wrap?.offsetWidth;
       wrap?.classList.add("is-pulse");
     }
-  });
+  };
+  balance = read();
+  el.textContent = balance.toLocaleString("ru-RU");
+  window.addEventListener("pageshow", updateUI);
+  window.addEventListener("losy:balance", updateUI);
+  window.addEventListener("storage", updateUI);
+}
+
+/* НАСТРОЙКИ В ПРОФИЛЕ: переключатели музыки и звуков */
+export function initProfileSettings() {
+  const musicToggle = document.getElementById("settingMusicToggle");
+  const soundToggle = document.getElementById("settingSoundToggle");
+
+  if (musicToggle) {
+    musicToggle.checked = isMusicEnabled();
+    musicToggle.addEventListener("change", () => {
+      setMusicEnabled(musicToggle.checked);
+      playTapSound();
+    });
+  }
+
+  if (soundToggle) {
+    soundToggle.checked = isSoundEnabled();
+    soundToggle.addEventListener("change", () => {
+      setSoundEnabled(soundToggle.checked);
+      playTapSound();
+    });
+  }
 }
 
 /* реэкспорт точки вызова */
 export { initProfileBalances as initProfileBalancesExport };
+
