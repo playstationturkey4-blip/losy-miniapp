@@ -94,7 +94,7 @@ function getAudioContext() {
 export function playTapSound() {
   if (!isSoundEnabled()) return;
 
-  // Telegram Haptic Feedback
+  // Telegram Haptic Feedback (мягкий отклик)
   try {
     const tg = window.Telegram?.WebApp?.HapticFeedback || window.parent?.Telegram?.WebApp?.HapticFeedback;
     if (tg) tg.impactOccurred('light');
@@ -105,28 +105,52 @@ export function playTapSound() {
 
   try {
     const now = ctx.currentTime;
-    const osc = ctx.createOscillator();
+
+    // Мягкий обволакивающий фильтр низких частот (срезает резкие верхние частоты)
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(1200, now);
+    filter.frequency.exponentialRampToValueAtTime(600, now + 0.045);
+    filter.Q.value = 0.7;
+
     const gain = ctx.createGain();
+    // Плавная атака 3мс (без резких цифровых фронтов) и мягкий спад
+    gain.gain.setValueAtTime(0.0001, now);
+    gain.gain.exponentialRampToValueAtTime(0.085, now + 0.003);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.048);
 
-    // Мягкий бархатный тактильный щелчок (620Hz -> 240Hz за 35мс)
-    osc.type = 'triangle';
-    osc.frequency.setValueAtTime(620, now);
-    osc.frequency.exponentialRampToValueAtTime(240, now + 0.035);
+    // Теплый чистый синусоидальный тон с бархатным микро-глиссандо (480Hz -> 420Hz)
+    const osc = ctx.createOscillator();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(480, now);
+    osc.frequency.exponentialRampToValueAtTime(420, now + 0.04);
 
-    gain.gain.setValueAtTime(0.24, now);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.045);
+    // Тонкий мягкий гармонический оттенок (вторая гармоника) для объема
+    const osc2 = ctx.createOscillator();
+    const gain2 = ctx.createGain();
+    osc2.type = 'sine';
+    osc2.frequency.setValueAtTime(960, now);
+    gain2.gain.setValueAtTime(0.0001, now);
+    gain2.gain.exponentialRampToValueAtTime(0.015, now + 0.002);
+    gain2.gain.exponentialRampToValueAtTime(0.0001, now + 0.018);
 
-    osc.connect(gain);
+    osc.connect(filter);
+    osc2.connect(gain2);
+    gain2.connect(filter);
+    filter.connect(gain);
     gain.connect(ctx.destination);
 
     osc.start(now);
+    osc2.start(now);
     osc.stop(now + 0.05);
+    osc2.stop(now + 0.02);
   } catch (e) {}
 }
 
-// Глобальный перехват тапов на всех кликабельных элементах
+// Глобальный перехват тапов на интерактивных элементах оболочки, где нет встроенных звуков
 export function initGlobalTapSounds() {
   document.addEventListener('click', (e) => {
+    if (e.target.closest('[data-no-tap-sound], .has-custom-sound')) return;
     const clickable = e.target.closest(
       'button, a, [role="button"], input[type="button"], input[type="submit"], input[type="checkbox"], .gcard, .bottomnav__item, .hero__cta, .hero__about, .sheet__close, .topbar__brand, .topbar__balance, .topbar__avatar, .offer, .xpill, .filter-opt'
     );
@@ -143,7 +167,7 @@ let fadeInterval = null;
 export function initHomeMusic() {
   if (homeAudio) return;
   try {
-    homeAudio = new Audio('/assets/sounds/losy-home-theme.mp3?v=69');
+    homeAudio = new Audio('/assets/sounds/losy-home-theme.mp3?v=70');
     homeAudio.loop = true;
     homeAudio.volume = 0;
     homeAudio.preload = 'auto';
@@ -153,7 +177,7 @@ export function initHomeMusic() {
       const curView = location.hash.replace('#', '') || 'home';
       if (curView === 'home' && isMusicEnabled()) {
         homeAudio.play().then(() => {
-          fadeTo(0.28, 800);
+          fadeTo(0.24, 800);
         }).catch(() => {});
       }
     };
@@ -193,10 +217,10 @@ export function updateHomeMusic(currentView) {
     if (homeAudio.paused) {
       homeAudio.volume = 0;
       homeAudio.play().then(() => {
-        fadeTo(0.28, 800);
+        fadeTo(0.24, 800);
       }).catch(() => {});
     } else {
-      fadeTo(0.28, 600);
+      fadeTo(0.24, 600);
     }
   } else {
     if (!homeAudio.paused) {
