@@ -1,0 +1,12 @@
+{
+  "name": "losy-miniapp",
+  "version": "1.0.0",
+  "description": "LOSY Telegram Mini App and Bot",
+  "main": "server_fast.js",
+  "scripts": {
+    "start": "node server_fast.js"
+  },
+  "dependencies": {
+    "tunnelmole": "^2.1.18"
+  }
+}

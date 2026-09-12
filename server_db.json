@@ -1,0 +1,17 @@
+{
+  "users": {
+    "guest_local": {
+      "id": "guest_local",
+      "username": "",
+      "firstName": "Игрок (Demo)",
+      "balance": 850,
+      "spaceCoins": 100,
+      "owned": [
+        "pen",
+        "lit_energy"
+      ],
+      "updatedAt": 1789053494472
+    }
+  },
+  "sessions": {}
+}

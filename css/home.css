@@ -1,0 +1,422 @@
+/* ============================================================
+   LOSY Mini App — Home view: hero 9:16, CTAs, game carousel
+   ============================================================ */
+
+/* === HERO: вертикальная сцена 9:16, video object-fit: cover === */
+.hero {
+  position: relative;
+  height: 100vh;      /* фолбэк для старых webview */
+  height: 100svh;
+  min-height: 560px;
+  max-height: 900px;
+  overflow: clip;
+}
+.hero__video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;         /* 9:16 без искажений: кадрируем по центру */
+  object-position: center 22%;  /* лицо/персонаж — в верхней трети */
+  /* видео нельзя вкл/выкл тапом — играет всегда (нативная пауза/контролы отключены) */
+  pointer-events: none;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+/* Градиент-оверлей: читаемость текста, но персонаж не перекрываем */
+.hero__shade {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg,
+      rgba(5, 7, 10, .58) 0%,
+      rgba(5, 7, 10, .18) 26%,
+      rgba(5, 7, 10, .05) 45%,
+      rgba(5, 7, 10, .12) 62%,
+      rgba(5, 7, 10, .82) 88%,
+      var(--bg) 100%);
+  pointer-events: none;
+}
+.hero__shade::after { /* мягкое cyan-свечение по краю, не поверх персонажа */
+  content: "";
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 34%;
+  background: radial-gradient(80% 120% at 50% 118%, rgba(59, 232, 255, .14), transparent 62%);
+}
+
+/* Контент поверх видео */
+.hero__inner {
+  position: absolute;
+  left: 0; right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 0 20px calc(var(--sab) + 26px);
+  /* topbar + жесты Telegram сверху */
+}
+.hero__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  align-self: flex-start;
+  padding: 7px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(59, 232, 255, .35);
+  background: rgba(5, 7, 10, .45);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  font-family: var(--font-brand);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: .14em;
+  color: var(--accent);
+}
+.hero__title {
+  font-family: var(--font-brand);
+  font-weight: 800;
+  font-size: clamp(38px, 11.5vw, 64px);
+  line-height: .98;
+  letter-spacing: .01em;
+  text-wrap: balance;
+  text-shadow: 0 4px 30px rgba(5, 7, 10, .7);
+}
+.hero__title em {
+  font-style: normal;
+  color: var(--accent);
+  text-shadow: 0 0 28px rgba(59, 232, 255, .45);
+}
+.hero__slogan {
+  max-width: 30ch;
+  color: var(--ink-dim);
+  font-size: 15px;
+  line-height: 1.45;
+  text-shadow: 0 2px 14px rgba(5, 7, 10, .8);
+}
+.hero__cta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 2px;
+}
+.hero__cta .btn { flex: 1 1 auto; min-width: 132px; }
+.hero__about {
+  align-self: center;
+  margin-top: 2px;
+  min-height: 44px;
+  padding: 10px 18px;
+  border-radius: 999px;
+  font-family: var(--font-label);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+  border: 1px solid transparent;
+  transition: color var(--t-fast) var(--ease-out), border-color var(--t-fast) var(--ease-out), transform var(--t-fast) var(--ease-out);
+}
+.hero__about:hover { color: var(--ink); }
+.hero__about:active { transform: scale(.97); }
+.hero__scroll-hint {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+  color: var(--ink-faint);
+  font-family: var(--font-label);
+  font-size: 11px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+}
+.hero__scroll-hint svg {
+  width: 14px; height: 14px;
+  animation: hintdip 2.1s var(--ease-inout) infinite;
+}
+@keyframes hintdip {
+  0%, 100% { transform: translateY(0); opacity: .7; }
+  50% { transform: translateY(5px); opacity: 1; }
+}
+
+/* Desktop hero: композиция меняется — текст слева, ширина ограничена */
+@media (min-width: 900px) {
+  .hero { max-height: none; height: 100svh; }
+  .hero__inner {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 0 48px calc(var(--sab) + 48px);
+    gap: 22px;
+  }
+  .hero__title { font-size: clamp(56px, 6.2vw, 92px); }
+  .hero__slogan { font-size: 17px; }
+  .hero__cta .btn { flex: 0 0 auto; min-width: 190px; }
+  .hero__about { align-self: flex-start; }
+}
+
+/* === Секции home === */
+.home-sections {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 44px;
+  padding: 34px 20px 40px;
+  margin-top: -1px; /* стык с hero-градиентом */
+  background: transparent;
+}
+@media (min-width: 900px) {
+  .home-sections {
+    max-width: 1240px;
+    margin: 0 auto; /* hero снизу растворяется в --bg — секции продолжаются бесшовно */
+    padding: 44px 48px 72px;
+    gap: 64px;
+  }
+}
+
+/* === CAROUSEL режимов (mobile) === */
+.games__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.games__hint {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--ink-faint);
+  font-family: var(--font-label);
+  font-size: 11px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+.games__hint svg { width: 13px; height: 13px; }
+
+.carousel {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: min(78%, 300px);
+  gap: 14px;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scroll-padding-left: 20px;
+  /* тянем карусель в края экрана, но padding сохраняет snap-отступ */
+  margin: 0 -20px;
+  padding: 4px 20px 14px;
+}
+.carousel__item { scroll-snap-align: start; }
+
+/* Частично видна следующая карточка — визуальный призыв свайпнуть */
+@media (min-width: 480px) and (max-width: 899px) {
+  .carousel { grid-auto-columns: min(58%, 320px); }
+}
+
+/* === Game card === */
+.gcard {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  border-radius: var(--r-card);
+  overflow: hidden;
+  background: var(--bg-soft);
+  border: 1px solid var(--line);
+  transition:
+    transform var(--t-normal) var(--ease-out),
+    border-color var(--t-normal) var(--ease-out),
+    box-shadow var(--t-normal) var(--ease-out);
+}
+.gcard:active { transform: scale(.975); }
+@media (hover: hover) and (pointer: fine) {
+  .gcard:hover {
+    transform: translateY(-4px);
+    border-color: color-mix(in srgb, var(--gc-accent) 55%, transparent);
+    box-shadow: 0 18px 44px -18px color-mix(in srgb, var(--gc-accent) 45%, transparent);
+  }
+}
+.gcard__media {
+  position: relative;
+  aspect-ratio: 1 / 1;      /* placeholder 1:1; под будущие обложки можно сменить без layout-слома */
+  background: var(--bg-soft);
+}
+.gcard__media img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  transition: transform var(--t-slow) var(--ease-out);
+}
+@media (hover: hover) and (pointer: fine) {
+  .gcard:hover .gcard__media img { transform: scale(1.04); }
+}
+/* Плейсхолдер-подпись поверх картинки */
+.gcard__ph {
+  position: absolute;
+  left: 10px; top: 10px;
+  padding: 5px 10px;
+  border-radius: 8px;
+  background: rgba(5, 7, 10, .62);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  color: var(--ink-faint);
+  font-family: var(--font-label);
+  font-size: 10px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  pointer-events: none;
+}
+.gcard__scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 46%, rgba(5, 7, 10, .88));
+}
+.gcard__body {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 0 16px 16px;
+  margin-top: -64px;
+}
+.gcard__name {
+  font-family: var(--font-brand);
+  font-weight: 700;
+  font-size: 20px;
+  letter-spacing: .02em;
+}
+.gcard__desc {
+  color: var(--ink-dim);
+  font-size: 13px;
+  line-height: 1.4;
+}
+.gcard__go {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 10px;
+  min-height: 40px;
+  align-self: flex-start;
+  padding: 0 16px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--gc-accent) 45%, transparent);
+  color: var(--gc-accent);
+  font-family: var(--font-label);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  transition: background-color var(--t-fast) var(--ease-out), transform var(--t-fast) var(--ease-out);
+}
+.gcard__go svg { width: 14px; height: 14px; }
+.gcard__go:active { transform: scale(.96); }
+@media (hover: hover) and (pointer: fine) {
+  .gcard__go:hover { background: color-mix(in srgb, var(--gc-accent) 14%, transparent); }
+}
+/* Режимная акцентировка */
+.gcard--bombs { --gc-accent: var(--c-bombs); }
+.gcard--rocket { --gc-accent: var(--c-rocket); }
+.gcard--upgrade { --gc-accent: var(--c-upgrade); }
+
+/* === DESKTOP: grid 3 колонки вместо карусели === */
+@media (min-width: 900px) {
+  .games__hint { display: none; }
+  .carousel {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-auto-flow: row;
+    grid-auto-columns: unset;
+    overflow: visible;
+    margin: 0;
+    padding: 0 0 6px;
+    gap: 22px;
+  }
+}
+
+/* === VPN teaser (мост к Предложениям) === */
+.vpn {
+  position: relative;
+  border-radius: var(--r-card);
+  border: 1px solid var(--line);
+  background:
+    radial-gradient(120% 160% at 100% 0%, rgba(59, 232, 255, .16), transparent 52%),
+    radial-gradient(120% 160% at 0% 100%, rgba(143, 123, 255, .14), transparent 52%),
+    var(--bg-soft);
+  padding: 22px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow: hidden;
+}
+.vpn__tag {
+  align-self: flex-start;
+  padding: 5px 11px;
+  border-radius: 999px;
+  border: 1px solid rgba(59, 232, 255, .4);
+  color: var(--accent);
+  font-family: var(--font-label);
+  font-size: 11px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+.vpn__title {
+  font-family: var(--font-brand);
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.15;
+}
+.vpn__text {
+  color: var(--ink-dim);
+  font-size: 14px;
+  max-width: 44ch;
+}
+.vpn .btn { margin-top: 10px; align-self: flex-start; }
+@media (min-width: 900px) {
+  .vpn { padding: 30px 32px; }
+  .vpn__title { font-size: 28px; }
+  .vpn__text { font-size: 15px; }
+}
+
+/* === Как это работает: 3 шага, без простыни текста === */
+.steps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+@media (max-width: 359px) {
+  .steps { grid-template-columns: 1fr; }
+}
+.step {
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--bg-soft);
+  padding: 16px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 128px;
+}
+.step__num {
+  font-family: var(--font-brand);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent);
+}
+.step__title {
+  font-family: var(--font-label);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+.step__text {
+  color: var(--ink-dim);
+  font-size: 12.5px;
+  line-height: 1.4;
+}
+@media (min-width: 900px) {
+  .steps { gap: 18px; }
+  .step { padding: 22px; min-height: 0; }
+  .step__text { font-size: 13.5px; }
+}

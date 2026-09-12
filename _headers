@@ -1,0 +1,23 @@
+# Cache headers for LOSY Mini App
+
+# HTML documents: must revalidate to pick up updates instantly
+/*.html
+  Cache-Control: no-cache
+/modes/*.html
+  Cache-Control: no-cache
+/
+  Cache-Control: no-cache
+
+# Service Worker: never cache
+/sw.js
+  Cache-Control: no-cache
+
+# Static assets: immutable 1 year cache
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+/css/*
+  Cache-Control: public, max-age=31536000, immutable
+/js/*
+  Cache-Control: public, max-age=31536000, immutable
+/logo/*
+  Cache-Control: public, max-age=31536000, immutable

@@ -1,0 +1,38 @@
+<!-- ============================================================
+   LOSYVPN Brand Mark / Logo
+   Symbol: abstract head silhouette (faceless)
+   Typography: Unbounded (local fonts only)
+   
+   Концепция:
+   - Голова без лица = анонимность, приватность, защита идентичности
+   - Минимализм и геометрия = технический премиум
+   - Горизонтальная линия глаза = цифровой экран, шифрование
+   - Прозрачность и контроль
+   
+   Вдохновлён: face/head concept anonymity privacy
+   ============================================================ -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- Основной контур головы: обтекаемая форма без деталей лица -->
+  <path d="M12 14 C12 8 18 4 32 4 C46 4 52 8 52 14 L52 50 C52 56 46 60 32 60 C18 60 12 56 12 50 Z" 
+        fill="none" 
+        stroke="currentColor" 
+        stroke-width="3" 
+        stroke-linecap="round" 
+        stroke-linejoin="round"/>
+  
+  <!-- Линия глаза: цифровая защита, горизонт -->
+  <line x1="22" y1="28" x2="42" y2="28" 
+        stroke="currentColor" 
+        stroke-width="2.5" 
+        stroke-linecap="round"/>
+  
+  <!-- Точка справа: акцент внимания/контроля -->
+  <circle cx="48" cy="28" r="2" fill="currentColor"/>
+  
+  <!-- Намёк на подбородок: плавный градиент -->
+  <path d="M24 48 Q32 52 40 48" 
+        fill="none" 
+        stroke="currentColor" 
+        stroke-width="1.5" 
+        opacity="0.5"/>
+</svg>
