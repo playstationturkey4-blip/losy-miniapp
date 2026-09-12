@@ -4,7 +4,7 @@ function read() {
   try {
     const saved = localStorage.getItem(KEY);
     if (saved !== null) return saved !== 'off';
-    return !['losySoundBombs', 'losySoundRocket', 'losySoundUpgrade'].some(k => localStorage.getItem(k) === 'off');
+    return true;
   } catch { return true; }
 }
 let enabled = read();

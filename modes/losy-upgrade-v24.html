@@ -4482,8 +4482,9 @@ function readSoundSetting() {
   try {
     const saved = localStorage.getItem('losySound');
     if (saved !== null) return saved !== 'off';
-    const legacyKeys = ['losySoundBombs', 'losySoundRocket', 'losySoundUpgrade'];
-    return !legacyKeys.some(k => localStorage.getItem(k) === 'off');
+    const up = localStorage.getItem('losySoundUpgrade');
+    if (up !== null) return up !== 'off';
+    return true;
   } catch (e) {
     return true;
   }
@@ -4583,20 +4584,128 @@ const LosyAudio = (() => {
 
       masterGain.connect(c.destination);
 
-      // SFX bus: UI taps, start, lose (gain = 0.85)
+      // SFX bus: UI taps, start, lose (gain = 0.95)
       sfxGain = c.createGain();
-      sfxGain.gain.value = 0.85;
+      sfxGain.gain.value = 0.95;
       sfxGain.connect(limiter);
 
-      // Tick bus: controlled subtle wheel ticks (gain = 0.18)
+      // Tick bus: controlled audible wheel ticks (gain = 0.60)
       tickGain = c.createGain();
-      tickGain.gain.value = 0.18;
+      tickGain.gain.value = 0.60;
       tickGain.connect(limiter);
 
       // Celebration bus: dedicated full volume for victory salute fireworks (gain = 1.0)
       celebrationGain = c.createGain();
       celebrationGain.gain.value = 1.0;
       celebrationGain.connect(limiter);
+    } catch (e) {}
+  }
+
+  // HTML5 audio cache for universal fallback
+  const htmlAudioCache = {};
+  function tryPlayHtmlAudio(name, vol = 1.0) {
+    try {
+      const rel = SOUND_FILES[name];
+      if (!rel) return;
+      const url = resolveSoundUrl(rel);
+      const a = htmlAudioCache[name] || (htmlAudioCache[name] = new Audio(url));
+      a.currentTime = 0;
+      a.volume = Math.min(1.0, Math.max(0.0, vol));
+      const p = a.play();
+      if (p && p.catch) p.catch(() => {});
+    } catch (e) {}
+  }
+
+  // Synthesized Web Audio fallbacks (100% reliable across all devices and webviews, 0ms latency)
+  function synthTick(pitchMult = 1.0, vol = 0.6) {
+    if (!soundEnabled) return;
+    const c = ensureContext();
+    if (!c) return;
+    try {
+      if (c.state === 'suspended' || c.state === 'interrupted') c.resume().catch(() => {});
+      const osc = c.createOscillator();
+      const g = c.createGain();
+      const now = c.currentTime;
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(580 * pitchMult, now);
+      osc.frequency.exponentialRampToValueAtTime(140 * pitchMult, now + 0.038);
+      g.gain.setValueAtTime(vol * 0.6, now);
+      g.gain.exponentialRampToValueAtTime(0.001, now + 0.045);
+      osc.connect(g);
+      g.connect(tickGain || limiter || c.destination);
+      osc.start(now);
+      osc.stop(now + 0.05);
+    } catch (e) {}
+  }
+
+  function synthClick(vol = 0.5) {
+    if (!soundEnabled) return;
+    const c = ensureContext();
+    if (!c) return;
+    try {
+      if (c.state === 'suspended' || c.state === 'interrupted') c.resume().catch(() => {});
+      const osc = c.createOscillator();
+      const g = c.createGain();
+      const now = c.currentTime;
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(480, now);
+      g.gain.setValueAtTime(0.001, now);
+      g.gain.linearRampToValueAtTime(vol * 0.45, now + 0.004);
+      g.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+      osc.connect(g);
+      g.connect(sfxGain || limiter || c.destination);
+      osc.start(now);
+      osc.stop(now + 0.055);
+    } catch (e) {}
+  }
+
+  function synthWin() {
+    if (!soundEnabled) return;
+    const c = ensureContext();
+    if (!c) return;
+    try {
+      if (c.state === 'suspended' || c.state === 'interrupted') c.resume().catch(() => {});
+      const now = c.currentTime;
+      const notes = [523.25, 659.25, 783.99, 1046.50];
+      notes.forEach((freq, idx) => {
+        const osc = c.createOscillator();
+        const g = c.createGain();
+        const noteTime = now + idx * 0.09;
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(freq, noteTime);
+        g.gain.setValueAtTime(0.001, noteTime);
+        g.gain.linearRampToValueAtTime(0.35, noteTime + 0.02);
+        g.gain.exponentialRampToValueAtTime(0.001, noteTime + 0.38);
+        osc.connect(g);
+        g.connect(celebrationGain || limiter || c.destination);
+        osc.start(noteTime);
+        osc.stop(noteTime + 0.40);
+      });
+    } catch (e) {}
+  }
+
+  function synthLose() {
+    if (!soundEnabled) return;
+    const c = ensureContext();
+    if (!c) return;
+    try {
+      if (c.state === 'suspended' || c.state === 'interrupted') c.resume().catch(() => {});
+      const now = c.currentTime;
+      const notes = [293.66, 233.08, 196.00];
+      notes.forEach((freq, idx) => {
+        const osc = c.createOscillator();
+        const g = c.createGain();
+        const noteTime = now + idx * 0.12;
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, noteTime);
+        g.gain.setValueAtTime(0.001, noteTime);
+        g.gain.linearRampToValueAtTime(0.25, noteTime + 0.02);
+        g.gain.exponentialRampToValueAtTime(0.001, noteTime + 0.32);
+        osc.connect(g);
+        g.connect(sfxGain || limiter || c.destination);
+        osc.start(noteTime);
+        osc.stop(noteTime + 0.35);
+      });
     } catch (e) {}
   }
 
@@ -4614,9 +4723,22 @@ const LosyAudio = (() => {
   function decodeAudioSafe(c, arrayBuffer) {
     return new Promise((resolve, reject) => {
       try {
-        const res = c.decodeAudioData(arrayBuffer, buf => resolve(buf), err => reject(err));
+        let settled = false;
+        const res = c.decodeAudioData(
+          arrayBuffer,
+          buf => {
+            if (!settled) { settled = true; resolve(buf); }
+          },
+          err => {
+            if (!settled) { settled = true; reject(err); }
+          }
+        );
         if (res && typeof res.then === 'function') {
-          res.then(resolve).catch(reject);
+          res.then(buf => {
+            if (!settled) { settled = true; resolve(buf); }
+          }).catch(err => {
+            if (!settled) { settled = true; reject(err); }
+          });
         }
       } catch (err) {
         reject(err);
@@ -4677,7 +4799,7 @@ const LosyAudio = (() => {
     return Promise.all(keys.map(k => loadSound(k)));
   }
 
-  // Silent unlock on first touch gesture
+  // Silent unlock on gesture
   function unlock() {
     updateMasterMute();
     const c = ensureContext();
@@ -4693,6 +4815,7 @@ const LosyAudio = (() => {
       src.onended = () => { try { src.disconnect(); } catch (e) {} };
       src.start(0);
     } catch (e) {}
+    preloadSounds();
   }
 
   // Prepare before spinning wheel
@@ -4724,7 +4847,6 @@ const LosyAudio = (() => {
       gainNode.gain.value = volume;
       src.connect(gainNode);
 
-      // Route celebration salute directly through celebrationGain, other sounds to targetGain / sfxGain
       const bus = (name === 'salute') ? (celebrationGain || limiter || c.destination) : (targetGain || sfxGain || c.destination);
       gainNode.connect(bus);
 
@@ -4750,28 +4872,34 @@ const LosyAudio = (() => {
     updateMasterMute();
     if (!soundEnabled) return;
 
-    // Map sound aliases
     if (name === 'cashout') name = 'purchase';
     const resolvedName = (name === 'tap' || name === 'click' || name === 'purchase') ? name : name;
 
-    // Relative levels: click: 0.16, tick: 0.16, start: 0.75, lose: 0.85, salute: 1.0
     let finalVol = volume;
     if (volume === 1.0) {
-      if (resolvedName === 'click' || resolvedName === 'tap') finalVol = 0.16;
-      else if (resolvedName === 'start') finalVol = 0.75;
-      else if (resolvedName === 'lose') finalVol = 0.85;
+      if (resolvedName === 'click' || resolvedName === 'tap') finalVol = 0.45;
+      else if (resolvedName === 'start') finalVol = 0.85;
+      else if (resolvedName === 'lose') finalVol = 0.90;
       else if (resolvedName === 'salute') finalVol = 1.0;
     }
 
-    // Route celebration salute to celebrationGain, others to sfxGain
     const targetBus = (resolvedName === 'salute') ? celebrationGain : sfxGain;
 
     if (buffers[resolvedName]) {
       playBufferNode(resolvedName, buffers[resolvedName], targetBus, finalVol);
     } else {
+      if (resolvedName === 'click' || resolvedName === 'tap' || resolvedName === 'purchase') {
+        synthClick(finalVol);
+      } else if (resolvedName === 'lose') {
+        tryPlayHtmlAudio('lose', finalVol);
+        synthLose();
+      } else if (resolvedName === 'salute' || resolvedName === 'win') {
+        tryPlayHtmlAudio('salute', finalVol);
+        synthWin();
+      }
       loadSound(resolvedName).then(buf => {
         if (buf && soundEnabled) {
-          playBufferNode(resolvedName, buf, targetBus, finalVol);
+          // Cached for future plays
         }
       }).catch(() => {});
     }
@@ -4801,7 +4929,7 @@ const LosyAudio = (() => {
     lastTickTime = 0;
   }
 
-  function playTick(vol = 0.85) {
+  function playTick(vol = 0.9) {
     updateMasterMute();
     if (!soundEnabled) return;
     const c = ensureContext();
@@ -4811,14 +4939,12 @@ const LosyAudio = (() => {
     }
     let buf = buffers['tick'];
     if (!buf) {
-      loadSound('tick').then(b => {
-        if (b && soundEnabled) playTick(vol);
-      }).catch(() => {});
+      synthTick(1.0, vol);
+      loadSound('tick').catch(() => {});
       return;
     }
 
     try {
-      // Overlap control: limit active tick sources to at most 2 to prevent accumulation
       while (activeTickSources.length >= 2) {
         const oldest = activeTickSources.shift();
         try {
@@ -4832,11 +4958,9 @@ const LosyAudio = (() => {
       src.buffer = buf;
 
       const t = c.currentTime;
-      // Organic pitch variation: subtle +/- 1.5% micro-alternation
       const pitch = 0.985 + (tickCount % 5) * 0.0075;
       src.playbackRate.setValueAtTime(pitch, t);
 
-      // Micro-envelope GainNode: eliminates 100% of digital DC pops on cutoff
       const microGain = c.createGain();
       microGain.gain.setValueAtTime(vol, t);
       microGain.gain.exponentialRampToValueAtTime(0.001, t + 0.075);
@@ -4875,7 +4999,7 @@ const LosyAudio = (() => {
     const dur = durationMs || 4000;
     const times = [];
     let t = 80;
-    const maxT = dur - 240; // End ticks 240ms before spin finish for clean suspense silence
+    const maxT = dur - 240;
 
     while (t < maxT) {
       times.push(t);
@@ -4895,73 +5019,68 @@ const LosyAudio = (() => {
 
     let buf = buffers['tick'];
     if (!buf) {
-      loadSound('tick').then(b => {
-        if (b && soundEnabled) scheduleWheelTicks(durationMs, finalAngle, easeFn);
-      }).catch(() => {});
-      return;
+      loadSound('tick').catch(() => {});
     }
 
-    // Schedule directly on WebAudio timeline: ZERO main-thread setTimeout interrupt spam!
     const baseAudioTime = c.currentTime;
     times.forEach((delay, idx) => {
       try {
         const p = delay / dur;
-        const vol = p > 0.6 ? 0.85 - 0.20 * ((p - 0.6) / 0.4) : 0.85;
+        const vol = p > 0.6 ? 0.95 - 0.25 * ((p - 0.6) / 0.4) : 0.95;
         const tickTime = baseAudioTime + delay / 1000;
-        const src = c.createBufferSource();
-        src.buffer = buf;
         const pitch = 0.985 + (idx % 5) * 0.0075;
-        src.playbackRate.setValueAtTime(pitch, tickTime);
 
-        const microGain = c.createGain();
-        microGain.gain.setValueAtTime(vol, tickTime);
-        microGain.gain.exponentialRampToValueAtTime(0.001, tickTime + 0.075);
+        if (buf) {
+          const src = c.createBufferSource();
+          src.buffer = buf;
+          src.playbackRate.setValueAtTime(pitch, tickTime);
 
-        src.connect(microGain);
-        microGain.connect(tickGain || limiter || c.destination);
+          const microGain = c.createGain();
+          microGain.gain.setValueAtTime(vol, tickTime);
+          microGain.gain.exponentialRampToValueAtTime(0.001, tickTime + 0.075);
 
-        src.start(tickTime);
-        src.stop(tickTime + 0.080);
-        activeTickSources.push(src);
+          src.connect(microGain);
+          microGain.connect(tickGain || limiter || c.destination);
+
+          src.start(tickTime);
+          src.stop(tickTime + 0.080);
+          activeTickSources.push(src);
+        } else {
+          const osc = c.createOscillator();
+          const g = c.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(580 * pitch, tickTime);
+          osc.frequency.exponentialRampToValueAtTime(140 * pitch, tickTime + 0.038);
+          g.gain.setValueAtTime(vol * 0.60, tickTime);
+          g.gain.exponentialRampToValueAtTime(0.001, tickTime + 0.045);
+          osc.connect(g);
+          g.connect(tickGain || limiter || c.destination);
+          osc.start(tickTime);
+          osc.stop(tickTime + 0.05);
+        }
       } catch (e) {}
     });
   }
 
-  // Win celebration sequence:
-  // 1. Immediate cutoff of wheel ticks (guarantee activeTickSources.length === 0)
-  // 2. 0ms: powerful salute fireworks (salute-win-short.mp3, celebrationGain = 1.0)
-  // 3. Exactly ONE celebration sequence per round, zero double-play
   function playWinSequence() {
     stopWheelTicks();
     clearTimeout(winSequenceTimer);
     updateMasterMute();
     if (!soundEnabled) return;
 
-    // Guard against double celebration in the same round
     if (lastCelebratedRoundId === activeRoundId) return;
     lastCelebratedRoundId = activeRoundId;
 
-    console.log('[LOSY AUDIO] WIN');
-
-    // Ensure all ticks are completely stopped before salute
-    stopWheelTicks();
-    if (activeTickSources.length > 0) {
-      for (let i = 0; i < activeTickSources.length; i++) {
-        try { activeTickSources[i].stop(); activeTickSources[i].disconnect(); } catch (e) {}
-      }
-      activeTickSources = [];
-    }
-    console.log('[LOSY AUDIO] ticks stopped');
-
-    if (buffers['salute']) {
-      console.log('[LOSY AUDIO] salute buffer ready');
-    }
-
     isSalutePlaying = true;
-    console.log('[LOSY AUDIO] salute started');
-
-    // WIN = SALUTE: Exactly one explosive celebration sequence
-    play('salute', 1.0);
+    let played = false;
+    if (buffers['salute']) {
+      const src = playBufferNode('salute', buffers['salute'], celebrationGain, 1.0);
+      if (src) played = true;
+    }
+    if (!played) {
+      tryPlayHtmlAudio('salute', 1.0);
+      synthWin();
+    }
 
     setTimeout(() => {
       isSalutePlaying = false;
@@ -4973,7 +5092,16 @@ const LosyAudio = (() => {
     clearTimeout(winSequenceTimer);
     updateMasterMute();
     if (!soundEnabled) return;
-    play('lose', 1.0);
+
+    let played = false;
+    if (buffers['lose']) {
+      const src = playBufferNode('lose', buffers['lose'], sfxGain, 0.9);
+      if (src) played = true;
+    }
+    if (!played) {
+      tryPlayHtmlAudio('lose', 0.85);
+      synthLose();
+    }
   }
 
   function stopAll() {
@@ -6766,18 +6894,18 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // WebAudio: немедленный старт и предзагрузка звуков в ОЗУ
-  LosyAudio.ensureContext();
-  LosyAudio.preloadSounds();
-
-  // Бесшумная разблокировка WebAudio на любом первом взаимодействии
+  // Бесшумная разблокировка и предзагрузка WebAudio на первом пользовательском взаимодействии
+  let audioUnlocked = false;
   const silentUnlock = () => {
-    LosyAudio.unlock();
+    if (!audioUnlocked) {
+      audioUnlocked = true;
+      LosyAudio.unlock();
+      LosyAudio.preloadSounds();
+    }
   };
-  document.addEventListener('pointerdown', silentUnlock, { passive: true });
-  document.addEventListener('touchstart', silentUnlock, { passive: true });
-  document.addEventListener('mousedown', silentUnlock, { passive: true });
-  document.addEventListener('click', silentUnlock, { passive: true });
+  ['pointerdown', 'touchstart', 'mousedown', 'click', 'keydown'].forEach(evt => {
+    document.addEventListener(evt, silentUnlock, { passive: true });
+  });
 
   // Инициализация фильтров каталога и целей
   const catBtn = document.getElementById('catalogFilterBtn');

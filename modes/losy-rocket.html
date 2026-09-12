@@ -2277,7 +2277,6 @@ function setBet(amount) {
 
 function startCountdown() {
   if (game.phase !== 'idle') return;
-  playSound('click');
   if (game.bet > game.space) {
     game.bet = Math.floor(game.space / 10) * 10;
     if (game.bet < 10) {
@@ -2803,20 +2802,23 @@ function stopEngine() {
 
 function beep(second) {
   if (!soundEnabled) return;
-  // Мягкий деликатный акустический щелчок (warm UI tap)
+  // Одинаковый деликатный акустический тон (warm UI tap) для 3, 2 и 1
   try {
     const ctx = getCtx();
-    if (ctx && ctx.state === 'running') {
+    if (ctx) {
+      if (ctx.state === 'suspended' || ctx.state === 'interrupted') {
+        ctx.resume().catch(() => {});
+      }
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
       const now = ctx.currentTime;
-      // Мягкие обертоны теплой маримбы вместо резкого писка
-      const freq = second === 1 ? 520 : (second === 2 ? 460 : 400);
+      // Одинаковый мягкий приятный тон маримбы для 3, 2 и 1
+      const freq = 480;
       osc.type = 'sine';
       osc.frequency.setValueAtTime(freq, now);
       
       gain.gain.setValueAtTime(0.0001, now);
-      gain.gain.linearRampToValueAtTime(0.12, now + 0.005);
+      gain.gain.linearRampToValueAtTime(0.14, now + 0.005);
       gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.055);
       
       osc.connect(gain);
