@@ -249,6 +249,67 @@ const server = http.createServer((req, res) => {
         return;
       }
 
+      // API связки с Telegram-ботом
+      if (pathname === '/api/bot/promo' && req.method === 'POST') {
+        const PROMO_CODES = {
+          'LOSY2026': { reward: 50000, desc: 'Приветственный бонус 50 000 золота' },
+          'START': { reward: 25000, desc: 'Стартовый набор 25 000 золота' },
+          'VPNWIN': { reward: 35000, desc: 'Бонус за интерес к VPN 35 000 золота' },
+          'VIP': { reward: 77777, desc: 'VIP-бонус 77 777 золота' }
+        };
+        const userId = String(data.userId || authUser.id);
+        const code = String(data.code || '').trim().toUpperCase();
+        const promo = PROMO_CODES[code];
+        
+        if (!promo) {
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ ok: false, error: 'Промокод не существует или срок действия истёк' }));
+          return;
+        }
+
+        const targetUser = getOrCreateUser({ id: userId, username: data.username, first_name: data.firstName });
+        if (!targetUser.promocodes) targetUser.promocodes = [];
+
+        if (targetUser.promocodes.includes(code)) {
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ ok: false, error: 'Вы уже активировали этот промокод ранее!' }));
+          return;
+        }
+
+        targetUser.promocodes.push(code);
+        targetUser.balance = (targetUser.balance || 0) + promo.reward;
+        targetUser.updatedAt = Date.now();
+        saveDb();
+
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({
+          ok: true,
+          code: code,
+          reward: promo.reward,
+          desc: promo.desc,
+          newBalance: targetUser.balance
+        }));
+        return;
+      }
+
+      if (pathname === '/api/bot/user') {
+        const userId = String(parsedUrl.query.userId || data.userId || authUser.id);
+        const targetUser = getOrCreateUser({ id: userId, username: data.username, first_name: data.firstName });
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({
+          ok: true,
+          user: {
+            id: targetUser.id,
+            firstName: targetUser.firstName,
+            username: targetUser.username,
+            balance: targetUser.balance,
+            ownedCount: targetUser.owned ? targetUser.owned.length : 0,
+            promosUsed: targetUser.promocodes ? targetUser.promocodes.length : 0
+          }
+        }));
+        return;
+      }
+
       if (pathname === '/api/shop/buy' && req.method === 'POST') {
         const skinId = data.skinId;
         const skin = SERVER_SKINS[skinId];
