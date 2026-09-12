@@ -322,8 +322,50 @@
 }
 
 .cell.mine-hit .cell-inner {
-  background: rgba(255, 71, 87, 0.2);
-  border-color: rgba(255, 71, 87, 0.8);
+  background: radial-gradient(circle at center, rgba(255, 59, 92, 0.45) 0%, rgba(20, 5, 10, 0.95) 75%) !important;
+  border-color: #ff3b5c !important;
+  box-shadow: 0 0 22px rgba(255, 59, 92, 0.8), inset 0 0 14px rgba(255, 59, 92, 0.6) !important;
+  animation: cellMinePulse 0.9s ease infinite alternate;
+}
+
+.cell.cell-mine .cell-inner {
+  background: rgba(255, 71, 87, 0.18) !important;
+  border-color: rgba(255, 71, 87, 0.65) !important;
+}
+
+.cell-image.mine-active-img {
+  animation: minePopIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  filter: drop-shadow(0 0 14px #ff3b5c) !important;
+  transform: scale(1.05);
+}
+
+@keyframes minePopIn {
+  0% { transform: scale(0.2); opacity: 0; }
+  50% { transform: scale(1.28); opacity: 1; }
+  100% { transform: scale(1.05); opacity: 1; }
+}
+
+@keyframes cellMinePulse {
+  0% { box-shadow: 0 0 14px rgba(255, 59, 92, 0.6); }
+  100% { box-shadow: 0 0 28px rgba(255, 59, 92, 1.0); }
+}
+
+.cell-explosion-blast {
+  position: absolute;
+  inset: -20%;
+  width: 140%;
+  height: 140%;
+  pointer-events: none;
+  z-index: 10;
+  background: radial-gradient(circle, rgba(255, 240, 120, 0.95) 0%, rgba(255, 80, 50, 0.85) 35%, rgba(255, 30, 0, 0) 70%);
+  border-radius: 50%;
+  animation: blastWave 0.65s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+@keyframes blastWave {
+  0% { transform: scale(0.2); opacity: 1; }
+  45% { transform: scale(1.3); opacity: 0.95; }
+  100% { transform: scale(1.9); opacity: 0; }
 }
 
 .cell.disabled {
@@ -736,8 +778,7 @@
 }
 
 .loss-scene.active {
-  animation: resultCardIn 0.5s cubic-bezier(.16, 1, .3, 1),
-             lossGlow 2.4s ease-in-out 0.5s infinite;
+  animation: lossGlow 2.4s ease-in-out infinite;
 }
 
 @keyframes lossGlow {
@@ -862,6 +903,7 @@
     animation: none;
   }
 }
+.result-modal {
   position: fixed;
   inset: 0;
   z-index: 100;
@@ -2128,10 +2170,6 @@ function revealCell(index) {
     const relocate = free[Math.floor(Math.random() * free.length)];
     gameState.minePositions = gameState.minePositions.map((m) => (m === index ? relocate : m));
   }
-  if (prefersReducedMotion) {
-    immediateReveal(index);
-    return;
-  }
   
   gameState.status = 'safe_reveal';
   
@@ -2149,7 +2187,7 @@ function revealCell(index) {
     } else {
       revealSafeCell(index, cell);
     }
-  }, 100);
+  }, 90);
 }
 
 function immediateReveal(index) {
@@ -2248,39 +2286,41 @@ function updateMultiplierDisplay() {
 function hitMine(index, cell) {
   gameState.status = 'mine_hit';
   
-  // Show mine
+  // Show active mine with prominent glowing icon and blast effect
   const cellInner = cell.querySelector('.cell-inner');
   cellInner.innerHTML = `
     <img 
-      src="${ASSETS.explosion}" 
-      alt="Explosion" 
-      class="cell-image"
-      style="animation: explosion 0.4s ease;"
+      src="${ASSETS.mine}" 
+      alt="Mine" 
+      class="cell-image mine-active-img"
     />
+    <div class="cell-explosion-blast"></div>
   `;
   
   cell.classList.add('revealed', 'mine-hit');
 
+  // Trigger haptic feedback and sound immediately
+  triggerHapticFeedback('error');
+  playSound('mine');
+
   // Screen shake
   document.body.classList.add('screen-shake');
-
-  // Explosion effect — строго внутри клетки (у клетки overflow:hidden)
-  setTimeout(() => {
-    playSound('mine');
-    spawnCellExplosion(cell);
-  }, 100);
-  
   setTimeout(() => {
     document.body.classList.remove('screen-shake');
+  }, 320);
 
-    // Reveal all mines
+  // Extra particles / lottie explosion
+  spawnCellExplosion(cell);
+  
+  // Reveal all remaining mines across the board with graceful cascade
+  setTimeout(() => {
     revealAllMines();
-  }, 200);
+  }, 120);
 
-  // End game
+  // End game cleanly after explosion and reveal (550ms)
   setTimeout(() => {
     completeGame(false);
-  }, 600);
+  }, 550);
 }
 
 function hitMineImmediate(index, cell) {
@@ -2377,10 +2417,7 @@ function completeGame(isWin) {
       showWinScene();
     }, 300);
   } else {
-    // Карточка поражения появляется почти сразу — бомбы уже видны на поле
-    setTimeout(() => {
-      showLossScene();
-    }, 100);
+    showLossScene();
   }
 }
 
@@ -2614,11 +2651,6 @@ function createLOSYParticlesImmediate() {
 // ========================================
 
 function showLossScene() {
-  if (prefersReducedMotion) {
-    showLossSceneImmediate();
-    return;
-  }
-
   fillLossStats();
 
   elements.resultOverlay.classList.add('is-visible');
@@ -2627,28 +2659,10 @@ function showLossScene() {
   elements.lossScene.classList.add('active');
   elements.winScene.classList.remove('active');
 
-  setTimeout(() => playSound('lose'), 350);
+  playSound('lose');
+  triggerHapticFeedback('error');
 
-  // 120ms - screen shake
-  setTimeout(() => {
-    document.body.classList.add('screen-shake');
-  }, 120);
-
-  // 150ms - explosion at center
-  setTimeout(() => {
-    const rect = elements.board.getBoundingClientRect();
-    spawnExplosion(rect.left + rect.width / 2, rect.top + rect.height / 2, 280);
-  }, 150);
-
-  // 300ms - shatter particles
-  setTimeout(() => {
-    createShatterParticles();
-  }, 300);
-
-  // 450ms - flash
-  setTimeout(() => {
-    document.body.classList.remove('screen-shake');
-  }, 450);
+  createShatterParticles();
 }
 
 // Статистика проигранного раунда: сколько успел открыть и какой множитель был next

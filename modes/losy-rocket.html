@@ -1287,25 +1287,27 @@ body {
   z-index: 3;
   pointer-events: none;
   font-family: var(--font-label);
-  font-size: clamp(1rem, 3.5vw, 1.4rem);
+  font-size: clamp(1rem, 3.5vw, 1.3rem);
   letter-spacing: 0.25em;
   color: var(--ink-dim);
   text-align: center;
+  transition: opacity 0.2s ease;
 }
 
 .rocket-countdown span {
   display: block;
   font-family: var(--font-brand);
-  font-size: clamp(2.4rem, 8vw, 3.6rem);
+  font-size: clamp(2.8rem, 9vw, 4.2rem);
   color: var(--accent);
-  text-shadow: 0 0 26px rgba(59, 232, 255, 0.6);
-  animation: countdownPop 1s ease infinite;
+  text-shadow: 0 0 28px rgba(59, 232, 255, 0.7);
+  animation: countdownPop 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275) infinite;
+  margin-top: 0.25rem;
 }
 
 @keyframes countdownPop {
-  0% { transform: scale(1); opacity: 1; }
-  70% { transform: scale(1.12); opacity: 0.9; }
-  100% { transform: scale(1); opacity: 1; }
+  0% { transform: scale(0.7); opacity: 0.5; }
+  40% { transform: scale(1.1); opacity: 1; }
+  100% { transform: scale(1.0); opacity: 0.95; }
 }
 
 /* СТАТУС (заглушка между раундами) */
@@ -1922,7 +1924,7 @@ const LOSY_EXPLOSION_DATA = JSON.parse(atob("eyJ2IjoiNS41LjgiLCJmciI6MjUsImlwIjo
 // ========================================
 
 const GROWTH = 0.07;          // скорость роста множителя: 1.00 * e^(GROWTH * t)
-const COUNTDOWN_SEC = 1.2;      // отсчёт перед полётом
+const COUNTDOWN_SEC = 2.1;      // чёткий отсчёт 3 -> 2 -> 1 -> Взлёт!
 const RESULT_SEC = 3.2;       // показ карточки результата
 const RTP = 0.99;             // возврат игроку: P(краш >= x) = RTP / x
 
@@ -2100,6 +2102,7 @@ function cacheDOM() {
   el.multiplierDisplay = document.getElementById('multiplierDisplay');
   el.multiplierValue = document.getElementById('multiplierValue');
   el.countdownDisplay = document.getElementById('countdownDisplay');
+  el.countdownLabel = document.getElementById('countdownLabel');
   el.countdownValue = document.getElementById('countdownValue');
   el.statusDisplay = document.getElementById('statusDisplay');
   el.history = document.getElementById('rocketHistory');
@@ -2289,10 +2292,36 @@ function startCountdown() {
   game.mult = 1.0;
 
   game.countdownTimers.forEach(clearTimeout);
+
+  el.countdownValue.textContent = '3';
+  el.countdownDisplay.hidden = false;
+
+  // Шаг 1: "3" + мягкий звуковой отклик
+  beep(3);
+
+  // Четкие быстрые шаги: 3 (0с) -> 2 (0.7с) -> 1 (1.4с) -> Мгновенный взлёт (2.1с)
   game.countdownTimers = [
-    setTimeout(() => beep(1), 0),
-    setTimeout(() => beep(2), 400),
-    setTimeout(() => beep(3), 800)
+    setTimeout(() => {
+      if (game.phase !== 'countdown') return;
+      el.countdownValue.textContent = '2';
+      el.countdownValue.style.animation = 'none';
+      void el.countdownValue.offsetWidth;
+      el.countdownValue.style.animation = '';
+      beep(2);
+    }, 700),
+    setTimeout(() => {
+      if (game.phase !== 'countdown') return;
+      el.countdownValue.textContent = '1';
+      el.countdownValue.style.animation = 'none';
+      void el.countdownValue.offsetWidth;
+      el.countdownValue.style.animation = '';
+      beep(1);
+    }, 1400),
+    setTimeout(() => {
+      if (game.phase !== 'countdown') return;
+      el.countdownDisplay.hidden = true;
+      beginFlight();
+    }, 2100)
   ];
 
   updateUI();
@@ -2304,8 +2333,8 @@ function beginFlight() {
   game.flewAway = false;
   game.recordMult = null;
 
-  // Звук запуска — ровно в момент взлёта, под ним разгоняется гул двигателя
-  playSound('launch');
+  // Звук старта и запуск двигателя
+  playSound('launch', 0.6);
   startEngine();
 
   // Ставка уходит в момент взлёта, не на отсчёте
@@ -2658,11 +2687,8 @@ function loop(now) {
   lastFrame = now;
 
   if (game.phase === 'countdown') {
-    const left = Math.ceil((game.countdownEnd - now) / 1000);
-    if (left > 0) {
-      el.countdownDisplay.hidden = false;
-      el.countdownValue.textContent = left;
-    } else {
+    el.countdownDisplay.hidden = false;
+    if (now >= game.countdownEnd + 150) {
       el.countdownDisplay.hidden = true;
       game.countdownTimers.forEach(clearTimeout);
       beginFlight();
@@ -2777,7 +2803,34 @@ function stopEngine() {
 
 function beep(second) {
   if (!soundEnabled) return;
-  playSound('tick', second === 3 ? 1.0 : 0.7);
+  // Мягкий деликатный акустический щелчок (warm UI tap)
+  try {
+    const ctx = getCtx();
+    if (ctx && ctx.state === 'running') {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      const now = ctx.currentTime;
+      // Мягкие обертоны теплой маримбы вместо резкого писка
+      const freq = second === 1 ? 520 : (second === 2 ? 460 : 400);
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, now);
+      
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.linearRampToValueAtTime(0.12, now + 0.005);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.055);
+      
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.06);
+    }
+  } catch (e) {}
+
+  try {
+    if (window.Telegram?.WebApp?.HapticFeedback) {
+      window.Telegram.WebApp.HapticFeedback.impactOccurred('light');
+    }
+  } catch (e) {}
 }
 
 // ========================================
