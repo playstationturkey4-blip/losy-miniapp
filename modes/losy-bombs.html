@@ -1755,6 +1755,10 @@ const ASSETS = {
   spark: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDI0IDEwMjQiIHdpZHRoPSIxMDI0IiBoZWlnaHQ9IjEwMjQiPgo8ZGVmcz4KPGxpbmVhckdyYWRpZW50IGlkPSJjeWFuIiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI+PHN0b3Agc3RvcC1jb2xvcj0iI0VBRkJGRiIvPjxzdG9wIG9mZnNldD0iLjMiIHN0b3AtY29sb3I9IiMzQkU4RkYiLz48c3RvcCBvZmZzZXQ9Ii43IiBzdG9wLWNvbG9yPSIjMDBENEZGIi8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjN0IyRkJFIi8+PC9saW5lYXJHcmFkaWVudD4KPGxpbmVhckdyYWRpZW50IGlkPSJncmFwaGl0ZSIgeDE9IjAiIHkxPSIwIiB4Mj0iMSIgeTI9IjEiPjxzdG9wIHN0b3AtY29sb3I9IiMyNDMyNDQiLz48c3RvcCBvZmZzZXQ9Ii40NSIgc3RvcC1jb2xvcj0iIzExMTgyNyIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzA1MDcwQSIvPjwvbGluZWFyR3JhZGllbnQ+CjxsaW5lYXJHcmFkaWVudCBpZD0iZ29sZCIgeDE9IjAiIHkxPSIwIiB4Mj0iMSIgeTI9IjEiPjxzdG9wIHN0b3AtY29sb3I9IiNGRkYyQTAiLz48c3RvcCBvZmZzZXQ9Ii4zIiBzdG9wLWNvbG9yPSIjRkZENzAwIi8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjOUE2MTAwIi8+PC9saW5lYXJHcmFkaWVudD4KPHJhZGlhbEdyYWRpZW50IGlkPSJyZWQiIGN4PSIuMzUiIGN5PSIuMyI+PHN0b3Agc3RvcC1jb2xvcj0iI0ZGN0E5MyIvPjxzdG9wIG9mZnNldD0iLjM1IiBzdG9wLWNvbG9yPSIjRkYzRDc3Ii8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjNkUxMjM0Ii8+PC9yYWRpYWxHcmFkaWVudD4KPGZpbHRlciBpZD0iZ2xvdyIgeD0iLTUwJSIgeT0iLTUwJSIgd2lkdGg9IjIwMCUiIGhlaWdodD0iMjAwJSI+PGZlR2F1c3NpYW5CbHVyIHN0ZERldmlhdGlvbj0iMTQiIHJlc3VsdD0iYiIvPjxmZU1lcmdlPjxmZU1lcmdlTm9kZSBpbj0iYiIvPjxmZU1lcmdlTm9kZSBpbj0iU291cmNlR3JhcGhpYyIvPjwvZmVNZXJnZT48L2ZpbHRlcj4KPC9kZWZzPjxnIHN0cm9rZS1saW5lY2FwPSJyb3VuZCI+PHBhdGggZD0iTTUxMiAxMzB2MTgwTTUxMiA3MTR2MTgwTTEzMCA1MTJoMTgwTTcxNCA1MTJoMTgwTTI0MiAyNDJsMTI4IDEyOE02NTQgNjU0bDEyOCAxMjhNNzgyIDI0Mkw2NTQgMzcwTTM3MCA2NTRMMjQyIDc4MiIgc3Ryb2tlPSIjM0JFOEZGIiBzdHJva2Utd2lkdGg9IjE4Ii8+PHBhdGggZD0iTTUxMiAyNjBsMzggMTkwIDE5MCA2Mi0xOTAgNDAtMzggMjEyLTM4LTIxMi0xOTAtNDAgMTkwLTYyeiIgZmlsbD0iI0VBRkJGRiIgZmlsdGVyPSJ1cmwoI2dsb3cpIi8+PC9nPjwvc3ZnPg=='
 };
 
+// Preload high-priority game assets in background
+const _preloadDiamond = new Image(); _preloadDiamond.src = ASSETS.diamond;
+const _preloadMine = new Image(); _preloadMine.src = ASSETS.mine;
+
 const LOSY_COLORS = {
   cyan: '#3BE8FF',
   blue: '#00D4FF',
@@ -1803,35 +1807,152 @@ function b64ToArrayBuffer(b64) {
   return bytes.buffer;
 }
 function decodeSounds() {
+  // WebAudio oscillator synthesizer handles all sounds with 0ms latency and 0 thread freeze.
+  // Pre-decode audioBuffers asynchronously only in background without blocking.
   const ctx = getCtx();
   if (!ctx) return;
   for (const k of Object.keys(SOUNDS)) {
     if (audioBuffers[k]) continue;
-    try { audioBuffers[k] = ctx.decodeAudioData(b64ToArrayBuffer(SOUNDS[k].split(',')[1])); }
-    catch (e) { /* фолбэк на audioCache */ }
+    try {
+      const buf = b64ToArrayBuffer(SOUNDS[k].split(',')[1]);
+      ctx.decodeAudioData(buf, (decoded) => {
+        audioBuffers[k] = decoded;
+      }, () => {});
+    } catch (e) {}
   }
 }
+
 function playSound(name, volume = 0.8) {
-  if (!soundEnabled || !SOUNDS[name]) return;
+  if (!soundEnabled) return;
   const ctx = getCtx();
-  if (ctx && audioBuffers[name]) {
-    try {
+  if (!ctx) return;
+  const now = ctx.currentTime;
+  try {
+    if (name === 'click') {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(320, now);
+      osc.frequency.exponentialRampToValueAtTime(120, now + 0.035);
+      gain.gain.setValueAtTime(0.001, now);
+      gain.gain.linearRampToValueAtTime(0.12 * volume, now + 0.003);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.038);
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.start(now); osc.stop(now + 0.04);
+      return;
+    }
+    if (name === 'reveal') {
+      const step = Math.min(24, (gameState.revealedCells ? gameState.revealedCells.length : 1));
+      const baseFreq = 523.25 * Math.pow(1.045, step);
+      const osc1 = ctx.createOscillator();
+      const osc2 = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc1.type = 'sine';
+      osc1.frequency.setValueAtTime(baseFreq, now);
+      osc1.frequency.exponentialRampToValueAtTime(baseFreq * 1.02, now + 0.12);
+      osc2.type = 'triangle';
+      osc2.frequency.setValueAtTime(baseFreq * 2, now);
+      gain.gain.setValueAtTime(0.001, now);
+      gain.gain.linearRampToValueAtTime(0.18 * volume, now + 0.012);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.28);
+      osc1.connect(gain); osc2.connect(gain);
+      gain.connect(ctx.destination);
+      osc1.start(now); osc2.start(now);
+      osc1.stop(now + 0.29); osc2.stop(now + 0.29);
+      return;
+    }
+    if (name === 'mine') {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      const filter = ctx.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(320, now);
+      filter.frequency.exponentialRampToValueAtTime(40, now + 0.35);
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(140, now);
+      osc.frequency.exponentialRampToValueAtTime(32, now + 0.38);
+      gain.gain.setValueAtTime(0.001, now);
+      gain.gain.linearRampToValueAtTime(0.35 * volume, now + 0.015);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.42);
+      osc.connect(filter); filter.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now); osc.stop(now + 0.43);
+      return;
+    }
+    if (name === 'start') {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(260, now);
+      osc.frequency.exponentialRampToValueAtTime(620, now + 0.14);
+      gain.gain.setValueAtTime(0.001, now);
+      gain.gain.linearRampToValueAtTime(0.15 * volume, now + 0.01);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.16);
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.start(now); osc.stop(now + 0.17);
+      return;
+    }
+    if (name === 'cashout') {
+      const notes = [523.25, 659.25, 783.99, 1046.5];
+      notes.forEach((freq, idx) => {
+        const noteStart = now + idx * 0.055;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, noteStart);
+        gain.gain.setValueAtTime(0.001, noteStart);
+        gain.gain.linearRampToValueAtTime(0.18 * volume, noteStart + 0.008);
+        gain.gain.exponentialRampToValueAtTime(0.0001, noteStart + 0.18);
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.start(noteStart); osc.stop(noteStart + 0.19);
+      });
+      return;
+    }
+    if (name === 'win') {
+      const chords = [
+        [523.25, 659.25, 783.99],
+        [587.33, 739.99, 880.00],
+        [659.25, 830.61, 987.77, 1318.5]
+      ];
+      chords.forEach((chord, cIdx) => {
+        const cStart = now + cIdx * 0.12;
+        chord.forEach(freq => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(freq, cStart);
+          gain.gain.setValueAtTime(0.001, cStart);
+          gain.gain.linearRampToValueAtTime((0.14 / chord.length) * volume, cStart + 0.015);
+          gain.gain.exponentialRampToValueAtTime(0.0001, cStart + 0.45);
+          osc.connect(gain); gain.connect(ctx.destination);
+          osc.start(cStart); osc.stop(cStart + 0.46);
+        });
+      });
+      return;
+    }
+    if (name === 'lose') {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(190, now);
+      osc.frequency.exponentialRampToValueAtTime(75, now + 0.28);
+      gain.gain.setValueAtTime(0.001, now);
+      gain.gain.linearRampToValueAtTime(0.15 * volume, now + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.32);
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.start(now); osc.stop(now + 0.33);
+      return;
+    }
+    // Fallback if buffer pre-decoded
+    if (audioBuffers[name]) {
       const src = ctx.createBufferSource();
       src.buffer = audioBuffers[name];
       const gain = ctx.createGain();
       gain.gain.value = volume;
       src.connect(gain); gain.connect(ctx.destination);
       src.start();
-      return;
-    } catch (e) { /* фолбэк */ }
-  }
-  try {
-    const base = audioCache[name] || (audioCache[name] = new Audio(SOUNDS[name]));
-    base.currentTime = 0;
-    base.volume = volume;
-    const playback = base.play();
-    if (playback && playback.catch) playback.catch(() => {});
-  } catch (e) { /* звук не критичен */ }
+    }
+  } catch (e) {}
 }
 window.playSound = playSound;
 document.addEventListener('pointerdown', () => { unlockAudio(); }, { once: true });
@@ -2025,7 +2146,7 @@ function bindFastTap(elem, handler) {
   let lastExec = 0;
   const run = (e) => {
     const now = performance.now();
-    if (now - lastExec < 280) return;
+    if (now - lastExec < 50) return;
     lastExec = now;
     unlockAudio();
     handler(e);
@@ -2040,7 +2161,7 @@ function bindFastTap(elem, handler) {
 
 function bindEvents() {
   // Sound toggle
-  elements.soundToggle.addEventListener('click', () => {
+  bindFastTap(elements.soundToggle, () => {
     soundEnabled = !soundEnabled;
     localStorage.setItem('losySoundBombs', soundEnabled ? 'on' : 'off');
     elements.soundToggle.textContent = soundEnabled ? '🔊' : '🔇';
@@ -2048,16 +2169,16 @@ function bindEvents() {
   });
 
   // Mines selector
-  elements.minesDec.addEventListener('click', () => { playSound('click'); adjustMines(-1); });
-  elements.minesInc.addEventListener('click', () => { playSound('click'); adjustMines(1); });
+  bindFastTap(elements.minesDec, () => { playSound('click'); adjustMines(-1); });
+  bindFastTap(elements.minesInc, () => { playSound('click'); adjustMines(1); });
 
   // Bet controls
-  elements.betDec.addEventListener('click', () => { playSound('click'); adjustBet(-10); });
-  elements.betInc.addEventListener('click', () => { playSound('click'); adjustBet(10); });
+  bindFastTap(elements.betDec, () => { playSound('click'); adjustBet(-10); });
+  bindFastTap(elements.betInc, () => { playSound('click'); adjustBet(10); });
 
   // Quick bet buttons
   document.querySelectorAll('.bet-quick-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
+    bindFastTap(btn, () => {
       playSound('click');
       const value = btn.dataset.quick;
       if (value === 'max') {
@@ -2077,11 +2198,11 @@ function bindEvents() {
     playTapSound();
     cashOut();
   });
-  elements.newGameBtn.addEventListener('click', () => {
+  bindFastTap(elements.newGameBtn, () => {
     playTapSound();
     showNewGameMenu();
   });
-  elements.newGameBtnLoss.addEventListener('click', () => {
+  bindFastTap(elements.newGameBtnLoss, () => {
     playTapSound();
     showNewGameMenu();
   });
@@ -2321,7 +2442,6 @@ function revealSafeCell(index, cell) {
       src="${ASSETS.diamond}" 
       alt="Diamond" 
       class="cell-image"
-      loading="lazy"
     />
   `;
   
@@ -2454,7 +2574,6 @@ function revealAllMines() {
           src="${ASSETS.mine}" 
           alt="Mine" 
           class="cell-image"
-          loading="lazy"
         />
       `;
       cell.classList.add('revealed');
