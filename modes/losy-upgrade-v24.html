@@ -6498,7 +6498,7 @@ function buyFromShop(skinId, currency, cardEl) {
     if (gold < skin.value) { showToast('Не хватает золотых монет!'); playSound('click'); return false; }
     gold -= skin.value;
   } else {
-    if (space < skin.value) { showToast('Не хватает космо-монет!'); playSound('click'); return false; }
+    if (space < skin.value) { showToast('Не хватает золотых монет!'); playSound('click'); return false; }
     space -= skin.value;
   }
 
@@ -6524,7 +6524,7 @@ function buy(skinId, currency) {
     if (gold < skin.value) { showToast('Не хватает золотых монет!'); return; }
     gold -= skin.value;
   } else {
-    if (space < skin.value) { showToast('Не хватает космо-монет!'); return; }
+    if (space < skin.value) { showToast('Не хватает золотых монет!'); return; }
     space -= skin.value;
   }
 

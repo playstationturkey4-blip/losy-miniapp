@@ -228,6 +228,8 @@ def filter_bots(filter_mode='all', query=None, visited_list=None):
 # -------------------------------------------------------------
 # 4. КЛАВИАТУРЫ И ИНТЕРФЕЙС
 # -------------------------------------------------------------
+# 4. КЛАВИАТУРЫ И ИНТЕРФЕЙС
+# -------------------------------------------------------------
 def get_main_reply_keyboard():
     """
     Постоянное закрепленное нижнее меню (is_persistent=True)
@@ -235,26 +237,31 @@ def get_main_reply_keyboard():
     app_url = get_app_url()
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, is_persistent=True)
     btn_app = types.KeyboardButton("🚀 Запустить Mini App", web_app=types.WebAppInfo(url=app_url))
+    btn_unvisited = types.KeyboardButton("⏳ Где ещё не был")
     btn_vpn = types.KeyboardButton(f"🛡️ Список VPN ({len(VPN_BOTS)})")
     btn_profile = types.KeyboardButton("👤 Мой профиль")
     btn_promo = types.KeyboardButton("🎁 Промокод")
     btn_search = types.KeyboardButton("🔍 Поиск VPN")
 
     markup.row(btn_app)
-    markup.row(btn_vpn, btn_profile)
-    markup.row(btn_promo, btn_search)
+    markup.row(btn_unvisited, btn_vpn)
+    markup.row(btn_profile, btn_promo, btn_search)
     return markup
 
-def get_main_inline_keyboard():
+def get_main_inline_keyboard(unvisited_count=None):
     """Инлайн-кнопки под приветственным сообщением"""
     app_url = get_app_url()
     markup = types.InlineKeyboardMarkup(row_width=1)
     btn_app = types.InlineKeyboardButton("🚀 Запустить Mini App (Игры & Баланс)", web_app=types.WebAppInfo(url=app_url))
-    btn_vpn = types.InlineKeyboardButton(f"🛡️ Список VPN ({len(VPN_BOTS)} проверенных ботов)", callback_data="vpn_p:0:all")
+    
+    unvis_text = f"⏳ Боты, в которых ещё не был ({unvisited_count})" if unvisited_count is not None else "⏳ Боты, в которых ещё не был"
+    btn_unvisited = types.InlineKeyboardButton(unvis_text, callback_data="vpn_f:unvisited")
+    
+    btn_vpn = types.InlineKeyboardButton(f"🛡️ Полный каталог VPN ({len(VPN_BOTS)} ботов)", callback_data="vpn_p:0:all")
     btn_profile = types.InlineKeyboardButton("👤 Мой профиль (посещенные боты)", callback_data="menu_profile")
     btn_promo = types.InlineKeyboardButton("🎁 Промокод (Скоро)", callback_data="menu_promo")
     btn_rnd = types.InlineKeyboardButton("🎲 Случайный VPN", callback_data="vpn_rnd")
-    markup.add(btn_app, btn_vpn, btn_profile, btn_promo, btn_rnd)
+    markup.add(btn_app, btn_unvisited, btn_vpn, btn_profile, btn_promo, btn_rnd)
     return markup
 
 def build_vpn_keyboard(user_visited, page=0, filter_mode='all', query=None):
@@ -262,7 +269,7 @@ def build_vpn_keyboard(user_visited, page=0, filter_mode='all', query=None):
     Формирует интерактивную клавиатуру каталога VPN:
     - Кнопки ботов с отметкой «(Был тут) ✅» или обычные
     - Нажатие на кнопку бота открывает карточку и фиксирует визит
-    - Удобная пагинация и фильтры: [Все] [Был тут] [Новые]
+    - Удобная пагинация и фильтры: [Где не был] [Был тут] [Все]
     """
     visited_set = set(v.lower() for v in user_visited)
     items = filter_bots(filter_mode=filter_mode, query=query, visited_list=user_visited)
@@ -280,14 +287,16 @@ def build_vpn_keyboard(user_visited, page=0, filter_mode='all', query=None):
         visited_count = len([b for b in VPN_BOTS if b['id'] in visited_set])
         new_count = len(VPN_BOTS) - visited_count
 
-        f_all_text = f"• Все ({len(VPN_BOTS)}) •" if filter_mode == 'all' else f"Все ({len(VPN_BOTS)})"
-        f_vis_text = f"• Был тут ({visited_count}) •" if filter_mode == 'visited' else f"Был тут ({visited_count})"
-        f_new_text = f"• Новые ({new_count}) •" if filter_mode == 'unvisited' else f"Новые ({new_count})"
+        f_unvis_text = f"• ⏳ Где не был ({new_count}) •" if filter_mode == 'unvisited' else f"⏳ Где не был ({new_count})"
+        f_vis_text = f"• ✅ Был тут ({visited_count}) •" if filter_mode == 'visited' else f"✅ Был тут ({visited_count})"
+        f_all_text = f"• 📄 Все ({len(VPN_BOTS)}) •" if filter_mode == 'all' else f"📄 Все ({len(VPN_BOTS)})"
 
         markup.row(
-            types.InlineKeyboardButton(f_all_text, callback_data="vpn_f:all"),
-            types.InlineKeyboardButton(f_vis_text, callback_data="vpn_f:visited"),
-            types.InlineKeyboardButton(f_new_text, callback_data="vpn_f:unvisited")
+            types.InlineKeyboardButton(f_unvis_text, callback_data="vpn_f:unvisited"),
+            types.InlineKeyboardButton(f_vis_text, callback_data="vpn_f:visited")
+        )
+        markup.row(
+            types.InlineKeyboardButton(f_all_text, callback_data="vpn_f:all")
         )
 
     # Кнопки ботов на текущей странице
@@ -337,7 +346,7 @@ def build_vpn_keyboard(user_visited, page=0, filter_mode='all', query=None):
 
     # Сервисные кнопки
     markup.row(
-        types.InlineKeyboardButton("🎲 Случайный VPN", callback_data="vpn_rnd"),
+        types.InlineKeyboardButton("⏳ Где не был", callback_data="vpn_f:unvisited"),
         types.InlineKeyboardButton("👤 Мой профиль", callback_data="menu_profile")
     )
     markup.row(types.InlineKeyboardButton("« В главное меню", callback_data="menu_home"))
@@ -349,25 +358,40 @@ def build_vpn_detail_keyboard(bot_item, return_page=0, filter_mode='all'):
     Клавиатура карточки выбранного VPN-бота:
     - Прямой переход в бота в Telegram
     - Кнопка возврата к списку
+    - Кнопка «Боты, где не был»
     - Кнопка перехода в профиль
     """
     markup = types.InlineKeyboardMarkup(row_width=1)
     direct_url = f"https://t.me/{bot_item['username']}?start=losy"
-    btn_open = types.InlineKeyboardButton(f"🚀 Открыть @{bot_item['username']}", url=direct_url)
-    btn_back = types.InlineKeyboardButton(f"◀️ Назад к списку (Стр. {return_page + 1})", callback_data=f"vpn_p:{return_page}:{filter_mode}")
+    btn_open = types.InlineKeyboardButton(f"🚀 Запустить @{bot_item['username']}", url=direct_url)
+    
+    if filter_mode == 'unvisited':
+        back_text = f"◀️ Назад к списку «Где не был» (Стр. {return_page + 1})"
+    elif filter_mode == 'visited':
+        back_text = f"◀️ Назад к списку «Был тут» (Стр. {return_page + 1})"
+    else:
+        back_text = f"◀️ Назад к каталогу (Стр. {return_page + 1})"
+
+    btn_back = types.InlineKeyboardButton(back_text, callback_data=f"vpn_p:{return_page}:{filter_mode}")
+    btn_unvis = types.InlineKeyboardButton("⏳ Другие боты, где не был", callback_data="vpn_f:unvisited")
     btn_profile = types.InlineKeyboardButton("👤 Мой профиль", callback_data="menu_profile")
-    markup.add(btn_open, btn_back, btn_profile)
+    markup.add(btn_open, btn_back, btn_unvis, btn_profile)
     return markup
 
-def get_profile_keyboard():
+def get_profile_keyboard(user=None):
     """Клавиатура раздела «Мой профиль»"""
     app_url = get_app_url()
     markup = types.InlineKeyboardMarkup(row_width=1)
     btn_app = types.InlineKeyboardButton("🎮 Открыть Mini App (Игры)", web_app=types.WebAppInfo(url=app_url))
-    btn_vpn = types.InlineKeyboardButton(f"🛡️ Каталог VPN ({len(VPN_BOTS)})", callback_data="vpn_p:0:all")
-    btn_visited = types.InlineKeyboardButton("✅ Показать ботов «Был тут»", callback_data="vpn_f:visited")
+    
+    visited_count = len(user.get('visitedBots', [])) if user else 0
+    unvisited_count = len(VPN_BOTS) - visited_count
+    
+    btn_unvisited = types.InlineKeyboardButton(f"⏳ Боты, в которых ещё не был ({unvisited_count})", callback_data="vpn_f:unvisited")
+    btn_visited = types.InlineKeyboardButton(f"✅ Боты, в которых уже был ({visited_count})", callback_data="vpn_f:visited")
+    btn_vpn = types.InlineKeyboardButton(f"🛡️ Полный каталог ({len(VPN_BOTS)} ботов)", callback_data="vpn_p:0:all")
     btn_home = types.InlineKeyboardButton("« В главное меню", callback_data="menu_home")
-    markup.add(btn_app, btn_vpn, btn_visited, btn_home)
+    markup.add(btn_app, btn_unvisited, btn_visited, btn_vpn, btn_home)
     return markup
 
 def get_promo_keyboard():
@@ -394,16 +418,20 @@ def get_random_bot_keyboard(rand_bot):
 # -------------------------------------------------------------
 # 5. ТЕКСТЫ И ПРЕДСТАВЛЕНИЯ
 # -------------------------------------------------------------
-def get_welcome_text(name):
+def get_welcome_text(name, visited_count=0):
+    unvisited_count = len(VPN_BOTS) - visited_count
     return (
         f"🌌 <b>Добро пожаловать в LOSY VPN, {name}!</b>\n\n"
-        f"⚡ <b>LOSY</b> — ваш единый центр свободы интернета и интерактивных WebApp игр.\n\n"
-        f"🚀 <b>Разделы сервиса:</b>\n"
-        f"• <b>Каталог VPN</b> — строго <b>{len(VPN_BOTS)} проверенных ботов</b> без блокировок. "
-        f"Нажимайте на нужного бота — он автоматически отметится как <i>«(Был тут) ✅»</i>!\n"
-        f"• <b>Мой профиль</b> — отслеживание всех сервисов, в которые вы уже заходили, и ваш баланс.\n"
-        f"• <b>Mini App</b> — игры «Ракета», «Бомбы» 5x5 и «CS:GO Апгрейд» с обменом монет на реальные ключи.\n"
-        f"• <b>Промокод</b> — эксклюзивные промокоды (скоро открытие).\n\n"
+        f"⚡ <b>LOSY</b> — ваш удобный центр свободы интернета и интерактивных WebApp игр.\n\n"
+        f"📊 <b>Ваш прогресс по ботам:</b>\n"
+        f"• Посещено: <b>{visited_count} из {len(VPN_BOTS)}</b> ✅\n"
+        f"• Осталось открыть: <b>{unvisited_count} ботов</b> ⏳\n\n"
+        f"🚀 <b>Главные разделы сервиса:</b>\n"
+        f"• <b>⏳ Боты, где не был</b> — быстрый список всех сервисов, которые вы ещё не открывали;\n"
+        f"• <b>🛡️ Каталог VPN</b> — все <b>{len(VPN_BOTS)} проверенных ботов</b> (отмечаются галочкой <i>«(Был тут) ✅»</i> при нажатии);\n"
+        f"• <b>👤 Мой профиль</b> — отслеживание истории посещений, баланс золотых монет и инвентарь;\n"
+        f"• <b>🚀 Mini App</b> — игры «Ракета», «Бомбы» 5x5 и «CS:GO Апгрейд» с обменом на реальные ключи;\n"
+        f"• <b>🎁 Промокод</b> — эксклюзивные промокоды (скоро открытие).\n\n"
         f"👇 <i>Выберите раздел в меню ниже:</i>"
     )
 
@@ -412,7 +440,9 @@ def get_vpn_catalog_text(user_visited, page=0, filter_mode='all', query=None):
     items = filter_bots(filter_mode=filter_mode, query=query, visited_list=user_visited)
     total_items = len(items)
     total_pages = max(1, math.ceil(total_items / ITEMS_PER_PAGE))
+    page = max(0, min(page, total_pages - 1))
     visited_count = len([b for b in VPN_BOTS if b['id'] in visited_set])
+    unvisited_count = len(VPN_BOTS) - visited_count
 
     if query:
         return (
@@ -422,19 +452,30 @@ def get_vpn_catalog_text(user_visited, page=0, filter_mode='all', query=None):
             f"👇 <i>Нажмите на кнопку бота, чтобы открыть его:</i>"
         )
 
-    mode_title = "Все сервисы"
-    if filter_mode == 'visited':
-        mode_title = "Посещённые боты"
-    elif filter_mode == 'unvisited':
-        mode_title = "Новые сервисы"
-
-    return (
-        f"🛡️ <b>Каталог проверенных VPN-ботов</b>\n\n"
-        f"🌐 Режим: <b>{mode_title}</b> ({total_items} ботов)\n"
-        f"📊 Ваш прогресс: <b>{visited_count}</b> из <b>{len(VPN_BOTS)}</b> посещено\n"
-        f"📄 Страница: <b>{page + 1}</b> из <b>{total_pages}</b>\n\n"
-        f"💡 <i>Нажмите на любого бота ниже. Он отметится как <b>«(Был тут) ✅»</b> и откроет прямую ссылку!</i>"
-    )
+    if filter_mode == 'unvisited':
+        return (
+            f"⏳ <b>Боты, в которых вы ещё не были:</b>\n\n"
+            f"🎯 <b>Осталось открыть:</b> <b>{unvisited_count}</b> из <b>{len(VPN_BOTS)}</b> ботов\n"
+            f"✅ <b>Уже посещено:</b> <b>{visited_count}</b> ботов\n"
+            f"📄 Страница: <b>{page + 1}</b> из <b>{total_pages}</b>\n\n"
+            f"💡 <i>Нажмите на любого бота ниже — он откроется и сразу отметится как <b>«(Был тут) ✅»</b>!</i>"
+        )
+    elif filter_mode == 'visited':
+        return (
+            f"✅ <b>Боты, в которые вы уже заходили (Был тут):</b>\n\n"
+            f"📊 <b>Посещено:</b> <b>{visited_count}</b> из <b>{len(VPN_BOTS)}</b> ботов\n"
+            f"⏳ <b>Осталось открыть:</b> <b>{unvisited_count}</b> ботов\n"
+            f"📄 Страница: <b>{page + 1}</b> из <b>{total_pages}</b>\n\n"
+            f"💡 <i>Эти боты уже зафиксированы в вашем личном профиле.</i>"
+        )
+    else:
+        return (
+            f"🛡️ <b>Полный каталог проверенных VPN-ботов</b>\n\n"
+            f"🌐 Всего сервисов: <b>{len(VPN_BOTS)}</b>\n"
+            f"📊 <b>Ваш прогресс:</b> <b>{visited_count}</b> посещено | <b>{unvisited_count}</b> осталось\n"
+            f"📄 Страница: <b>{page + 1}</b> из <b>{total_pages}</b>\n\n"
+            f"💡 <i>С отметкой <b>«(Был тут) ✅»</b> — вы уже открывали. Со значком <b>⚡</b> — вы ещё не заходили.</i>"
+        )
 
 def get_vpn_detail_text(bot_item, is_visited=True):
     status_str = "✅ <b>Вы уже заходили сюда (Был тут)</b>" if is_visited else "⏳ <b>Вы ещё не открывали этого бота</b>"
@@ -450,6 +491,7 @@ def get_profile_text(user):
     balance_str = f"{user.get('balance', 200000):,}".replace(",", " ")
     visited_ids = user.get('visitedBots', [])
     visited_count = len(visited_ids)
+    unvisited_count = len(VPN_BOTS) - visited_count
 
     # Сопоставляем ID с названиями ботов
     visited_details = []
@@ -459,12 +501,13 @@ def get_profile_text(user):
             visited_details.append(f"• <b>{b['name']}</b> (@{b['username']})")
 
     lines = [
-        f"👤 <b>Мой профиль:</b>\n",
+        f"👤 <b>Личный профиль игрока:</b>\n",
         f"🆔 <b>Telegram ID:</b> <code>{user.get('id')}</code>",
         f"🏷️ <b>Имя:</b> {user.get('firstName', 'Игрок')}",
-        f"💰 <b>Баланс монет:</b> <b>{balance_str}</b> 🪙",
+        f"💰 <b>Баланс золотых монет:</b> <b>{balance_str}</b> 🪙",
         f"🎒 <b>Предметов в инвентаре:</b> {user.get('ownedCount', 1)}\n",
-        f"📊 <b>Посещено VPN-ботов:</b> <b>{visited_count}</b> из <b>{len(VPN_BOTS)}</b>"
+        f"📊 <b>Посещено VPN-ботов:</b> <b>{visited_count}</b> из <b>{len(VPN_BOTS)}</b>",
+        f"⏳ <b>Осталось открыть:</b> <b>{unvisited_count}</b> ботов"
     ]
 
     if visited_details:
@@ -477,11 +520,11 @@ def get_profile_text(user):
             lines.append(f"<i>...и ещё {len(visited_details) - max_show} сервисов</i>")
     else:
         lines.append(
-            f"\nℹ️ <i>Вы пока не заходили ни в один VPN-бот из каталога. "
-            f"Откройте «Список VPN» и протестируйте сервисы!</i>"
+            f"\nℹ️ <i>Вы пока не заходили ни в один VPN-бот из каталога.\n"
+            f"Нажмите кнопку ниже, чтобы открыть ботов, где вы ещё не были!</i>"
         )
 
-    lines.append(f"\n⚡ <i>Баланс полностью синхронизирован с играми Mini App!</i>")
+    lines.append(f"\n⚡ <i>Баланс и посещения полностью синхронизированы с Mini App!</i>")
     return "\n".join(lines)
 
 def get_promo_text():
@@ -567,8 +610,12 @@ def send_or_edit_screen(chat_id, img_key, caption, markup, call=None):
 @bot.message_handler(commands=['start'])
 def handle_start(message):
     name = message.from_user.first_name or "друг"
-    caption = get_welcome_text(name)
-    inline_kb = get_main_inline_keyboard()
+    user = get_user_data(message.from_user.id, message.from_user.username, message.from_user.first_name)
+    visited_count = len(user.get('visitedBots', []))
+    unvisited_count = len(VPN_BOTS) - visited_count
+
+    caption = get_welcome_text(name, visited_count=visited_count)
+    inline_kb = get_main_inline_keyboard(unvisited_count=unvisited_count)
     reply_kb = get_main_reply_keyboard()
 
     send_or_edit_screen(message.chat.id, 'welcome', caption, inline_kb)
@@ -582,6 +629,13 @@ def handle_start(message):
 def handle_menu(message):
     handle_start(message)
 
+@bot.message_handler(commands=['unvisited', 'new'])
+def handle_unvisited_command(message):
+    user = get_user_data(message.from_user.id, message.from_user.username, message.from_user.first_name)
+    caption = get_vpn_catalog_text(user['visitedBots'], page=0, filter_mode='unvisited')
+    kb = build_vpn_keyboard(user['visitedBots'], page=0, filter_mode='unvisited')
+    send_or_edit_screen(message.chat.id, 'vpn', caption, kb)
+
 @bot.message_handler(commands=['vpn'])
 def handle_vpn_command(message):
     user = get_user_data(message.from_user.id, message.from_user.username, message.from_user.first_name)
@@ -593,7 +647,7 @@ def handle_vpn_command(message):
 def handle_profile_command(message):
     user = get_user_data(message.from_user.id, message.from_user.username, message.from_user.first_name)
     caption = get_profile_text(user)
-    kb = get_profile_keyboard()
+    kb = get_profile_keyboard(user)
     send_or_edit_screen(message.chat.id, 'profile', caption, kb)
 
 @bot.message_handler(commands=['app'])
@@ -646,7 +700,9 @@ def handle_random_command(message):
 
 @bot.message_handler(commands=['help'])
 def handle_help_command(message):
-    bot.send_message(message.chat.id, get_help_text(), reply_markup=get_main_inline_keyboard())
+    user = get_user_data(message.from_user.id, message.from_user.username, message.from_user.first_name)
+    unvisited_count = len(VPN_BOTS) - len(user.get('visitedBots', []))
+    bot.send_message(message.chat.id, get_help_text(), reply_markup=get_main_inline_keyboard(unvisited_count=unvisited_count))
 
 # -------------------------------------------------------------
 # 8. ОБРАБОТЧИКИ ТЕКСТОВЫХ REPLY КНОПОК
@@ -655,19 +711,21 @@ def handle_help_command(message):
 def handle_text_messages(message):
     text = (message.text or "").strip()
 
-    if text.startswith("🛡️ Список VPN") or text in ["Список VPN", "VPN", "vpn"]:
+    if text in ["⏳ Где ещё не был", "Где ещё не был", "Боты, где не был", "Боты, в которых не был", "где не был", "не был", "Новые боты", "новые", "/unvisited", "/new"]:
+        handle_unvisited_command(message)
+    elif text.startswith("🛡️ Список VPN") or text in ["Список VPN", "Все VPN", "VPN", "vpn", "/vpn"]:
         handle_vpn_command(message)
-    elif text in ["👤 Мой профиль", "Профиль", "профиль", "/myprofile"]:
+    elif text in ["👤 Мой профиль", "Профиль", "профиль", "/profile", "/myprofile"]:
         handle_profile_command(message)
-    elif text in ["🎁 Промокод", "🎁 Промокод (Скоро)", "Промокод", "промокод"]:
+    elif text in ["🎁 Промокод", "🎁 Промокод (Скоро)", "Промокод", "промокод", "/promo"]:
         handle_promo_command(message)
-    elif text in ["🔍 Поиск VPN", "Поиск VPN", "Поиск", "search"]:
+    elif text in ["🔍 Поиск VPN", "Поиск VPN", "Поиск", "search", "/search"]:
         handle_search_command(message)
-    elif text in ["🎲 Случайный VPN", "Случайный VPN", "random"]:
+    elif text in ["🎲 Случайный VPN", "Случайный VPN", "random", "/random"]:
         handle_random_command(message)
-    elif text in ["🚀 Запустить Mini App", "Mini App", "Игры"]:
+    elif text in ["🚀 Запустить Mini App", "Mini App", "Игры", "/app"]:
         handle_app_command(message)
-    elif text in ["ℹ️ О сервисе", "Помощь", "help"]:
+    elif text in ["ℹ️ О сервисе", "Помощь", "help", "/help"]:
         handle_help_command(message)
     else:
         bot.send_message(
@@ -697,8 +755,11 @@ def handle_callbacks(call):
 
     # 1. Главное меню
     if data == "menu_home":
-        caption = get_welcome_text(first_name or "друг")
-        send_or_edit_screen(chat_id, 'welcome', caption, get_main_inline_keyboard(), call=call)
+        user = get_user_data(user_id, username, first_name)
+        visited_count = len(user.get('visitedBots', []))
+        unvisited_count = len(VPN_BOTS) - visited_count
+        caption = get_welcome_text(first_name or "друг", visited_count=visited_count)
+        send_or_edit_screen(chat_id, 'welcome', caption, get_main_inline_keyboard(unvisited_count=unvisited_count), call=call)
 
     # 2. Переход к VPN каталогу: "vpn_p:<page>:<filter>" или "vpn_p:<page>:<filter>:<query>"
     elif data.startswith("vpn_p:"):
@@ -743,7 +804,7 @@ def handle_callbacks(call):
     elif data == "menu_profile":
         user = get_user_data(user_id, username, first_name)
         caption = get_profile_text(user)
-        kb = get_profile_keyboard()
+        kb = get_profile_keyboard(user)
         send_or_edit_screen(chat_id, 'profile', caption, kb, call=call)
 
     # 6. Промокоды (Скоро)
@@ -825,6 +886,7 @@ def setup_bot_meta():
         # 2. Регистрация слэш-команд меню в Telegram
         commands = [
             types.BotCommand("start", "🌌 Главное меню"),
+            types.BotCommand("unvisited", f"⏳ Боты, в которых ещё не был ({len(VPN_BOTS)})"),
             types.BotCommand("vpn", f"🛡️ Каталог {len(VPN_BOTS)} проверенных VPN"),
             types.BotCommand("profile", "👤 Мой профиль и посещенные боты"),
             types.BotCommand("app", "🚀 Запустить Mini App"),

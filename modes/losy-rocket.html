@@ -2487,7 +2487,7 @@ function startCountdown() {
   if (game.bet > game.space) {
     game.bet = Math.floor(game.space / 10) * 10;
     if (game.bet < 10) {
-      showToast('Недостаточно космо-монет!');
+      showToast('Недостаточно золотых монет!');
       return;
     }
     updateUI();
