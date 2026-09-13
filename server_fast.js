@@ -934,7 +934,7 @@ server.listen(PORT, '0.0.0.0', async () => {
         menu_button: {
           type: 'web_app',
           text: '🚀 Играть',
-          web_app: { url: `${publicUrl}?v=80` }
+          web_app: { url: `${publicUrl}?v=85` }
         }
       });
       const req = https.request({

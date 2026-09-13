@@ -78,9 +78,9 @@ def get_app_url(user_id=None):
     elif os.environ.get("APP_URL"):
         base = os.environ.get("APP_URL").rstrip('/')
     
-    # Принудительный сброс кэша Telegram WebView (v=80)
+    # Принудительный сброс кэша Telegram WebView (v=85)
     sep = "&" if "?" in base else "?"
-    url = f"{base}{sep}v=80"
+    url = f"{base}{sep}v=85"
     if user_id:
         url += f"&userId={user_id}"
     return url
