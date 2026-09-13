@@ -1,9 +1,25 @@
 {
   "users": {
+    "123": {
+      "id": "123",
+      "username": "",
+      "firstName": "Игрок",
+      "balance": 200000,
+      "spaceCoins": 0,
+      "owned": [
+        "pen"
+      ],
+      "promocodes": [],
+      "vpnKeys": [],
+      "visitedBots": [
+        "hitvpnbot"
+      ],
+      "updatedAt": 1789303818733
+    },
     "guest_local": {
       "id": "guest_local",
       "username": "",
-      "firstName": "\u0418\u0433\u0440\u043e\u043a (Demo)",
+      "firstName": "Игрок (Demo)",
       "balance": 200000,
       "spaceCoins": 100,
       "owned": [
@@ -11,7 +27,23 @@
       ],
       "promocodes": [],
       "vpnKeys": [],
-      "updatedAt": 1789053494472
+      "updatedAt": 1789053494472,
+      "visitedBots": []
+    },
+    "8432034026": {
+      "id": "8432034026",
+      "username": "fowoges",
+      "firstName": "­­",
+      "balance": 200000,
+      "owned": [
+        "pen"
+      ],
+      "promocodes": [],
+      "vpnKeys": [],
+      "visitedBots": [
+        "vpneucombot"
+      ],
+      "updatedAt": 0
     }
   },
   "sessions": {}
