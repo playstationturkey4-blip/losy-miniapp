@@ -949,7 +949,7 @@ server.listen(PORT, '0.0.0.0', async () => {
         menu_button: {
           type: 'web_app',
           text: '🚀 Играть',
-          web_app: { url: `${publicUrl.replace(/\/$/, '')}/?v=90` }
+          web_app: { url: `${publicUrl.replace(/\/$/, '')}/?v=91` }
         }
       });
       const req = https.request({

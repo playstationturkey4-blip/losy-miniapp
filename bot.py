@@ -80,7 +80,7 @@ def get_app_url(user_id=None):
     
     # Обязательный trailing slash перед query-параметрами для соответствия RFC и WebApp
     clean_base = base.rstrip('/') + '/'
-    url = f"{clean_base}?v=90"
+    url = f"{clean_base}?v=91"
     if user_id:
         url += f"&userId={user_id}"
     return url

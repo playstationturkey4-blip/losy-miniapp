@@ -33,13 +33,13 @@
   <link rel="preload" href="/assets/fonts/Unbounded-Variable.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="/assets/fonts/Inter-Variable.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="/assets/hero/losy-hero-poster.jpg" as="image" />
-  <link rel="preload" href="/dist/shell.bundle.css?v=90" as="style" />
-  <link rel="modulepreload" href="/dist/app.bundle.js?v=90" />
+  <link rel="preload" href="/dist/shell.bundle.css?v=91" as="style" />
+  <link rel="modulepreload" href="/dist/app.bundle.js?v=91" />
 
   <!-- Фоновая предзагрузка режимов игр -->
-  <link rel="prefetch" href="/modes/losy-upgrade-v24.html?v=90" />
-  <link rel="prefetch" href="/modes/losy-bombs.html?v=90" />
-  <link rel="prefetch" href="/modes/losy-rocket.html?v=90" />
+  <link rel="prefetch" href="/modes/losy-upgrade-v24.html?v=91" />
+  <link rel="prefetch" href="/modes/losy-bombs.html?v=91" />
+  <link rel="prefetch" href="/modes/losy-rocket.html?v=91" />
   <link rel="prefetch" href="/assets/hero/losy-hero-916.mp4" as="video" />
 
   <!-- Critical Inline CSS: мгновенный темный фон и скелет за 0.05 сек -->
@@ -141,6 +141,9 @@
       opacity: 0 !important;
       visibility: hidden !important;
       pointer-events: none !important;
+      width: 0 !important;
+      height: 0 !important;
+    }
     .hero__poster {
       position: absolute;
       inset: 0;
@@ -166,10 +169,22 @@
     .hero__video.is-live {
       opacity: 1 !important;
     }
+    .hero__shade {
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      pointer-events: none;
+    }
+    .hero__inner {
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      z-index: 10;
+      pointer-events: auto;
+    }
   </style>
 
   <!-- Единый оптимизированный CSS бандл оболочки -->
-  <link rel="stylesheet" href="/dist/shell.bundle.css?v=90" />
+  <link rel="stylesheet" href="/dist/shell.bundle.css?v=91" />
 </head>
 <body>
 
@@ -386,9 +401,9 @@
   </div>
 
   <!-- Единый менеджер персонального баланса и идентификации -->
-  <script src="/js/balance-sync.js?v=90"></script>
+  <script src="/js/balance-sync.js?v=91"></script>
   <!-- Оболочка: единый высокоскоростной бандл -->
-  <script defer src="/dist/app.bundle.js?v=90"></script>
+  <script defer src="/dist/app.bundle.js?v=91"></script>
   <script>
     // Принудительно сбрасываем устаревший кэш ServiceWorker Telegram WebView
     if ('serviceWorker' in navigator) {
