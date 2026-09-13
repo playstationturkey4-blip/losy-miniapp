@@ -29,7 +29,7 @@ export const MODES = [
     id: "upgrade",
     name: "Апгрейд",
     desc: "Обменивай скины и повышай их уровень.",
-    url: "/modes/losy-upgrade-v24.html?v=91",
+    url: "/modes/losy-upgrade-v24.html?v=92",
     cover: "/assets/covers/upgrade.webp",
     accent: "upgrade",
   },

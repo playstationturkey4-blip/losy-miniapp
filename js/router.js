@@ -94,17 +94,18 @@ export function initCarouselHints() {
 /* ПРОФИЛЬ: баланс единой валюты — золотые монеты (200 000 по умолчанию).
    Оболочка и игры живут на одном origin — localStorage общий. */
 export function initProfileBalances() {
-  const read = (k) => {
+  const read = () => {
     try {
-      const v = localStorage.getItem(k);
+      if (window.LosyUser) return window.LosyUser.getBalance();
+      const v = localStorage.getItem("losyBalance");
       if (v === null) return 200000;
       const n = parseInt(v, 10);
-      return isNaN(n) ? 200000 : n;
+      return isNaN(n) || n < 0 ? 0 : n;
     } catch (e) { return 200000; }
   };
   const fill = () => {
     const g = document.getElementById("profileGold");
-    if (g) g.textContent = read("losyBalance").toLocaleString("ru-RU");
+    if (g) g.textContent = read().toLocaleString("ru-RU");
   };
   fill();
   window.addEventListener("pageshow", fill);
@@ -114,13 +115,14 @@ export function initProfileBalances() {
 
 /* Баланс в топбаре — единая валюта (200 000 на старте). */
 export function initBalance() {
-  let balance = 200000;
+  let balance = -1;
   const read = () => {
     try {
+      if (window.LosyUser) return window.LosyUser.getBalance();
       const v = localStorage.getItem("losyBalance");
       if (v === null) return 200000;
       const n = Number(v);
-      return isNaN(n) ? 200000 : n;
+      return isNaN(n) || n < 0 ? 0 : n;
     } catch (e) { return 200000; }
   };
   const el = document.querySelector("[data-balance]");

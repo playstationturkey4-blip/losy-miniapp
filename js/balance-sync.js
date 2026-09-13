@@ -8,6 +8,7 @@
 
   const STORAGE_KEY_BAL = 'losyBalance';
   const STORAGE_KEY_UID = 'losy_user_id';
+  const STORAGE_KEY_INIT = 'losy_user_initialized';
   const INITIAL_BALANCE = 200000;
 
   // 1. Определение уникального User ID
@@ -65,30 +66,44 @@
     return { id: uid, firstName, username };
   }
 
-  // 2. Чтение персонального баланса
+  // 2. Чтение персонального баланса: 200 000 начисляется СТРОГО ОДИН РАЗ на старте и НИКОГДА не сбрасывается!
   function getBalance() {
     const uid = getUserId();
     try {
-      // Пользовательский ключ баланса имеет наивысший приоритет
+      // Пользовательский ключ баланса (losyBalance_12345) имеет наивысший приоритет
       const userSpecific = localStorage.getItem(STORAGE_KEY_BAL + '_' + uid);
       if (userSpecific !== null) {
         const parsed = parseInt(userSpecific, 10);
-        if (!isNaN(parsed) && parsed >= 0) return parsed;
+        if (!isNaN(parsed) && parsed >= 0) {
+          localStorage.setItem(STORAGE_KEY_BAL, String(parsed));
+          localStorage.setItem(STORAGE_KEY_INIT + '_' + uid, 'true');
+          return parsed;
+        }
       }
 
-      // Общий ключ баланса
+      // Общий ключ баланса (losyBalance)
       const general = localStorage.getItem(STORAGE_KEY_BAL);
       if (general !== null) {
         const parsed = parseInt(general, 10);
         if (!isNaN(parsed) && parsed >= 0) {
           localStorage.setItem(STORAGE_KEY_BAL + '_' + uid, String(parsed));
+          localStorage.setItem(STORAGE_KEY_INIT + '_' + uid, 'true');
           return parsed;
         }
       }
 
-      // Начальный баланс для нового пользователя — ровно 200 000
+      // Если пользователь уже был инициализирован ранее, но баланс = 0 (или был очищен) — не даем повторные 200k!
+      if (localStorage.getItem(STORAGE_KEY_INIT + '_' + uid) === 'true' || localStorage.getItem(STORAGE_KEY_INIT) === 'true') {
+        localStorage.setItem(STORAGE_KEY_BAL, '0');
+        localStorage.setItem(STORAGE_KEY_BAL + '_' + uid, '0');
+        return 0;
+      }
+
+      // СТРОГО новый игрок: единоразовый стартовый баланс 200 000
       localStorage.setItem(STORAGE_KEY_BAL, String(INITIAL_BALANCE));
       localStorage.setItem(STORAGE_KEY_BAL + '_' + uid, String(INITIAL_BALANCE));
+      localStorage.setItem(STORAGE_KEY_INIT + '_' + uid, 'true');
+      localStorage.setItem(STORAGE_KEY_INIT, 'true');
       return INITIAL_BALANCE;
     } catch (e) {
       return INITIAL_BALANCE;
@@ -103,6 +118,8 @@
     try {
       localStorage.setItem(STORAGE_KEY_BAL, String(num));
       localStorage.setItem(STORAGE_KEY_BAL + '_' + uid, String(num));
+      localStorage.setItem(STORAGE_KEY_INIT + '_' + uid, 'true');
+      localStorage.setItem(STORAGE_KEY_INIT, 'true');
       window.dispatchEvent(new CustomEvent('losy:balance', {
         detail: { balance: num, userId: uid }
       }));
@@ -154,12 +171,14 @@
       });
       if (res.ok) {
         const data = await res.json();
-        if (data.ok && typeof data.balance === 'number') {
+        if (data && data.ok && typeof data.balance === 'number' && !isNaN(data.balance)) {
           const serverBal = data.balance;
           const currentBal = getBalance();
           if (serverBal !== currentBal) {
             localStorage.setItem(STORAGE_KEY_BAL, String(serverBal));
             localStorage.setItem(STORAGE_KEY_BAL + '_' + info.id, String(serverBal));
+            localStorage.setItem(STORAGE_KEY_INIT + '_' + info.id, 'true');
+            localStorage.setItem(STORAGE_KEY_INIT, 'true');
             window.dispatchEvent(new CustomEvent('losy:balance', {
               detail: { balance: serverBal, userId: info.id }
             }));

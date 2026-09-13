@@ -2,8 +2,8 @@
   "name": "losy-miniapp",
   "version": "1.0.0",
   "description": "LOSY Telegram Mini App and Bot",
-  "main": "server_fast.js",
   "scripts": {
+    "build": "npx esbuild js/app.js --bundle --minify --outfile=dist/app.bundle.js",
     "postinstall": "pip3 install --no-cache-dir -r requirements.txt || pip install -r requirements.txt || true",
     "start": "node server_fast.js"
   },

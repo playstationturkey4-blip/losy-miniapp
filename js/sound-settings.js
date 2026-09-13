@@ -63,18 +63,20 @@ export function onMusicChange(fn) {
   return () => musicListeners.delete(fn);
 }
 
-// 3. ЕДИНАЯ ВАЛЮТА: 200 000 ЗОЛОТЫХ МОНЕТ
+// 3. ЕДИНАЯ ВАЛЮТА: 200 000 ЗОЛОТЫХ МОНЕТ (единоразово для новых пользователей)
 export function initUnifiedCurrency() {
   try {
-    if (localStorage.getItem(MIGRATION_KEY) !== 'true') {
-      localStorage.setItem(CURRENCY_KEY, '200000');
-      localStorage.removeItem('losySpaceCoins');
-      localStorage.setItem(MIGRATION_KEY, 'true');
-      window.dispatchEvent(new CustomEvent('losy:balance'));
-    } else if (!localStorage.getItem(CURRENCY_KEY)) {
-      localStorage.setItem(CURRENCY_KEY, '200000');
-      window.dispatchEvent(new CustomEvent('losy:balance'));
+    if (window.LosyUser) {
+      const b = window.LosyUser.getBalance();
+      localStorage.setItem(CURRENCY_KEY, String(b));
+    } else {
+      const cur = localStorage.getItem(CURRENCY_KEY);
+      if (cur === null) {
+        localStorage.setItem(CURRENCY_KEY, '200000');
+        window.dispatchEvent(new CustomEvent('losy:balance'));
+      }
     }
+    localStorage.removeItem('losySpaceCoins');
   } catch (e) {}
 }
 
@@ -160,14 +162,14 @@ export function initGlobalTapSounds() {
   }, { capture: true, passive: true });
 }
 
-// 5. ФОНОВАЯ МУЗЫКА ДЛЯ ГЛАВНОЙ СТРАНИЦЫ (Lo-Fi / Ambient)
+// 5. ФОНОВАЯ МУЗЫКА ДЛЯ ГЛАВНОЙ СТРАНИЦЫ (Lo-Fi / Ambient Prime)
 let homeAudio = null;
 let fadeInterval = null;
 
 export function initHomeMusic() {
   if (homeAudio) return;
   try {
-    homeAudio = new Audio('/assets/sounds/losy-ambient-soft-v71.mp3');
+    homeAudio = new Audio('/assets/sounds/losy-home-theme.mp3?v=92');
     homeAudio.loop = true;
     homeAudio.volume = 0;
     homeAudio.preload = 'auto';
@@ -177,7 +179,7 @@ export function initHomeMusic() {
       const curView = location.hash.replace('#', '') || 'home';
       if (curView === 'home' && isMusicEnabled()) {
         homeAudio.play().then(() => {
-          fadeTo(0.20, 800);
+          fadeTo(0.28, 800);
         }).catch(() => {});
       }
     };
@@ -217,10 +219,10 @@ export function updateHomeMusic(currentView) {
     if (homeAudio.paused) {
       homeAudio.volume = 0;
       homeAudio.play().then(() => {
-        fadeTo(0.24, 800);
+        fadeTo(0.28, 800);
       }).catch(() => {});
     } else {
-      fadeTo(0.24, 600);
+      fadeTo(0.28, 600);
     }
   } else {
     if (!homeAudio.paused) {

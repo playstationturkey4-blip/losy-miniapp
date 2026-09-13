@@ -3,7 +3,7 @@
 
 <html lang="ru">
 <head>
-  <script src="/js/balance-sync.js?v=91"></script>
+  <script src="/js/balance-sync.js?v=92"></script>
   <script>
     window.handleImgError = function(img) {
       if (img.dataset.fallbackDone) return;
@@ -5535,129 +5535,70 @@ const LosyAudio = (() => {
     } catch (e) {}
   }
 
-  function scheduleWheelTicks(durationMs, finalAngle, easeFn) {
-    stopWheelTicks();
+  // Новый нежный, мягкий, бархатный звук прокрута колеса (WebAudio синтез высокого класса)
+  function playGentleTick(progress = 0) {
     updateMasterMute();
     if (!soundEnabled) return;
     const c = ensureContext();
     if (!c) return;
-    if (c.state === 'suspended' || c.state === 'interrupted') {
-      try { c.resume().catch(() => {}); } catch (e) {}
-    }
-
-    const dur = durationMs || 4000;
-    tickDurationMs = dur;
-    const times = [];
-    let t = 80;
-    const maxT = dur - 240;
-
-    while (t < maxT) {
-      times.push(t);
-      const p = t / dur;
-      let interval;
-      if (p < 0.10) {
-        const u = p / 0.10;
-        interval = 85 - 23 * Math.sin(u * Math.PI * 0.5);
-      } else if (p < 0.28) {
-        interval = 62;
-      } else {
-        const u = (p - 0.28) / 0.72;
-        interval = 62 + 175 * Math.pow(u, 2.1);
+    try {
+      if (c.state === 'suspended' || c.state === 'interrupted') {
+        c.resume().catch(() => {});
       }
-      t += interval;
-    }
+      const t = c.currentTime;
+      const prog = Math.max(0, Math.min(1, progress));
 
-    if (!buffers['tick']) {
-      loadSound('tick').catch(() => {});
-    }
+      // Частота понижается от 560Hz (быстрый ход) до 390Hz (мягкая остановка у цели)
+      const baseFreq = 560 - prog * 170;
 
-    tickScheduleQueue = times;
-    tickQueueIndex = 0;
-    tickBaseAudioTime = c.currentTime;
+      // Теплый обволакивающий lowpass фильтр (срезает резкие верхние частоты)
+      const filter = c.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(baseFreq * 2.2, t);
+      filter.Q.value = 0.85;
 
-    const scheduleAhead = 0.180; // Окно упреждения: планируем не более 1-2 тиков вперед, 0 блокировок потока!
+      // Плавный мягкий гейн без резких щелчков (атака 1.5мс, спад 26мс)
+      const gain = c.createGain();
+      const vol = prog > 0.65 ? 0.15 * (1 - (prog - 0.65) * 0.4) : 0.15;
+      gain.gain.setValueAtTime(0.0001, t);
+      gain.gain.exponentialRampToValueAtTime(vol, t + 0.0015);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.026);
 
-    function processTickQueue() {
-      if (!soundEnabled || !c || c.state === 'closed') return;
-      const curAudio = c.currentTime;
-      const buf = buffers['tick'];
+      // Основной тон: чистая теплая синусоида
+      const osc1 = c.createOscillator();
+      osc1.type = 'sine';
+      osc1.frequency.setValueAtTime(baseFreq, t);
+      osc1.frequency.exponentialRampToValueAtTime(baseFreq * 0.88, t + 0.024);
 
-      while (tickQueueIndex < tickScheduleQueue.length) {
-        const delayMs = tickScheduleQueue[tickQueueIndex];
-        const tickTargetTime = tickBaseAudioTime + delayMs / 1000;
+      // Второй тон: мягкий треугольный обертон для бархатистой акустической глубины
+      const osc2 = c.createOscillator();
+      const gain2 = c.createGain();
+      osc2.type = 'triangle';
+      osc2.frequency.setValueAtTime(baseFreq * 1.5, t);
+      gain2.gain.setValueAtTime(0.0001, t);
+      gain2.gain.exponentialRampToValueAtTime(vol * 0.22, t + 0.0015);
+      gain2.gain.exponentialRampToValueAtTime(0.0001, t + 0.018);
 
-        // Если тик лежит дальше окна упреждения, ждем следующего цикла
-        if (tickTargetTime > curAudio + scheduleAhead) {
-          break;
-        }
+      osc1.connect(filter);
+      osc2.connect(gain2);
+      gain2.connect(filter);
+      filter.connect(gain);
+      gain.connect(tickGain || limiter || c.destination);
 
-        // Если тик устарел более чем на 80 мс, пропускаем
-        if (tickTargetTime < curAudio - 0.080) {
-          tickQueueIndex++;
-          continue;
-        }
+      osc1.start(t);
+      osc2.start(t);
+      osc1.stop(t + 0.028);
+      osc2.stop(t + 0.020);
 
-        const scheduledTime = Math.max(curAudio + 0.002, tickTargetTime);
-        const idx = tickQueueIndex;
-        const p = delayMs / tickDurationMs;
-        const vol = p > 0.6 ? 0.95 - 0.25 * ((p - 0.6) / 0.4) : 0.95;
-        const pitch = 0.985 + (idx % 5) * 0.0075;
+      tickCount++;
+      lastTickTime = Date.now();
+    } catch (e) {}
+  }
 
-        try {
-          if (buf) {
-            if (activeTickSources.length >= 3) {
-              const old = activeTickSources.shift();
-              try { old.stop(); old.disconnect(); } catch (_) {}
-            }
-
-            const src = c.createBufferSource();
-            src.buffer = buf;
-            src.playbackRate.setValueAtTime(pitch, scheduledTime);
-
-            const microGain = c.createGain();
-            microGain.gain.setValueAtTime(vol, scheduledTime);
-            microGain.gain.exponentialRampToValueAtTime(0.001, scheduledTime + 0.075);
-
-            src.connect(microGain);
-            microGain.connect(tickGain || limiter || c.destination);
-
-            src.start(scheduledTime);
-            src.stop(scheduledTime + 0.080);
-            activeTickSources.push(src);
-
-            src.onended = () => {
-              try { src.disconnect(); microGain.disconnect(); } catch (_) {}
-              const i = activeTickSources.indexOf(src);
-              if (i !== -1) activeTickSources.splice(i, 1);
-            };
-          } else {
-            const osc = c.createOscillator();
-            const g = c.createGain();
-            osc.type = 'triangle';
-            osc.frequency.setValueAtTime(580 * pitch, scheduledTime);
-            osc.frequency.exponentialRampToValueAtTime(140 * pitch, scheduledTime + 0.038);
-            g.gain.setValueAtTime(vol * 0.60, scheduledTime);
-            g.gain.exponentialRampToValueAtTime(0.001, scheduledTime + 0.045);
-            osc.connect(g);
-            g.connect(tickGain || limiter || c.destination);
-            osc.start(scheduledTime);
-            osc.stop(scheduledTime + 0.05);
-          }
-        } catch (e) {}
-
-        tickQueueIndex++;
-      }
-
-      if (tickQueueIndex >= tickScheduleQueue.length) {
-        clearInterval(tickSchedulerTimer);
-        tickSchedulerTimer = null;
-      }
-    }
-
-    // Запуск первого тика
-    processTickQueue();
-    // Интервал планирования каждые 40 мс без нагрузки на CPU
-    tickSchedulerTimer = setInterval(processTickQueue, 40);
+  function scheduleWheelTicks() {
+    stopWheelTicks();
+    updateMasterMute();
+    ensureContext();
   }
 
   function playWinSequence() {
@@ -5779,6 +5720,7 @@ const LosyAudio = (() => {
     unlock,
     resetTick,
     playTick,
+    playGentleTick,
     play,
     playWinSequence,
     playLose,
@@ -5809,25 +5751,13 @@ window.playSound = playSound;
 window.playResult = playResult;
 
 function readBalance(key) {
+  if (window.LosyUser) return window.LosyUser.getBalance();
   const v = parseInt(localStorage.getItem(key), 10);
   return isNaN(v) || v < 0 ? 0 : v;
 }
 
 let gold = window.LosyUser ? window.LosyUser.getBalance() : readBalance(STORE.gold);
 let space = 0;
-
-// СТАРТОВЫЙ БОНУС: разово начисляем 200 000 золотых монет только новым игрокам
-try {
-  if (!localStorage.getItem('losyStartBonus_v69')) {
-    localStorage.setItem('losyStartBonus_v69', '1');
-    if (gold <= 0) {
-      gold = 200000;
-      if (window.LosyUser) window.LosyUser.saveBalance(gold);
-      else localStorage.setItem(STORE.gold, String(gold));
-    }
-    localStorage.removeItem(STORE.space);
-  }
-} catch (e) {}
 
 window.addEventListener('losy:balance', () => {
   if (!spinning) {
@@ -6965,9 +6895,9 @@ function doUpgrade() {
     }
   };
 
-  // Сбрасываем и запускаем идеально плавную трещотку колеса
+  // Сбрасываем и подготавливаем аудио к плавному старту
   LosyAudio.resetTick();
-  LosyAudio.scheduleWheelTicks(UPGRADE_SPIN_DURATION, finalAngle, easeSpin);
+  LosyAudio.stopWheelTicks();
 
   if (needleSpinRafId) {
     cancelAnimationFrame(needleSpinRafId);
@@ -6976,19 +6906,48 @@ function doUpgrade() {
 
   if (needleEl) {
     let startTimestamp = null;
+    let lastTickTimestamp = 0;
+
     const frame = (now) => {
-      if (startTimestamp === null) startTimestamp = now;
-      const p = Math.min(1, (now - startTimestamp) / UPGRADE_SPIN_DURATION);
+      if (startTimestamp === null) {
+        startTimestamp = now;
+        lastTickTimestamp = now;
+      }
+      const elapsed = now - startTimestamp;
+      const p = Math.min(1, elapsed / UPGRADE_SPIN_DURATION);
       const eased = easeSpin(p);
       const ang = startRot + finalAngle * eased;
       needleCurrent = ang;
 
-      needleEl.style.transform = `rotate(${ang.toFixed(2)}deg) translate3d(0,0,0)`;
+      needleEl.style.transform = `rotate(${ang.toFixed(2)}deg)`;
+
+      // Новый нежный бархатный звук прокрута прямо внутри rAF (0 фризов, 60fps)
+      if (p < 0.985) {
+        let currentInterval;
+        if (p < 0.10) {
+          const u = p / 0.10;
+          currentInterval = 82 - 22 * Math.sin(u * Math.PI * 0.5); // разгон: 82мс -> 60мс
+        } else if (p < 0.32) {
+          currentInterval = 60; // стабильный комфортный ход 16 тиков/сек
+        } else {
+          const u = (p - 0.32) / 0.68;
+          currentInterval = 60 + 220 * Math.pow(u, 2.1); // благородное замедление до 280мс
+        }
+
+        if (now - lastTickTimestamp >= currentInterval) {
+          lastTickTimestamp = now;
+          LosyAudio.playGentleTick(p);
+          if (p > 0.55 && currentInterval > 95) {
+            try { window.Telegram?.WebApp?.HapticFeedback?.selectionChanged(); } catch (_) {}
+          }
+        }
+      }
+
       if (p < 1) {
         needleSpinRafId = requestAnimationFrame(frame);
       } else {
         needleSpinRafId = null;
-        needleEl.style.transform = `rotate(${ang.toFixed(2)}deg) translate3d(0,0,0)`;
+        needleEl.style.transform = `rotate(${ang.toFixed(2)}deg)`;
         finishRound();
       }
     };

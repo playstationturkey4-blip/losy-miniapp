@@ -50,6 +50,7 @@
       "username": "fowoges",
       "firstName": "­­",
       "balance": 200000,
+      "spaceCoins": 0,
       "owned": [
         "pen"
       ],
@@ -58,7 +59,7 @@
       "visitedBots": [
         "vpneucombot"
       ],
-      "updatedAt": 0
+      "updatedAt": 1789330683579
     },
     "user_test_aaa_111": {
       "id": "user_test_aaa_111",
@@ -311,6 +312,50 @@
       "vpnKeys": [],
       "visitedBots": [],
       "updatedAt": 1789322136289
+    },
+    "guest_0xknnoaemu05gv3g": {
+      "id": "guest_0xknnoaemu05gv3g",
+      "username": "",
+      "firstName": "Гость",
+      "balance": 200000,
+      "spaceCoins": 0,
+      "owned": [
+        "pen"
+      ],
+      "promocodes": [],
+      "vpnKeys": [],
+      "visitedBots": [],
+      "updatedAt": 1789324265083
+    },
+    "test_player_777": {
+      "id": "test_player_777",
+      "username": "",
+      "firstName": "Игрок",
+      "balance": 275000,
+      "spaceCoins": 0,
+      "owned": [
+        "pen"
+      ],
+      "promocodes": [],
+      "vpnKeys": [],
+      "visitedBots": [],
+      "updatedAt": 1789333336280,
+      "initialized": true
+    },
+    "player_1789333387": {
+      "id": "player_1789333387",
+      "username": "",
+      "firstName": "Игрок",
+      "balance": 275000,
+      "spaceCoins": 0,
+      "owned": [
+        "pen"
+      ],
+      "promocodes": [],
+      "vpnKeys": [],
+      "visitedBots": [],
+      "updatedAt": 1789333392372,
+      "initialized": true
     }
   },
   "sessions": {}

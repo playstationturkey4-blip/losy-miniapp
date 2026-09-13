@@ -380,16 +380,15 @@ const server = http.createServer((req, res) => {
       let authUser = verifyTelegramWebAppData(initData);
       
       if (!authUser) {
-        // Не авторизован через Telegram HMAC — работаем в безопасном изолированном гостевом режиме
-        const rawId = String(data.userId || data.user?.id || parsedUrl.query.userId || data.guestId || parsedUrl.query.guestId || req.headers['x-guest-id'] || '');
-        if (rawId && rawId.startsWith('guest_')) {
+        // Если initData отсутствует или не подписана HMAC — используем переданный userId игрока
+        const rawId = String(data.userId || data.user?.id || parsedUrl.query.userId || data.guestId || parsedUrl.query.guestId || req.headers['x-guest-id'] || '').trim();
+        if (rawId && rawId !== 'null' && rawId !== 'undefined') {
           authUser = {
             id: rawId,
-            first_name: data.firstName || data.first_name || 'Гость',
-            username: ''
+            first_name: data.firstName || data.first_name || 'Игрок',
+            username: data.username || ''
           };
         } else {
-          // Запрещаем модифицировать чужие числовые Telegram ID без валидной подписи!
           const randomGuest = 'guest_' + crypto.randomBytes(4).toString('hex');
           authUser = { id: randomGuest, first_name: 'Гость', username: '' };
         }
@@ -408,6 +407,7 @@ const server = http.createServer((req, res) => {
             return;
           }
           user.balance = Math.min(100000000, Math.max(0, newBal));
+          user.initialized = true;
           user.updatedAt = Date.now();
           saveDb();
           syncUserToSupabase(user);
@@ -943,7 +943,7 @@ server.listen(PORT, '0.0.0.0', async () => {
 
     const info = `LOCAL: http://localhost:${PORT}\nPUBLIC: ${publicUrl}\n`;
 
-    // Автоматически синхронизируем кнопку 'Играть' в Telegram боте (v=91 на Vercel)
+    // Автоматически синхронизируем кнопку 'Играть' в Telegram боте (v=92 на Vercel)
     try {
       const https = require('https');
       const miniappUrl = process.env.MINIAPP_URL || 'https://losy-miniapp.vercel.app';
@@ -951,7 +951,7 @@ server.listen(PORT, '0.0.0.0', async () => {
         menu_button: {
           type: 'web_app',
           text: '🚀 Играть',
-          web_app: { url: `${miniappUrl.replace(/\/$/, '')}/?v=91` }
+          web_app: { url: `${miniappUrl.replace(/\/$/, '')}/?v=92` }
         }
       });
       const req = https.request({
