@@ -2212,103 +2212,106 @@ body {
 }
 
 /* ===================================================
-   ПОРАЖЕНИЕ: ТОЛЬКО ПРАВАЯ КАРТОЧКА («УСКОЛЬЗНУВШАЯ ЦЕЛЬ»)
-   Без надписей, максимально плавная шелковистая анимация
+   ПОРАЖЕНИЕ: АНИМАЦИЯ ДЛЯ ПРЕДМЕТА СТАВКИ («СГОРЕВШИЙ ПРЕДМЕТ»)
+   Выразительная, сочная и плавная анимация на левой карточке (ставка)
    =================================================== */
 
-/* Правая карточка: мягкий, плавный вздох сожаления и нежное покачивание (без резких рывков) */
-.ug-card--target.lost {
-  animation: targetElusiveLoss 1.35s cubic-bezier(0.25, 1, 0.5, 1) both !important;
+/* Левая карточка (ставка): физическое покачивание сгорания и опечаленный спад */
+.ug-card--stake.lost,
+.machine-rocket.rocket-left.lost {
+  animation: stakeCardDefeat 1.35s cubic-bezier(0.25, 1, 0.5, 1) both !important;
   transform-origin: center bottom;
   will-change: transform, filter;
 }
 
-@keyframes targetElusiveLoss {
+@keyframes stakeCardDefeat {
   0% {
     transform: perspective(800px) translate3d(0, 0, 0) rotate(0deg) scale(1);
   }
-  /* 1. Плавный мягкий отход назад (шелковистая кривая без резких скачков) */
-  25% {
-    transform: perspective(800px) translate3d(6px, -3px, -12px) rotate(1.5deg) scale(0.98);
+  12% {
+    /* Резкое вздрагивание при сгорании */
+    transform: perspective(800px) translate3d(-6px, -2px, -8px) rotate(-2.5deg) scale(0.97);
   }
-  /* 2. Мягкое перетекание в лёгкое грустное покачивание вниз */
-  55% {
-    transform: perspective(800px) translate3d(-4px, 5px, -20px) rotate(-1.0deg) scale(0.95);
+  28% {
+    transform: perspective(800px) translate3d(5px, 2px, -12px) rotate(2deg) scale(0.96);
   }
-  /* 3. Спокойное выравнивание */
-  80% {
-    transform: perspective(800px) translate3d(1px, 2px, -6px) rotate(0.4deg) scale(0.985);
+  45% {
+    transform: perspective(800px) translate3d(-3px, 6px, -18px) rotate(-1.2deg) scale(0.94);
   }
-  /* 4. Полная плавная стабилизация на платформе */
+  65% {
+    /* Опечаленный спад вниз */
+    transform: perspective(800px) translate3d(0, 9px, -22px) rotate(0deg) scale(0.93);
+  }
+  85% {
+    transform: perspective(800px) translate3d(0, 7px, -14px) rotate(0deg) scale(0.95);
+  }
   100% {
     transform: perspective(800px) translate3d(0, 0, 0) rotate(0deg) scale(1);
   }
 }
 
-/* Мягкий неоновый импульс сожаления на рамке (плавный бархатный спад, без надписей!) */
-.ug-card--target.lost .ug-card__frame-box {
-  animation: targetLossPulse 1.35s cubic-bezier(0.25, 1, 0.5, 1) both;
+/* Рамка карточки ставки: неоновый алый импульс сгорания ставки */
+.ug-card--stake.lost .ug-card__frame-box {
+  animation: stakeLossPulse 1.35s cubic-bezier(0.25, 1, 0.5, 1) both;
   will-change: filter;
 }
 
-@keyframes targetLossPulse {
+@keyframes stakeLossPulse {
   0% {
-    filter: drop-shadow(0 0 8px rgba(255, 61, 212, 0.32));
+    filter: drop-shadow(0 0 8px rgba(59, 232, 255, 0.32));
   }
-  25% {
-    filter: drop-shadow(0 0 16px rgba(255, 71, 87, 0.6)) drop-shadow(0 0 28px rgba(255, 71, 87, 0.3));
+  18% {
+    filter: drop-shadow(0 0 24px rgba(255, 61, 119, 0.85)) drop-shadow(0 0 40px rgba(255, 61, 119, 0.45));
   }
-  60% {
-    filter: drop-shadow(0 0 12px rgba(255, 71, 87, 0.4));
-  }
-  100% {
-    filter: drop-shadow(0 0 16px rgba(255, 61, 212, 0.32));
-  }
-}
-
-/* Предмет внутри правой карточки: шелковистое покачивание с легким угасанием яркости */
-.ug-card--target.lost .ug-card__item img {
-  animation: itemDodgeLoss 1.35s cubic-bezier(0.25, 1, 0.5, 1) both !important;
-  will-change: transform, filter;
-}
-
-@keyframes itemDodgeLoss {
-  0% {
-    transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
-    filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.5));
-  }
-  25% {
-    transform: translate3d(4px, -2px, 0) rotate(1.2deg) scale(0.96);
-    filter: drop-shadow(0 0 12px rgba(255, 71, 87, 0.35));
-  }
-  55% {
-    transform: translate3d(-3px, 4px, 0) rotate(-0.8deg) scale(0.93);
-    filter: grayscale(0.18) brightness(0.88);
+  50% {
+    filter: drop-shadow(0 0 16px rgba(255, 71, 87, 0.6)) drop-shadow(0 0 28px rgba(255, 40, 70, 0.3));
   }
   80% {
-    transform: translate3d(1px, 2px, 0) rotate(0.3deg) scale(0.975);
-    filter: grayscale(0.08) brightness(0.95);
+    filter: drop-shadow(0 0 10px rgba(255, 71, 87, 0.35));
   }
   100% {
-    transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
-    filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.5));
+    filter: drop-shadow(0 0 8px rgba(59, 232, 255, 0.32));
   }
 }
 
-/* Левая карточка (ставка): анимация поражения отключена полностью */
-.ug-card--stake.lost,
-.machine-rocket.rocket-left.lost,
-.ug-card--stake.is-loss-gray,
-.machine-rocket.rocket-left.is-loss-gray {
-  animation: none !important;
-  transform: none !important;
+/* Предмет ставки внутри карточки: покачивание, обесцвечивание (сгорание в пепел) и приглушение */
+.ug-card--stake.lost .ug-card__item img,
+.ug-card--stake.is-loss-gray .ug-card__item img {
+  animation: stakeItemLoss 1.35s cubic-bezier(0.25, 1, 0.5, 1) both !important;
+  will-change: transform, filter, opacity;
 }
 
-.ug-card--stake.is-loss-gray .ug-card__item img,
-.ug-card--stake.lost .ug-card__item img {
-  animation: none !important;
-  transform: none !important;
-  filter: drop-shadow(0 8px 16px rgba(0,0,0,.65)) !important;
+@keyframes stakeItemLoss {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
+    filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.65));
+    opacity: 1;
+  }
+  15% {
+    transform: translate3d(-5px, -3px, 0) scale(0.93) rotate(-3deg);
+    filter: drop-shadow(0 0 18px rgba(255, 61, 119, 0.75)) brightness(1.2);
+    opacity: 0.95;
+  }
+  35% {
+    transform: translate3d(4px, 2px, 0) scale(0.89) rotate(2deg);
+    filter: grayscale(0.5) brightness(0.8) drop-shadow(0 0 14px rgba(255, 71, 87, 0.5));
+    opacity: 0.8;
+  }
+  60% {
+    transform: translate3d(0, 7px, 0) scale(0.84) rotate(0deg);
+    filter: grayscale(0.9) brightness(0.6) drop-shadow(0 4px 10px rgba(0, 0, 0, 0.8));
+    opacity: 0.65;
+  }
+  85% {
+    transform: translate3d(0, 5px, 0) scale(0.88) rotate(0deg);
+    filter: grayscale(0.8) brightness(0.7);
+    opacity: 0.75;
+  }
+  100% {
+    transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
+    filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.65));
+    opacity: 1;
+  }
 }
 
 .ug-card--stake:not(.is-loss-gray):not(.lost) .ug-card__item img {
@@ -5570,32 +5573,11 @@ try {
   if (Array.isArray(saved)) owned = saved;
 } catch (e) { owned = []; }
 
-if (!owned.includes('pen')) {
-  owned.unshift('pen'); // стартовый бесплатный предмет всегда в наличии
-  try { localStorage.setItem(STORE.owned, JSON.stringify(owned)); } catch (e) {}
-}
-
-// bought: миграция — если ключа нет, считаем все текущие owned купленными,
-// чтобы со старого билда счётчик «В наличии» не обнулился
-try {
-  const b = JSON.parse(localStorage.getItem(STORE.bought));
-  if (Array.isArray(b)) {
-    bought = b;
-  } else {
-    bought = owned.slice();
-    try { localStorage.setItem(STORE.bought, JSON.stringify(bought)); } catch (e) {}
-  }
-} catch (e) { bought = owned.slice(); }
 // МИГРАЦИЯ v28: старые скины (ракеты) удалены из проекта — вычищаем их id
 // из хранилища, чтобы не осталось ни одной ссылки на старые предметы
 const SKIN_IDS = new Set(SKINS.map(s => s.id));
 owned = owned.filter(id => SKIN_IDS.has(id));
 bought = bought.filter(id => SKIN_IDS.has(id));
-if (!owned.includes('pen')) {
-  owned.unshift('pen');
-  try { localStorage.setItem(STORE.owned, JSON.stringify(owned)); } catch (e) {}
-  try { localStorage.setItem(STORE.bought, JSON.stringify(owned)); } catch (e) {}
-}
 // Ставка/цель могут ссылаться на удалённый предмет — чистим (и память, и хранилище)
 if (stakeId && !SKIN_IDS.has(stakeId)) { stakeId = null; try { localStorage.removeItem(STORE.stake); } catch (e) {} }
 if (targetId && !SKIN_IDS.has(targetId)) { targetId = null; try { localStorage.removeItem(STORE.target); } catch (e) {} }
@@ -5604,11 +5586,7 @@ if (stakeId && targetId && stakeId === targetId) {
   targetId = null;
   try { localStorage.removeItem(STORE.target); } catch (e) {}
 }
-// Если ставка не задана — по умолчанию ставим бесплатную ручку
-if (!stakeId) {
-  stakeId = 'pen';
-  try { localStorage.setItem(STORE.stake, 'pen'); } catch (e) {}
-}
+// Если ставка не задана — оставляем пустую платформу, игрок выбирает предмет сам
 // Ручка никогда не может быть целью апгрейда
 if (targetId === 'pen') {
   targetId = null;
@@ -5974,7 +5952,6 @@ function renderCatalog() {
       e.stopPropagation();
       if (spinning) return;
       clearLostState();
-      if (!owned.includes('pen')) owned.push('pen');
       stakeId = 'pen';
       if (targetId === stakeId) targetId = null;
       save();
@@ -5986,7 +5963,6 @@ function renderCatalog() {
       if (spinning) return;
       clearLostState();
       if (skin.id === 'pen') {
-        if (!owned.includes('pen')) owned.push('pen');
         stakeId = 'pen';
         if (targetId === stakeId) targetId = null;
         save();
@@ -6021,9 +5997,6 @@ function renderCatalog() {
     btn.addEventListener('click', () => {
       if (spinning) return;
       resetLostState();
-      if (!owned.includes('pen')) {
-        owned.push('pen');
-      }
       stakeId = 'pen';
       if (targetId === stakeId) targetId = null;
       save();
@@ -6146,14 +6119,13 @@ function renderTargets() {
         showToast('Цель должна быть строго дороже ставки!');
         return;
       }
+      if (!stakeId) {
+        showToast('Сначала выбери ставку в списке слева!');
+        return;
+      }
       playSound('click');
       targetId = skin.id;
       activeX = null; // ручной выбор цели отключает X
-      if (!stakeId) {
-        stakeId = 'pen';
-        if (!owned.includes('pen')) owned.push('pen');
-        if (targetId === 'pen') targetId = null;
-      }
       save();
       render();
     });
@@ -6437,10 +6409,10 @@ function doUpgrade() {
   let target = targetId ? byId(targetId) : null;
 
   if (!stake) {
-    stakeId = 'pen';
-    if (!owned.includes('pen')) owned.push('pen');
-    stake = byId('pen');
-    save();
+    spinning = false;
+    renderUpgrade();
+    showToast('Сначала выбери предмет для ставки в списке ниже!');
+    return;
   }
 
   if (!target) {
@@ -6469,12 +6441,13 @@ function doUpgrade() {
   if (stake.id === 'pen') {
     if (!owned.includes('pen')) owned.push('pen');
   } else if (!owned.includes(stake.id)) {
-    stakeId = 'pen';
-    if (!owned.includes('pen')) owned.push('pen');
+    stakeId = null;
+    targetId = null;
+    activeX = null;
     save();
     spinning = false;
     renderUpgrade();
-    showToast('Скин закончился. Установлена бесплатная ручка!');
+    showToast('Этот скин закончился. Выбери предмет для ставки!');
     return;
   }
 
@@ -6642,31 +6615,43 @@ function doUpgrade() {
         }, 1200);
       }, 2200);
     } else {
-      spinning = false;
-      el.catalogList.style.pointerEvents = '';
-      el.targetList.style.pointerEvents = '';
-
-      // ПРОИГРЫШ:
-      // Если предмет сгорел и его больше нет в инвентаре, откатываем ставку на бесплатную ручку
-      if (stakeId !== 'pen' && !owned.includes(stakeId)) {
-        stakeId = 'pen';
-        if (!owned.includes('pen')) owned.push('pen');
-        save();
-      }
-
-      renderUpgrade();
-
-      // Анимация проигрыша ТОЛЬКО для правой карточки (ускользнувшая цель), левая карточка спокойна
-      targetEl.classList.add('lost');
+      // ПОРАЖЕНИЕ:
+      // Анимация проигрыша воспроизводится СТРОГО на карточке предмета, на который ставил игрок (stakeEl)!
+      // Во время анимации карточка сохраняет сгоревший предмет, не сменяясь на ручку или новый предмет.
+      targetEl.classList.remove('won', 'lost');
+      stakeEl.classList.remove('won');
+      stakeEl.classList.add('lost', 'is-loss-gray');
       playResult('lose');
       spawnNextTime();
+
+      if (el.upgradeBtn) {
+        el.upgradeBtn.disabled = true;
+        el.upgradeBtn.textContent = 'НЕ ПОВЕЗЛО';
+      }
 
       clearLostStateTimer();
       lossStateTimer = setTimeout(() => {
         lossStateTimer = null;
         window._lossTimer = null;
         clearLostState();
+        spinning = false;
+        el.catalogList.style.pointerEvents = '';
+        el.targetList.style.pointerEvents = '';
+
+        // Ставка сгорела: очищаем платформу ставки и цель.
+        // Никакой новый предмет автоматически НЕ добавляется в инвентарь (owned) и НЕ подставляется на платформу!
+        if (!stakeId || !owned.includes(stakeId)) {
+          stakeId = null;
+          targetId = null;
+          activeX = null;
+        } else {
+          targetId = null;
+          activeX = null;
+        }
+        save();
         renderUpgrade();
+        renderCatalog();
+        renderTargets();
         returnToTop();
       }, 1400);
       window._lossTimer = lossStateTimer;

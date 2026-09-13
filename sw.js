@@ -1,7 +1,7 @@
-/* LOSY Turbo SW v71: Network-First for HTML + Stale-While-Revalidate for Assets
+/* LOSY Turbo SW v72: Network-First for HTML + Stale-While-Revalidate for Assets
    Гарантирует 100% свежесть игровых режимов и оболочки без устаревшего кэша. */
 
-const CACHE = 'losy-turbo-cache-v71';
+const CACHE = 'losy-turbo-cache-v72';
 
 const PRECACHE_ASSETS = [
   '/',
@@ -14,7 +14,7 @@ const PRECACHE_ASSETS = [
   '/assets/covers/bombs.webp',
   '/assets/covers/rocket.webp',
   '/assets/covers/upgrade.webp',
-  '/modes/losy-upgrade-v24.html?v=71',
+  '/modes/losy-upgrade-v24.html?v=72',
   '/modes/losy-bombs.html?v=71',
   '/modes/losy-rocket.html?v=71'
 ];
