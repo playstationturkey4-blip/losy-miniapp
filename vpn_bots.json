@@ -2,2006 +2,2053 @@
   {
     "id": "hitvpnbot",
     "name": "HitVPN",
-    "username": "hitvpnbot"
+    "username": "hitvpnbot",
+    "url": "https://t.me/hitvpnbot"
   },
   {
-    "id": "finevpnbot",
-    "name": "FineVPN",
-    "username": "FineVPNbot"
-  },
-  {
-    "id": "cacaovpn_bot",
-    "name": "CacaoVPN",
-    "username": "CacaoVPN_bot"
-  },
-  {
-    "id": "vpneucombot",
-    "name": "VPNEU",
-    "username": "vpneucombot"
-  },
-  {
-    "id": "vpndoza_bot",
-    "name": "DOZA VPN",
-    "username": "vpndoza_bot"
-  },
-  {
-    "id": "cenzavpnbot",
-    "name": "CenzaVPN",
-    "username": "Cenzavpnbot"
+    "id": "ultaclub_bot",
+    "name": "Ульта VPN",
+    "username": "Ultaclub_bot",
+    "url": "https://t.me/Ultaclub_bot"
   },
   {
     "id": "ma3x_vpn_bot",
     "name": "MATRIX VPN",
-    "username": "ma3x_vpn_bot"
+    "username": "ma3x_vpn_bot",
+    "url": "https://t.me/ma3x_vpn_bot"
   },
   {
-    "id": "mansurvpn_bot",
-    "name": "Mansur VPN",
-    "username": "mansurvpn_bot"
+    "id": "vpndoza_bot",
+    "name": "DOZA VPN",
+    "username": "vpndoza_bot",
+    "url": "https://t.me/vpndoza_bot"
   },
   {
-    "id": "ordenaccessbot",
-    "name": "Orden VPN",
-    "username": "OrdenAccessBot"
+    "id": "cacaovpn_bot",
+    "name": "CacaoVPN",
+    "username": "CacaoVPN_bot",
+    "url": "https://t.me/CacaoVPN_bot"
   },
   {
-    "id": "darknetvpnbot",
-    "name": "Darknet VPN",
-    "username": "darknetvpnbot"
+    "id": "finevpnbot",
+    "name": "FineVPN",
+    "username": "FineVPNbot",
+    "url": "https://t.me/FineVPNbot"
   },
   {
-    "id": "hitproxy_rbot",
-    "name": "Hitray / HitProxy",
-    "username": "HitProxy_rbot"
-  },
-  {
-    "id": "capybaravpnbot",
-    "name": "Capybara VPN",
-    "username": "capybaravpnbot"
-  },
-  {
-    "id": "snowdnvpn_bot",
-    "name": "Snowdn VPN",
-    "username": "snowdnvpn_bot"
+    "id": "vpneucombot",
+    "name": "VPNEU",
+    "username": "vpneucombot",
+    "url": "https://t.me/vpneucombot"
   },
   {
     "id": "mostvpnio_bot",
     "name": "MostVPN",
-    "username": "Mostvpnio_bot"
-  },
-  {
-    "id": "folkvpn_bot",
-    "name": "FOLK VPN",
-    "username": "folkvpn_bot"
-  },
-  {
-    "id": "vpn_zovbot",
-    "name": "ZOV VPN",
-    "username": "vpn_zovbot"
-  },
-  {
-    "id": "bakevpnbot",
-    "name": "Bake VPN",
-    "username": "bakevpnbot"
-  },
-  {
-    "id": "bakevpn_bot",
-    "name": "Bake VPN (дубль)",
-    "username": "bakevpn_bot"
-  },
-  {
-    "id": "chopper_vpn_bot",
-    "name": "Chopper VPN",
-    "username": "chopper_vpn_bot"
-  },
-  {
-    "id": "cordvpnbot",
-    "name": "Cord VPN",
-    "username": "cordvpnbot"
-  },
-  {
-    "id": "paranoiavpn_bot",
-    "name": "ParanoiaVPN",
-    "username": "ParanoiaVPN_bot"
-  },
-  {
-    "id": "youtubervpn_bot",
-    "name": "Youtuber VPN",
-    "username": "YoutuberVPN_bot"
-  },
-  {
-    "id": "prvtvpnbot",
-    "name": "Private VPN Bot",
-    "username": "prvtvpnbot"
+    "username": "Mostvpnio_bot",
+    "url": "https://t.me/Mostvpnio_bot"
   },
   {
     "id": "bro_vpn_bot",
     "name": "BroVPN",
-    "username": "bro_vpn_bot"
-  },
-  {
-    "id": "veilbot_bot",
-    "name": "Vee VPN",
-    "username": "veilbot_bot"
-  },
-  {
-    "id": "arma_vpn_bot",
-    "name": "ARMA VPN",
-    "username": "arma_VPN_bot"
-  },
-  {
-    "id": "freeroamvpn_bot",
-    "name": "FreeRoam VPN",
-    "username": "freeroamvpn_bot"
-  },
-  {
-    "id": "ogionebot",
-    "name": "OGI",
-    "username": "ogionebot"
-  },
-  {
-    "id": "addvpn_bot",
-    "name": "ADD VPN",
-    "username": "addvpn_bot"
-  },
-  {
-    "id": "brat_vpn_official_bot",
-    "name": "BratVPN",
-    "username": "brat_vpn_official_bot"
-  },
-  {
-    "id": "nosokvpnbot",
-    "name": "Носок VPN",
-    "username": "NosokVPNBot"
-  },
-  {
-    "id": "vpn_tube_bot",
-    "name": "VpnTube",
-    "username": "VPN_Tube_bot"
-  },
-  {
-    "id": "vpn_com_im_bot",
-    "name": "VPN.com.im",
-    "username": "vpn_com_im_bot"
-  },
-  {
-    "id": "zgc_vpn_bot",
-    "name": "ZGC VPN",
-    "username": "zgc_vpn_bot"
-  },
-  {
-    "id": "glushobhodbot",
-    "name": "GlushObhod VPN",
-    "username": "GlushObhodBot"
-  },
-  {
-    "id": "hlvpnbot",
-    "name": "HLVPN",
-    "username": "hlvpnbot"
-  },
-  {
-    "id": "globteleappbot",
-    "name": "GlobTELE",
-    "username": "globteleappbot"
-  },
-  {
-    "id": "official_vpnbot",
-    "name": "Official VPN",
-    "username": "official_vpnbot"
-  },
-  {
-    "id": "kotvpn_bot",
-    "name": "KotVPN",
-    "username": "kotvpn_bot"
-  },
-  {
-    "id": "happpvpnbot",
-    "name": "HappVPN",
-    "username": "happpvpnbot"
+    "username": "bro_vpn_bot",
+    "url": "https://t.me/bro_vpn_bot"
   },
   {
     "id": "wavevpn_xbot",
     "name": "Wave VPN",
-    "username": "WaveVPN_XBot"
+    "username": "WaveVPN_XBot",
+    "url": "https://t.me/WaveVPN_XBot"
+  },
+  {
+    "id": "glushobhodbot",
+    "name": "GlushObhod VPN",
+    "username": "GlushObhodBot",
+    "url": "https://t.me/GlushObhodBot"
+  },
+  {
+    "id": "vpn_tube_bot",
+    "name": "VpnTube",
+    "username": "VPN_Tube_bot",
+    "url": "https://t.me/VPN_Tube_bot"
+  },
+  {
+    "id": "hlvpnbot",
+    "name": "HLVPN",
+    "username": "hlvpnbot",
+    "url": "https://t.me/hlvpnbot"
+  },
+  {
+    "id": "bakevpnbot",
+    "name": "Bake VPN",
+    "username": "bakevpnbot",
+    "url": "https://t.me/bakevpnbot"
+  },
+  {
+    "id": "paranoiavpn_bot",
+    "name": "ParanoiaVPN",
+    "username": "ParanoiaVPN_bot",
+    "url": "https://t.me/ParanoiaVPN_bot"
+  },
+  {
+    "id": "bakevpn_bot",
+    "name": "Bake VPN",
+    "username": "bakevpn_bot",
+    "url": "https://t.me/bakevpn_bot"
+  },
+  {
+    "id": "addvpn_bot",
+    "name": "ADD VPN",
+    "username": "addvpn_bot",
+    "url": "https://t.me/addvpn_bot"
+  },
+  {
+    "id": "official_vpnbot",
+    "name": "Official VPN",
+    "username": "official_vpnbot",
+    "url": "https://t.me/official_vpnbot"
+  },
+  {
+    "id": "capybaravpnbot",
+    "name": "Capybara VPN",
+    "username": "capybaravpnbot",
+    "url": "https://t.me/capybaravpnbot"
+  },
+  {
+    "id": "vpn_zovbot",
+    "name": "ZOV VPN",
+    "username": "vpn_zovbot",
+    "url": "https://t.me/vpn_zovbot"
+  },
+  {
+    "id": "nosokvpnbot",
+    "name": "Носок VPN",
+    "username": "NosokVPNBot",
+    "url": "https://t.me/NosokVPNBot"
+  },
+  {
+    "id": "veilbot_bot",
+    "name": "Vee VPN",
+    "username": "veilbot_bot",
+    "url": "https://t.me/veilbot_bot"
+  },
+  {
+    "id": "arma_vpn_bot",
+    "name": "ARMA VPN",
+    "username": "arma_VPN_bot",
+    "url": "https://t.me/arma_VPN_bot"
+  },
+  {
+    "id": "freeroamvpn_bot",
+    "name": "FreeRoam VPN",
+    "username": "freeroamvpn_bot",
+    "url": "https://t.me/freeroamvpn_bot"
+  },
+  {
+    "id": "brat_vpn_official_bot",
+    "name": "BratVPN",
+    "username": "brat_vpn_official_bot",
+    "url": "https://t.me/brat_vpn_official_bot"
+  },
+  {
+    "id": "vpn_com_im_bot",
+    "name": "VPN.com.im",
+    "username": "vpn_com_im_bot",
+    "url": "https://t.me/vpn_com_im_bot"
+  },
+  {
+    "id": "zgc_vpn_bot",
+    "name": "ZGC VPN",
+    "username": "zgc_vpn_bot",
+    "url": "https://t.me/zgc_vpn_bot"
+  },
+  {
+    "id": "kotvpn_bot",
+    "name": "KotVPN",
+    "username": "kotvpn_bot",
+    "url": "https://t.me/kotvpn_bot"
+  },
+  {
+    "id": "happpvpnbot",
+    "name": "HappVPN",
+    "username": "happpvpnbot",
+    "url": "https://t.me/happpvpnbot"
   },
   {
     "id": "zuvpnbot",
     "name": "Zu VPN",
-    "username": "ZuVPNbot"
+    "username": "ZuVPNbot",
+    "url": "https://t.me/ZuVPNbot"
   },
   {
     "id": "bitvpn_probot",
     "name": "BitVPN",
-    "username": "bitvpn_probot"
+    "username": "bitvpn_probot",
+    "url": "https://t.me/bitvpn_probot"
   },
   {
     "id": "klassvpnbot",
     "name": "klassvpn",
-    "username": "klassvpnbot"
+    "username": "klassvpnbot",
+    "url": "https://t.me/klassvpnbot"
   },
   {
     "id": "makhkets_bot",
     "name": "Makhkets VPN",
-    "username": "makhkets_bot"
+    "username": "makhkets_bot",
+    "url": "https://t.me/makhkets_bot"
   },
   {
     "id": "james_bond_vpn_bot",
     "name": "James Bond VPN",
-    "username": "james_bond_vpn_bot"
+    "username": "james_bond_vpn_bot",
+    "url": "https://t.me/james_bond_vpn_bot"
   },
   {
     "id": "quietvpn_bot",
     "name": "Quiet VPN",
-    "username": "quietvpn_bot"
+    "username": "quietvpn_bot",
+    "url": "https://t.me/quietvpn_bot"
   },
   {
     "id": "sankoffyvpn_bot",
     "name": "sankoffy.vpn",
-    "username": "sankoffyvpn_bot"
+    "username": "sankoffyvpn_bot",
+    "url": "https://t.me/sankoffyvpn_bot"
   },
   {
     "id": "pupa_vpn_bot",
     "name": "Pupa VPN",
-    "username": "pupa_vpn_bot"
+    "username": "pupa_vpn_bot",
+    "url": "https://t.me/pupa_vpn_bot"
   },
   {
     "id": "dozi_vpn_bot",
     "name": "Dozi VPN",
-    "username": "dozi_vpn_bot"
+    "username": "dozi_vpn_bot",
+    "url": "https://t.me/dozi_vpn_bot"
   },
   {
     "id": "gen_vpnbot",
     "name": "Gen VPN & CARDS",
-    "username": "Gen_vpnbot"
-  },
-  {
-    "id": "vupen_bot",
-    "name": "Vupen",
-    "username": "vupen_bot"
+    "username": "Gen_vpnbot",
+    "url": "https://t.me/Gen_vpnbot"
   },
   {
     "id": "frvpn_shop_bot",
     "name": "Friends to Friends",
-    "username": "frvpn_shop_bot"
+    "username": "frvpn_shop_bot",
+    "url": "https://t.me/frvpn_shop_bot"
   },
   {
     "id": "legendavpn_bot",
     "name": "Легенда VPN",
-    "username": "LegendaVPN_bot"
+    "username": "LegendaVPN_bot",
+    "url": "https://t.me/LegendaVPN_bot"
   },
   {
     "id": "apes3vpnbot",
     "name": "3 Apes VPN",
-    "username": "Apes3VPNbot"
+    "username": "Apes3VPNbot",
+    "url": "https://t.me/Apes3VPNbot"
   },
   {
     "id": "vpn_liberty_bot",
     "name": "LIBERTY VPN",
-    "username": "vpn_liberty_bot"
+    "username": "vpn_liberty_bot",
+    "url": "https://t.me/vpn_liberty_bot"
   },
   {
     "id": "durevpnbot",
     "name": "Durev VPN",
-    "username": "DureVpnBot"
+    "username": "DureVpnBot",
+    "url": "https://t.me/DureVpnBot"
   },
   {
     "id": "bulba_vpn_bot",
     "name": "BulbaVPN",
-    "username": "bulba_vpn_bot"
+    "username": "bulba_vpn_bot",
+    "url": "https://t.me/bulba_vpn_bot"
   },
   {
     "id": "vanya_vpn_bot",
     "name": "Дядя Ваня VPN",
-    "username": "vanya_vpn_bot"
+    "username": "vanya_vpn_bot",
+    "url": "https://t.me/vanya_vpn_bot"
   },
   {
     "id": "x_rocket_vpn_bot",
     "name": "X Rocket VPN",
-    "username": "X_Rocket_VPN_bot"
-  },
-  {
-    "id": "minipass_bot",
-    "name": "miniPass",
-    "username": "minipass_bot"
+    "username": "X_Rocket_VPN_bot",
+    "url": "https://t.me/X_Rocket_VPN_bot"
   },
   {
     "id": "capybara_store_vpn_bot",
-    "name": "Capybara (второй бот)",
-    "username": "Capybara_Store_VPN_bot"
+    "name": "Capybara — второй бот",
+    "username": "Capybara_Store_VPN_bot",
+    "url": "https://t.me/Capybara_Store_VPN_bot"
   },
   {
     "id": "vpnpantherbot",
     "name": "VPN Panther",
-    "username": "VpnPantherBot"
+    "username": "VpnPantherBot",
+    "url": "https://t.me/VpnPantherBot"
   },
   {
     "id": "sotavpnbot",
     "name": "Sota VPN",
-    "username": "sotavpnbot"
+    "username": "sotavpnbot",
+    "url": "https://t.me/sotavpnbot"
   },
   {
     "id": "ejx_bot",
     "name": "EJX VPN",
-    "username": "ejx_bot"
+    "username": "ejx_bot",
+    "url": "https://t.me/ejx_bot"
   },
   {
     "id": "shukavpn_bot",
     "name": "ЩукаВПН",
-    "username": "shukaVPN_bot"
+    "username": "shukaVPN_bot",
+    "url": "https://t.me/shukaVPN_bot"
   },
   {
     "id": "glushvpn_bot",
     "name": "GlushVPN",
-    "username": "glushvpn_bot"
+    "username": "glushvpn_bot",
+    "url": "https://t.me/glushvpn_bot"
   },
   {
     "id": "skippnetbot",
     "name": "Skip VPN",
-    "username": "skippnetbot"
+    "username": "skippnetbot",
+    "url": "https://t.me/skippnetbot"
   },
   {
     "id": "siriusvpnbot",
     "name": "Sirius VPN",
-    "username": "siriusvpnbot"
+    "username": "siriusvpnbot",
+    "url": "https://t.me/siriusvpnbot"
   },
   {
     "id": "dar_vpnbot",
     "name": "DAR VPN",
-    "username": "dar_vpnbot"
+    "username": "dar_vpnbot",
+    "url": "https://t.me/dar_vpnbot"
   },
   {
     "id": "popular_vpnbot",
     "name": "Popular VPN Bot",
-    "username": "popular_vpnbot"
+    "username": "popular_vpnbot",
+    "url": "https://t.me/popular_vpnbot"
   },
   {
     "id": "vpndendibot",
     "name": "Dendi VPN",
-    "username": "vpndendibot"
+    "username": "vpndendibot",
+    "url": "https://t.me/vpndendibot"
   },
   {
     "id": "zipvpnbot",
     "name": "ZiP VPN",
-    "username": "zipvpnbot"
+    "username": "zipvpnbot",
+    "url": "https://t.me/zipvpnbot"
   },
   {
     "id": "myrkavpnbot",
     "name": "Myrka VPN",
-    "username": "Myrkavpnbot"
+    "username": "Myrkavpnbot",
+    "url": "https://t.me/Myrkavpnbot"
   },
   {
     "id": "unstop_vpn_bot",
     "name": "UNSTOP VPN",
-    "username": "unstop_vpn_bot"
+    "username": "unstop_vpn_bot",
+    "url": "https://t.me/unstop_vpn_bot"
   },
   {
     "id": "vpn_telegrambot",
     "name": "TMG Premium VPN",
-    "username": "VPN_TelegramBot"
+    "username": "VPN_TelegramBot",
+    "url": "https://t.me/VPN_TelegramBot"
   },
   {
     "id": "vpn_tgm_bot",
     "name": "Изи ВПН",
-    "username": "vpn_tgm_bot"
+    "username": "vpn_tgm_bot",
+    "url": "https://t.me/vpn_tgm_bot"
   },
   {
     "id": "ctrlbobvpn_bot",
     "name": "CTRL VPN",
-    "username": "CtrlBobVPN_bot"
+    "username": "CtrlBobVPN_bot",
+    "url": "https://t.me/CtrlBobVPN_bot"
   },
   {
     "id": "youfast_vpn_bot",
     "name": "YouFast VPN",
-    "username": "YouFast_vpn_bot"
+    "username": "YouFast_vpn_bot",
+    "url": "https://t.me/YouFast_vpn_bot"
   },
   {
     "id": "nemo_vpn_bot",
     "name": "Nemo VPN",
-    "username": "nemo_vpn_bot"
+    "username": "nemo_vpn_bot",
+    "url": "https://t.me/nemo_vpn_bot"
   },
   {
     "id": "lunairevpn_bot",
     "name": "Lunaire VPN",
-    "username": "lunairevpn_bot"
+    "username": "lunairevpn_bot",
+    "url": "https://t.me/lunairevpn_bot"
   },
   {
     "id": "vpn4peace_bot",
     "name": "VPN Окно в Европу",
-    "username": "vpn4peace_bot"
+    "username": "vpn4peace_bot",
+    "url": "https://t.me/vpn4peace_bot"
   },
   {
     "id": "free_vpn_amnezia_bot",
     "name": "Amnezia Free VPN Bot",
-    "username": "free_vpn_amnezia_bot"
+    "username": "free_vpn_amnezia_bot",
+    "url": "https://t.me/free_vpn_amnezia_bot"
   },
   {
     "id": "planetvpn_bot",
     "name": "PlanetVPN bot",
-    "username": "PlanetVPN_bot"
+    "username": "PlanetVPN_bot",
+    "url": "https://t.me/PlanetVPN_bot"
   },
   {
     "id": "vpnusvpn_bot",
     "name": "VPNUS VPN",
-    "username": "vpnusvpn_bot"
+    "username": "vpnusvpn_bot",
+    "url": "https://t.me/vpnusvpn_bot"
   },
   {
     "id": "bot_vpn_bot",
     "name": "BotVPN",
-    "username": "bot_vpn_bot"
-  },
-  {
-    "id": "okbin_bot",
-    "name": "OkBin",
-    "username": "OkBin_bot"
-  },
-  {
-    "id": "glynetbot",
-    "name": "GlyNet",
-    "username": "GlyNetBot"
-  },
-  {
-    "id": "dark_netvpn_bot",
-    "name": "dark_netvpn",
-    "username": "dark_netvpn_bot"
+    "username": "bot_vpn_bot",
+    "url": "https://t.me/bot_vpn_bot"
   },
   {
     "id": "vpn_best_price_bot",
     "name": "Vpn best price / CHEBURNET",
-    "username": "Vpn_best_price_bot"
+    "username": "Vpn_best_price_bot",
+    "url": "https://t.me/Vpn_best_price_bot"
   },
   {
     "id": "vertoxvpn_bot",
     "name": "Vertox VPN",
-    "username": "Vertoxvpn_bot"
+    "username": "Vertoxvpn_bot",
+    "url": "https://t.me/Vertoxvpn_bot"
   },
   {
     "id": "vpndd_bot",
     "name": "Добрый VPN",
-    "username": "vpndd_bot"
+    "username": "vpndd_bot",
+    "url": "https://t.me/vpndd_bot"
   },
   {
     "id": "vibevpntgbot",
     "name": "Vibe Proxy",
-    "username": "vibevpntgbot"
+    "username": "vibevpntgbot",
+    "url": "https://t.me/vibevpntgbot"
   },
   {
     "id": "nasa_vpn_bot",
     "name": "NASA VPN",
-    "username": "nasa_vpn_bot"
+    "username": "nasa_vpn_bot",
+    "url": "https://t.me/nasa_vpn_bot"
   },
   {
     "id": "vpn1probot",
     "name": "VPN #1 Premium",
-    "username": "vpn1probot"
+    "username": "vpn1probot",
+    "url": "https://t.me/vpn1probot"
   },
   {
     "id": "oneokvpnbot",
     "name": "Oneok VPN",
-    "username": "OneokVPNbot"
+    "username": "OneokVPNbot",
+    "url": "https://t.me/OneokVPNbot"
   },
   {
     "id": "proxylunvpn_bot",
     "name": "proxylun",
-    "username": "proxylunvpn_bot"
+    "username": "proxylunvpn_bot",
+    "url": "https://t.me/proxylunvpn_bot"
   },
   {
     "id": "statussvpnbot",
     "name": "Status VPN",
-    "username": "statussvpnbot"
+    "username": "statussvpnbot",
+    "url": "https://t.me/statussvpnbot"
   },
   {
     "id": "vpntelegramrobot",
     "name": "top vpn",
-    "username": "vpntelegramrobot"
-  },
-  {
-    "id": "generatewarpplusbot",
-    "name": "Warp Plus Keys",
-    "username": "generatewarpplusbot"
+    "username": "vpntelegramrobot",
+    "url": "https://t.me/vpntelegramrobot"
   },
   {
     "id": "vpngeneratorbot",
     "name": "VPN Generator",
-    "username": "vpngeneratorbot"
-  },
-  {
-    "id": "vlessbots_bot",
-    "name": "vlessbots",
-    "username": "vlessbots_bot"
+    "username": "vpngeneratorbot",
+    "url": "https://t.me/vpngeneratorbot"
   },
   {
     "id": "chfreevpn_bot",
     "name": "chfreevpn",
-    "username": "chfreevpn_bot"
+    "username": "chfreevpn_bot",
+    "url": "https://t.me/chfreevpn_bot"
   },
   {
     "id": "hotaru_vpn_bot",
     "name": "Hotaru VPN",
-    "username": "hotaru_vpn_bot"
+    "username": "hotaru_vpn_bot",
+    "url": "https://t.me/hotaru_vpn_bot"
   },
   {
     "id": "dekim_vpn_bot",
     "name": "Dekim VPN",
-    "username": "Dekim_vpn_bot"
+    "username": "Dekim_vpn_bot",
+    "url": "https://t.me/Dekim_vpn_bot"
   },
   {
     "id": "tonvpn_bot",
     "name": "Ton VPN",
-    "username": "tonvpn_bot"
+    "username": "tonvpn_bot",
+    "url": "https://t.me/tonvpn_bot"
   },
   {
     "id": "vpnwhiteness_bot",
     "name": "Whiteness VPN",
-    "username": "vpnwhiteness_bot"
+    "username": "vpnwhiteness_bot",
+    "url": "https://t.me/vpnwhiteness_bot"
   },
   {
     "id": "gogetvpn_bot",
     "name": "GoGet VPN",
-    "username": "gogetvpn_bot"
+    "username": "gogetvpn_bot",
+    "url": "https://t.me/gogetvpn_bot"
   },
   {
     "id": "okoloio_bot",
     "name": "OKolo VPN",
-    "username": "okoloio_bot"
+    "username": "okoloio_bot",
+    "url": "https://t.me/okoloio_bot"
   },
   {
     "id": "horizonvpnbot",
     "name": "Horizon VPN",
-    "username": "HorizonVPNbot"
+    "username": "HorizonVPNbot",
+    "url": "https://t.me/HorizonVPNbot"
   },
   {
     "id": "space_tunnel_bot",
     "name": "SpaceTunnel VPN",
-    "username": "space_tunnel_bot"
+    "username": "space_tunnel_bot",
+    "url": "https://t.me/space_tunnel_bot"
   },
   {
     "id": "wgtg_bot",
     "name": "WG VPN",
-    "username": "wgtg_bot"
+    "username": "wgtg_bot",
+    "url": "https://t.me/wgtg_bot"
   },
   {
     "id": "vtslyvpn_bot",
     "name": "VTSLY VPN",
-    "username": "VTSLYVPN_bot"
+    "username": "VTSLYVPN_bot",
+    "url": "https://t.me/VTSLYVPN_bot"
   },
   {
     "id": "ultimavpnbot",
     "name": "UltimaVPN",
-    "username": "UltimaVPNbot"
+    "username": "UltimaVPNbot",
+    "url": "https://t.me/UltimaVPNbot"
   },
   {
     "id": "trumpvpn_bot",
     "name": "TRUMP vpn",
-    "username": "TrumpVPN_bot"
+    "username": "TrumpVPN_bot",
+    "url": "https://t.me/TrumpVPN_bot"
   },
   {
     "id": "persikvpn_bot",
     "name": "VpnPersik",
-    "username": "persikvpn_bot"
+    "username": "persikvpn_bot",
+    "url": "https://t.me/persikvpn_bot"
   },
   {
     "id": "realityvpnbot",
     "name": "realbot",
-    "username": "RealityVpnBot"
+    "username": "RealityVpnBot",
+    "url": "https://t.me/RealityVpnBot"
   },
   {
     "id": "platina_vpn_bot",
     "name": "Platina",
-    "username": "platina_vpn_bot"
+    "username": "platina_vpn_bot",
+    "url": "https://t.me/platina_vpn_bot"
   },
   {
     "id": "perec_vpn_bot",
     "name": "Perec Vpn Bot",
-    "username": "perec_vpn_bot"
+    "username": "perec_vpn_bot",
+    "url": "https://t.me/perec_vpn_bot"
   },
   {
     "id": "telegavpn_bot",
     "name": "Telega VPN",
-    "username": "telegavpn_bot"
+    "username": "telegavpn_bot",
+    "url": "https://t.me/telegavpn_bot"
   },
   {
     "id": "atlantavpn_bot",
     "name": "Atlanta VPN",
-    "username": "atlantavpn_bot"
+    "username": "atlantavpn_bot",
+    "url": "https://t.me/atlantavpn_bot"
   },
   {
     "id": "ulet_vpn_bot",
     "name": "Улёт VPN",
-    "username": "ulet_vpn_bot"
+    "username": "ulet_vpn_bot",
+    "url": "https://t.me/ulet_vpn_bot"
   },
   {
     "id": "lagomvpn_bot",
     "name": "Lagom VPN",
-    "username": "lagomvpn_bot"
-  },
-  {
-    "id": "whypn_bot",
-    "name": "whypn",
-    "username": "whypn_bot"
-  },
-  {
-    "id": "monetka_vpn_bot",
-    "name": "MONETKA",
-    "username": "monetka_vpn_bot"
+    "username": "lagomvpn_bot",
+    "url": "https://t.me/lagomvpn_bot"
   },
   {
     "id": "yummyvpn_bot",
     "name": "Yummy VPN",
-    "username": "yummyvpn_bot"
+    "username": "yummyvpn_bot",
+    "url": "https://t.me/yummyvpn_bot"
   },
   {
     "id": "belkavpn_bot",
     "name": "belkavpn_bot",
-    "username": "belkavpn_bot"
+    "username": "belkavpn_bot",
+    "url": "https://t.me/belkavpn_bot"
   },
   {
     "id": "legendary_vpn_bot",
     "name": "Legendary VPN",
-    "username": "legendary_vpn_bot"
+    "username": "legendary_vpn_bot",
+    "url": "https://t.me/legendary_vpn_bot"
   },
   {
     "id": "platinavpnbot",
-    "name": "Platina (резерв)",
-    "username": "platinavpnbot"
-  },
-  {
-    "id": "the231sbot",
-    "name": "EX VPN",
-    "username": "the231sbot"
+    "name": "platinavpnbot",
+    "username": "platinavpnbot",
+    "url": "https://t.me/platinavpnbot"
   },
   {
     "id": "appavpn_bot",
     "name": "Appa VPN",
-    "username": "AppaVPN_bot"
+    "username": "AppaVPN_bot",
+    "url": "https://t.me/AppaVPN_bot"
   },
   {
     "id": "nash_vpn_bot",
     "name": "NashVPN",
-    "username": "nash_vpn_bot"
+    "username": "nash_vpn_bot",
+    "url": "https://t.me/nash_vpn_bot"
   },
   {
     "id": "silvpn_bot",
     "name": "SilVPN",
-    "username": "silvpn_bot"
+    "username": "silvpn_bot",
+    "url": "https://t.me/silvpn_bot"
   },
   {
     "id": "vpn_groza_bot",
     "name": "ГРОЗА VPN",
-    "username": "VPN_GROZA_BOT"
+    "username": "VPN_GROZA_BOT",
+    "url": "https://t.me/VPN_GROZA_BOT"
   },
   {
     "id": "outlinevpnfreebot",
     "name": "Your.VPN",
-    "username": "OutlineVPNfreebot"
+    "username": "OutlineVPNfreebot",
+    "url": "https://t.me/OutlineVPNfreebot"
   },
   {
     "id": "ummavpnbot",
     "name": "UmmaVPN",
-    "username": "ummavpnbot"
+    "username": "ummavpnbot",
+    "url": "https://t.me/ummavpnbot"
   },
   {
     "id": "neovpnbot",
     "name": "NEO VPN",
-    "username": "neovpnbot"
+    "username": "neovpnbot",
+    "url": "https://t.me/neovpnbot"
   },
   {
     "id": "kosmos2vpnbot",
     "name": "КОСМИЧЕСКИЙ VPN",
-    "username": "kosmos2vpnbot"
+    "username": "kosmos2vpnbot",
+    "url": "https://t.me/kosmos2vpnbot"
   },
   {
     "id": "evo_vpn_bot",
     "name": "EvoVPN",
-    "username": "evo_vpn_bot"
+    "username": "evo_vpn_bot",
+    "url": "https://t.me/evo_vpn_bot"
   },
   {
     "id": "bird_vpn_bot",
     "name": "BIRD VPN",
-    "username": "Bird_vpn_bot"
+    "username": "Bird_vpn_bot",
+    "url": "https://t.me/Bird_vpn_bot"
   },
   {
     "id": "nerp_vpn_bot",
     "name": "NerpVPN",
-    "username": "nerp_vpn_bot"
+    "username": "nerp_vpn_bot",
+    "url": "https://t.me/nerp_vpn_bot"
   },
   {
     "id": "failvpn_bot",
     "name": "Fail VPN",
-    "username": "failvpn_bot"
+    "username": "failvpn_bot",
+    "url": "https://t.me/failvpn_bot"
   },
   {
     "id": "vpndriftbot",
     "name": "Drift VPN",
-    "username": "vpndriftbot"
+    "username": "vpndriftbot",
+    "url": "https://t.me/vpndriftbot"
   },
   {
     "id": "slik_vpn_bot",
     "name": "SLIK VPN",
-    "username": "slik_vpn_bot"
+    "username": "slik_vpn_bot",
+    "url": "https://t.me/slik_vpn_bot"
   },
   {
     "id": "driftvpn_robot",
     "name": "DriftVPN Бот",
-    "username": "DriftVPN_robot"
+    "username": "DriftVPN_robot",
+    "url": "https://t.me/DriftVPN_robot"
   },
   {
     "id": "dvpnbot",
     "name": "DVPN Bot",
-    "username": "dvpnbot"
+    "username": "dvpnbot",
+    "url": "https://t.me/dvpnbot"
   },
   {
     "id": "svyazvpn_bot",
-    "name": "SvyazVPN / Всегда на связи",
-    "username": "Svyazvpn_bot"
+    "name": "SvyazVPN",
+    "username": "Svyazvpn_bot",
+    "url": "https://t.me/Svyazvpn_bot"
   },
   {
     "id": "plusone_vpn_bot",
     "name": "PlusOne",
-    "username": "plusone_vpn_bot"
+    "username": "plusone_vpn_bot",
+    "url": "https://t.me/plusone_vpn_bot"
   },
   {
     "id": "fratresvpn_bot",
     "name": "FratresVPN",
-    "username": "fratresvpn_bot"
+    "username": "fratresvpn_bot",
+    "url": "https://t.me/fratresvpn_bot"
   },
   {
     "id": "guardianvpnbot",
     "name": "GuardianVPN",
-    "username": "GuardianVPNBot"
+    "username": "GuardianVPNBot",
+    "url": "https://t.me/GuardianVPNBot"
   },
   {
     "id": "vpn_raketa_bot",
     "name": "VPN RAKETA",
-    "username": "VPN_RAKETA_BOT"
+    "username": "VPN_RAKETA_BOT",
+    "url": "https://t.me/VPN_RAKETA_BOT"
   },
   {
     "id": "shadownetvpnbot",
     "name": "Shadownet VPN",
-    "username": "ShadownetVPNbot"
+    "username": "ShadownetVPNbot",
+    "url": "https://t.me/ShadownetVPNbot"
   },
   {
     "id": "medvedvpnbot",
     "name": "Медведь VPN",
-    "username": "MedvedVPNbot"
+    "username": "MedvedVPNbot",
+    "url": "https://t.me/MedvedVPNbot"
   },
   {
     "id": "tgvpnbot",
     "name": "Red Shield VPN",
-    "username": "TgVPNBot"
+    "username": "TgVPNBot",
+    "url": "https://t.me/TgVPNBot"
   },
   {
     "id": "globus_vpn_bot",
     "name": "Globus VPN",
-    "username": "globus_vpn_bot"
+    "username": "globus_vpn_bot",
+    "url": "https://t.me/globus_vpn_bot"
   },
   {
     "id": "pandanewvpn_bot",
     "name": "PandaVPN",
-    "username": "PandanewVPN_bot"
+    "username": "PandanewVPN_bot",
+    "url": "https://t.me/PandanewVPN_bot"
   },
   {
     "id": "pandadefenderbot",
     "name": "Panda Defender VPN",
-    "username": "PandaDefenderBot"
+    "username": "PandaDefenderBot",
+    "url": "https://t.me/PandaDefenderBot"
   },
   {
     "id": "puppetvpnbot",
     "name": "PuppetVPN",
-    "username": "puppetvpnbot"
+    "username": "puppetvpnbot",
+    "url": "https://t.me/puppetvpnbot"
   },
   {
     "id": "bebra_vpn_bot",
     "name": "Bebra VPN",
-    "username": "BEBRA_VPN_BOT"
+    "username": "BEBRA_VPN_BOT",
+    "url": "https://t.me/BEBRA_VPN_BOT"
   },
   {
     "id": "vpnsbot",
     "name": "VPNS Bot",
-    "username": "vpnsbot"
+    "username": "vpnsbot",
+    "url": "https://t.me/vpnsbot"
   },
   {
     "id": "pinkvpn_bot",
     "name": "PINK VPN",
-    "username": "PinkVPN_bot"
+    "username": "PinkVPN_bot",
+    "url": "https://t.me/PinkVPN_bot"
   },
   {
     "id": "luchvpn_bot",
     "name": "Luch VPN",
-    "username": "LuchVPN_bot"
+    "username": "LuchVPN_bot",
+    "url": "https://t.me/LuchVPN_bot"
   },
   {
     "id": "gvpn2026_bot",
     "name": "GVPN",
-    "username": "gvpn2026_bot"
+    "username": "gvpn2026_bot",
+    "url": "https://t.me/gvpn2026_bot"
   },
   {
     "id": "clewvpn_bot",
     "name": "Clew VPN",
-    "username": "clewvpn_bot"
+    "username": "clewvpn_bot",
+    "url": "https://t.me/clewvpn_bot"
   },
   {
     "id": "rufox_vpn_bot",
     "name": "Fox VPN",
-    "username": "RuFox_VPN_bot"
+    "username": "RuFox_VPN_bot",
+    "url": "https://t.me/RuFox_VPN_bot"
   },
   {
     "id": "ural_vpnbot",
     "name": "Ural VPN",
-    "username": "ural_vpnbot"
+    "username": "ural_vpnbot",
+    "url": "https://t.me/ural_vpnbot"
   },
   {
     "id": "vless_vpn_fast_bot",
     "name": "Vless-Vpn",
-    "username": "Vless_vpn_fast_bot"
+    "username": "Vless_vpn_fast_bot",
+    "url": "https://t.me/Vless_vpn_fast_bot"
   },
   {
     "id": "rovpnbot",
     "name": "RO VPN",
-    "username": "Rovpnbot"
-  },
-  {
-    "id": "sabznetbot",
-    "name": "Sabznet",
-    "username": "Sabznetbot"
+    "username": "Rovpnbot",
+    "url": "https://t.me/Rovpnbot"
   },
   {
     "id": "nufilter_vip_bot",
     "name": "NF VPN / Nufilter",
-    "username": "Nufilter_vip_bot"
+    "username": "Nufilter_vip_bot",
+    "url": "https://t.me/Nufilter_vip_bot"
   },
   {
     "id": "segvpnbot",
     "name": "SEG VPN",
-    "username": "SEGvpnbot"
-  },
-  {
-    "id": "begzarpremiumbot",
-    "name": "Begzar Premium",
-    "username": "BegzarPremiumBot"
+    "username": "SEGvpnbot",
+    "url": "https://t.me/SEGvpnbot"
   },
   {
     "id": "royal_vpn_robot",
     "name": "Royal VPN",
-    "username": "Royal_VPN_Robot"
+    "username": "Royal_VPN_Robot",
+    "url": "https://t.me/Royal_VPN_Robot"
   },
   {
     "id": "poisonvpnbot",
     "name": "Poison VPN",
-    "username": "poisonvpnbot"
-  },
-  {
-    "id": "zero_linkbot",
-    "name": "Zero Link Bot / V2Ray VPN",
-    "username": "Zero_Linkbot"
+    "username": "poisonvpnbot",
+    "url": "https://t.me/poisonvpnbot"
   },
   {
     "id": "v2raybekharbot",
-    "name": "V2Ray VPN / V2RayBekharBot",
-    "username": "V2RayBekharBot"
-  },
-  {
-    "id": "connectbashbot",
-    "name": "ConnectBash / وصل باش",
-    "username": "connectbashbot"
-  },
-  {
-    "id": "jokardoband2_bot",
-    "name": "Продажа серверов и конфигураций V2RayNG",
-    "username": "jokardoband2_bot"
-  },
-  {
-    "id": "bypass_filter_robot",
-    "name": "Bypass Filter Robot",
-    "username": "bypass_filter_robot"
+    "name": "V2Ray VPN",
+    "username": "V2RayBekharBot",
+    "url": "https://t.me/V2RayBekharBot"
   },
   {
     "id": "volnalink_bot",
     "name": "VolnaLink VPN",
-    "username": "VolnaLink_bot"
+    "username": "VolnaLink_bot",
+    "url": "https://t.me/VolnaLink_bot"
   },
   {
     "id": "magnumvpnbot",
     "name": "Magnum VPN",
-    "username": "Magnumvpnbot"
+    "username": "Magnumvpnbot",
+    "url": "https://t.me/Magnumvpnbot"
   },
   {
     "id": "hobbyvpnbot",
-    "name": "Хобби ВПН / Hobby VPN",
-    "username": "HobbyVPNbot"
+    "name": "Хобби ВПН",
+    "username": "HobbyVPNbot",
+    "url": "https://t.me/HobbyVPNbot"
   },
   {
     "id": "theinsvpnbot",
     "name": "The Ins VPN",
-    "username": "theinsvpnbot"
+    "username": "theinsvpnbot",
+    "url": "https://t.me/theinsvpnbot"
   },
   {
     "id": "luranvpn_bot",
     "name": "Luran VPN",
-    "username": "luranvpn_bot"
+    "username": "luranvpn_bot",
+    "url": "https://t.me/luranvpn_bot"
   },
   {
     "id": "owjvpnkey_bot",
     "name": "OwJ-VPN",
-    "username": "OwJVPNKey_Bot"
+    "username": "OwJVPNKey_Bot",
+    "url": "https://t.me/OwJVPNKey_Bot"
   },
   {
     "id": "officialfastvpn_bot",
     "name": "Fast VPN",
-    "username": "OfficialFastVpn_Bot"
+    "username": "OfficialFastVpn_Bot",
+    "url": "https://t.me/OfficialFastVpn_Bot"
   },
   {
     "id": "aliusvpn_bot",
     "name": "Alius VPN",
-    "username": "aliusvpn_bot"
+    "username": "aliusvpn_bot",
+    "url": "https://t.me/aliusvpn_bot"
   },
   {
     "id": "planvpn_bot",
     "name": "Plan VPN",
-    "username": "planvpn_bot"
+    "username": "planvpn_bot",
+    "url": "https://t.me/planvpn_bot"
   },
   {
     "id": "sigmavpn_xbot",
     "name": "Sigma VPN",
-    "username": "sigmavpn_xbot"
-  },
-  {
-    "id": "nekopass_robot",
-    "name": "NekoPass VPN",
-    "username": "NekoPass_robot"
+    "username": "sigmavpn_xbot",
+    "url": "https://t.me/sigmavpn_xbot"
   },
   {
     "id": "cryptrend_vpn_bot",
     "name": "Cryptrend VPN",
-    "username": "cryptrend_vpn_bot"
+    "username": "cryptrend_vpn_bot",
+    "url": "https://t.me/cryptrend_vpn_bot"
   },
   {
     "id": "utka_vpn_bot",
     "name": "Утка VPN",
-    "username": "utka_vpn_bot"
+    "username": "utka_vpn_bot",
+    "url": "https://t.me/utka_vpn_bot"
   },
   {
     "id": "mka_vpn_bot",
     "name": "MKA VPN",
-    "username": "mka_vpn_bot"
+    "username": "mka_vpn_bot",
+    "url": "https://t.me/mka_vpn_bot"
   },
   {
     "id": "phantom_vpn_robot",
     "name": "Phantom VPN",
-    "username": "phantom_vpn_robot"
+    "username": "phantom_vpn_robot",
+    "url": "https://t.me/phantom_vpn_robot"
   },
   {
     "id": "configs_zamavpn_bot",
     "name": "ZamaVPN",
-    "username": "configs_zamavpn_bot"
+    "username": "configs_zamavpn_bot",
+    "url": "https://t.me/configs_zamavpn_bot"
   },
   {
     "id": "vpneaglebot",
     "name": "EagleVPN",
-    "username": "VPNEagleBOT"
+    "username": "VPNEagleBOT",
+    "url": "https://t.me/VPNEagleBOT"
   },
   {
     "id": "vpnber_bot",
     "name": "VPN BER",
-    "username": "vpnber_bot"
+    "username": "vpnber_bot",
+    "url": "https://t.me/vpnber_bot"
   },
   {
     "id": "telebot_v2ray_bot",
     "name": "Продаж VPN Bot 🔋",
-    "username": "Telebot_v2ray_bot"
+    "username": "Telebot_v2ray_bot",
+    "url": "https://t.me/Telebot_v2ray_bot"
   },
   {
     "id": "torvpnbuy_bot",
     "name": "TorVPN BOT",
-    "username": "TorVPNbuy_bot"
+    "username": "TorVPNbuy_bot",
+    "url": "https://t.me/TorVPNbuy_bot"
+  },
+  {
+    "id": "tgi_proxy_bot",
+    "name": "TGI VPN",
+    "username": "tgi_proxy_bot",
+    "url": "https://t.me/tgi_proxy_bot"
   },
   {
     "id": "upx_vpn_bot",
     "name": "FIFI VPN",
-    "username": "upx_vpn_bot"
+    "username": "upx_vpn_bot",
+    "url": "https://t.me/upx_vpn_bot"
   },
   {
-    "id": "tgi_proxy_bot",
-    "name": "TGI VPN — быстрый и надежный ВПН",
-    "username": "tgi_proxy_bot"
+    "id": "tg_proxyvpn_bot",
+    "name": "Proxy VPN Bot",
+    "username": "tg_proxyvpn_bot",
+    "url": "https://t.me/tg_proxyvpn_bot"
   },
   {
-    "id": "wireguard_hosting_bot",
-    "name": "WireGuard+VNI Hosting Bot",
-    "username": "Wireguard_Hosting_bot"
+    "id": "freeopenvpnbot",
+    "name": "Free OpenVPN Bot",
+    "username": "FreeOpenVpnBot",
+    "url": "https://t.me/FreeOpenVpnBot"
   },
   {
-    "id": "premium_wireguardbot",
-    "name": "Premium Wireguard Bot",
-    "username": "Premium_wireguardBot"
+    "id": "outlinevpnrobot",
+    "name": "Outline VPN Robot",
+    "username": "OutlineVpnRobot",
+    "url": "https://t.me/OutlineVpnRobot"
   },
   {
-    "id": "vpntypebot",
-    "name": "VPNTYPEbot Official | AtlasPage 🚀",
-    "username": "vpntypebot"
+    "id": "hiddify_vpn_bot",
+    "name": "Hiddify VPN Bot",
+    "username": "hiddify_vpn_bot",
+    "url": "https://t.me/hiddify_vpn_bot"
   },
   {
-    "id": "zf_sup_bot",
-    "name": "ZENIT FOX - Поддержка",
-    "username": "zf_sup_bot"
+    "id": "nekoray_vpn_bot",
+    "name": "NekoRay VPN Bot",
+    "username": "nekoray_vpn_bot",
+    "url": "https://t.me/nekoray_vpn_bot"
   },
   {
-    "id": "freedom_vpn_connect_bot",
-    "name": "FreedomVPN Connect Bot",
-    "username": "freedom_vpn_connect_bot"
+    "id": "singbox_vpn_bot",
+    "name": "Sing-Box VPN Bot",
+    "username": "singbox_vpn_bot",
+    "url": "https://t.me/singbox_vpn_bot"
   },
   {
-    "id": "speedvpn_id_bot",
-    "name": "Speed VPN Bot",
-    "username": "speedvpn_id_bot"
+    "id": "amnezia_vpn_robot",
+    "name": "Amnezia VPN Robot",
+    "username": "amnezia_vpn_robot",
+    "url": "https://t.me/amnezia_vpn_robot"
   },
   {
-    "id": "hundredprovpnbot",
-    "name": "100PRO VPN",
-    "username": "hundredprovpnbot"
+    "id": "free_vpn_tg_bot",
+    "name": "Free VPN TG",
+    "username": "free_vpn_tg_bot",
+    "url": "https://t.me/free_vpn_tg_bot"
   },
   {
-    "id": "eglvpn_bot",
-    "name": "🦅 Eagle VPN",
-    "username": "eglvpn_bot"
+    "id": "supervpn_fast_bot",
+    "name": "Super VPN Fast",
+    "username": "supervpn_fast_bot",
+    "url": "https://t.me/supervpn_fast_bot"
   },
   {
-    "id": "tg_turbovpn_bot",
-    "name": "Turbo VPN Bot",
-    "username": "tg_turbovpn_bot"
+    "id": "open_vpn_tg_bot",
+    "name": "OpenVPN TG Bot",
+    "username": "open_vpn_tg_bot",
+    "url": "https://t.me/open_vpn_tg_bot"
   },
   {
-    "id": "shield_vpns_bot",
-    "name": "🛡Shield VPN",
-    "username": "Shield_VPNS_bot"
+    "id": "vpn_key_generator_bot",
+    "name": "VPN Key Generator",
+    "username": "vpn_key_generator_bot",
+    "url": "https://t.me/vpn_key_generator_bot"
   },
   {
-    "id": "securevpnfreebot",
-    "name": "🛡 Secure VPN — быстрый и безопасный доступ",
-    "username": "SecureVpnFreeBot"
+    "id": "vpn_pass_bot",
+    "name": "VPN Pass Bot",
+    "username": "vpn_pass_bot",
+    "url": "https://t.me/vpn_pass_bot"
   },
   {
-    "id": "wireguardmanagerbot",
-    "name": "WireGuard VPN",
-    "username": "WireGuardManagerBot"
+    "id": "awg_vpn_bot",
+    "name": "AWG VPN Bot",
+    "username": "awg_vpn_bot",
+    "url": "https://t.me/awg_vpn_bot"
   },
   {
-    "id": "flesh_vpn_bot",
-    "name": "⚡️Flesh VPN",
-    "username": "Flesh_VPN_bot"
+    "id": "vless_awg_bot",
+    "name": "MY VPN",
+    "username": "vless_awg_bot",
+    "url": "https://t.me/vless_awg_bot"
   },
   {
-    "id": "cybershieldvpn_bot",
-    "name": "Cyber Shield VPN",
-    "username": "CyberShieldVPN_bot"
+    "id": "yastrebvpnbot",
+    "name": "Ястреб ВПН",
+    "username": "yastrebvpnbot",
+    "url": "https://t.me/yastrebvpnbot"
   },
   {
-    "id": "fast_vpnbot",
-    "name": "⚡️Fast VPN Bot",
-    "username": "fast_vpnbot"
+    "id": "lipetskvpn_bot",
+    "name": "LipetskVpn",
+    "username": "lipetskvpn_bot",
+    "url": "https://t.me/lipetskvpn_bot"
   },
   {
-    "id": "wireguardserver_bot",
-    "name": "WireGuard Server",
-    "username": "WireGuardServer_bot"
+    "id": "vpn_v2boxbot",
+    "name": "Vpnbot",
+    "username": "vpn_v2boxbot",
+    "url": "https://t.me/vpn_v2boxbot"
   },
   {
-    "id": "nexus_vless_bot",
-    "name": "🚀 Nexus VPN",
-    "username": "Nexus_Vless_bot"
+    "id": "nadezhny_vpn_bot",
+    "name": "Надёжный VPN",
+    "username": "nadezhny_vpn_bot",
+    "url": "https://t.me/nadezhny_vpn_bot"
   },
   {
-    "id": "vpn_pro_free_bot",
-    "name": "VPN PRO - Быстрый и Безопасный",
-    "username": "VPN_PRO_free_bot"
+    "id": "vpn_luna_bot",
+    "name": "Luna VPN",
+    "username": "vpn_luna_bot",
+    "url": "https://t.me/vpn_luna_bot"
   },
   {
-    "id": "prime_vpnbot",
-    "name": "Prime VPN | Безопасный доступ",
-    "username": "prime_vpnbot"
+    "id": "shadowsocksvpn_bot",
+    "name": "Shadowsocks",
+    "username": "shadowsocksvpn_bot",
+    "url": "https://t.me/shadowsocksvpn_bot"
   },
   {
-    "id": "nova_vpns_bot",
-    "name": "Nova VPN | Скоростной интернет",
-    "username": "Nova_VPNS_bot"
+    "id": "kostervpnbot",
+    "name": "Костёр ВПН",
+    "username": "kostervpnbot",
+    "url": "https://t.me/kostervpnbot"
   },
   {
-    "id": "pulsevpn_robot",
-    "name": "⚡️ PULSE VPN",
-    "username": "PulseVPN_Robot"
+    "id": "orenburgvpn_bot",
+    "name": "Oren_VPN",
+    "username": "orenburgvpn_bot",
+    "url": "https://t.me/orenburgvpn_bot"
   },
   {
-    "id": "orbitvpn_bot",
-    "name": "🪐 Orbit VPN",
-    "username": "OrbitVPN_bot"
+    "id": "vpn_luch_bot",
+    "name": "VPN 249 рублей",
+    "username": "vpn_luch_bot",
+    "url": "https://t.me/vpn_luch_bot"
   },
   {
-    "id": "guardvpn_robot",
-    "name": "🛡️ Guard VPN",
-    "username": "GuardVPN_robot"
+    "id": "amur_vpn_bot",
+    "name": "Amur VPN",
+    "username": "amur_vpn_bot",
+    "url": "https://t.me/amur_vpn_bot"
   },
   {
-    "id": "apex_vpn_bot",
-    "name": "Apex VPN",
-    "username": "Apex_VPN_bot"
+    "id": "vladimirvpnbot",
+    "name": "Vladimir VPN",
+    "username": "vladimirvpnbot",
+    "url": "https://t.me/vladimirvpnbot"
   },
   {
-    "id": "quantumvpn_bot",
-    "name": "🌌 Quantum VPN",
-    "username": "QuantumVPN_bot"
+    "id": "vpn_sng_bot",
+    "name": "VPN Store",
+    "username": "vpn_sng_bot",
+    "url": "https://t.me/vpn_sng_bot"
   },
   {
-    "id": "echovpn_robot",
-    "name": "Echo VPN",
-    "username": "EchoVPN_robot"
+    "id": "vpn_platina_bot",
+    "name": "VPN PLATINA",
+    "username": "vpn_platina_bot",
+    "url": "https://t.me/vpn_platina_bot"
   },
   {
-    "id": "vortexvpn_robot",
-    "name": "🌪 Vortex VPN",
-    "username": "VortexVPN_robot"
+    "id": "vpn_granitbot",
+    "name": "Безлимитный VPN (Granit)",
+    "username": "vpn_granitbot",
+    "url": "https://t.me/vpn_granitbot"
   },
   {
-    "id": "stellarvpn_bot",
-    "name": "Stellar VPN",
-    "username": "StellarVPN_bot"
+    "id": "vpn_kotik_bot",
+    "name": "VPN Котик",
+    "username": "vpn_kotik_bot",
+    "url": "https://t.me/vpn_kotik_bot"
   },
   {
-    "id": "solarvpn_bot",
-    "name": "☀️ Solar VPN",
-    "username": "SolarVPN_bot"
+    "id": "kluch_vpn_bot",
+    "name": "Kluch🫆VPN",
+    "username": "kluch_vpn_bot",
+    "url": "https://t.me/kluch_vpn_bot"
   },
   {
-    "id": "zenvpn_robot",
-    "name": "🧘 Zen VPN",
-    "username": "ZenVPN_robot"
+    "id": "rvpnbot",
+    "name": "РВПН БОТ",
+    "username": "rvpnbot",
+    "url": "https://t.me/rvpnbot"
   },
   {
-    "id": "foxvpn_robot",
-    "name": "🦊 Fox VPN Robot",
-    "username": "FoxVPN_Robot"
+    "id": "fast_tg_vpn_bot",
+    "name": "fast_tg_vpn_bot",
+    "username": "fast_tg_vpn_bot",
+    "url": "https://t.me/fast_tg_vpn_bot"
   },
   {
-    "id": "bearvpn_bot",
-    "name": "🐻 Bear VPN",
-    "username": "BearVPN_bot"
+    "id": "vpn_superbot",
+    "name": "vpn_superbot",
+    "username": "vpn_superbot",
+    "url": "https://t.me/vpn_superbot"
   },
   {
-    "id": "lionvpn_bot",
-    "name": "🦁 Lion VPN",
-    "username": "LionVPN_bot"
+    "id": "vpn_turbo_bot",
+    "name": "vpn_turbo_bot",
+    "username": "vpn_turbo_bot",
+    "url": "https://t.me/vpn_turbo_bot"
   },
   {
-    "id": "tigervpn_robot",
-    "name": "🐯 Tiger VPN",
-    "username": "TigerVPN_robot"
+    "id": "best_vpn_speed_bot",
+    "name": "best_vpn_speed_bot",
+    "username": "best_vpn_speed_bot",
+    "url": "https://t.me/best_vpn_speed_bot"
   },
   {
-    "id": "wolfvpn_bot",
-    "name": "🐺 Wolf VPN",
-    "username": "WolfVPN_bot"
+    "id": "turbo_vpn_fast_bot",
+    "name": "turbo_vpn_fast_bot",
+    "username": "turbo_vpn_fast_bot",
+    "url": "https://t.me/turbo_vpn_fast_bot"
   },
   {
-    "id": "alphavpn_robot",
-    "name": "⚡️ Alpha VPN",
-    "username": "AlphaVPN_robot"
+    "id": "super_fast_vpn_bot",
+    "name": "super_fast_vpn_bot",
+    "username": "super_fast_vpn_bot",
+    "url": "https://t.me/super_fast_vpn_bot"
   },
   {
-    "id": "omegavpn_bot",
-    "name": "🔱 Omega VPN",
-    "username": "OmegaVPN_bot"
+    "id": "speed_vpn_fast_bot",
+    "name": "speed_vpn_fast_bot",
+    "username": "speed_vpn_fast_bot",
+    "url": "https://t.me/speed_vpn_fast_bot"
   },
   {
-    "id": "deltavpn_bot",
-    "name": "🔺 Delta VPN",
-    "username": "DeltaVPN_bot"
+    "id": "shield_vpn_free_bot",
+    "name": "shield_vpn_free_bot",
+    "username": "shield_vpn_free_bot",
+    "url": "https://t.me/shield_vpn_free_bot"
   },
   {
-    "id": "flashvpn_pro_bot",
-    "name": "⚡️ Flash VPN Pro",
-    "username": "FlashVPN_pro_bot"
+    "id": "private_vpn_fast_bot",
+    "name": "private_vpn_fast_bot",
+    "username": "private_vpn_fast_bot",
+    "url": "https://t.me/private_vpn_fast_bot"
   },
   {
-    "id": "ninjavpn_robot",
-    "name": "🥷 Ninja VPN",
-    "username": "NinjaVPN_robot"
+    "id": "guard_vpn_fast_bot",
+    "name": "guard_vpn_fast_bot",
+    "username": "guard_vpn_fast_bot",
+    "url": "https://t.me/guard_vpn_fast_bot"
   },
   {
-    "id": "ironvpn_bot",
-    "name": "🦾 Iron VPN",
-    "username": "IronVPN_bot"
+    "id": "turbo_fast_vpn_bot",
+    "name": "turbo_fast_vpn_bot",
+    "username": "turbo_fast_vpn_bot",
+    "url": "https://t.me/turbo_fast_vpn_bot"
   },
   {
-    "id": "redvpn_robot",
-    "name": "🔴 Red VPN",
-    "username": "RedVPN_robot"
+    "id": "fast_secure_vpn_bot",
+    "name": "fast_secure_vpn_bot",
+    "username": "fast_secure_vpn_bot",
+    "url": "https://t.me/fast_secure_vpn_bot"
   },
   {
-    "id": "spacevpn_robot",
-    "name": "🛰 Space VPN Robot",
-    "username": "SpaceVPN_robot"
+    "id": "secure_fast_vpn_bot",
+    "name": "secure_fast_vpn_bot",
+    "username": "secure_fast_vpn_bot",
+    "url": "https://t.me/secure_fast_vpn_bot"
   },
   {
-    "id": "safevpn_robot",
-    "name": "🔒 Safe VPN Bot",
-    "username": "SafeVPN_robot"
+    "id": "express_speed_vpn_bot",
+    "name": "express_speed_vpn_bot",
+    "username": "express_speed_vpn_bot",
+    "url": "https://t.me/express_speed_vpn_bot"
   },
   {
-    "id": "speedvpn_pro_bot",
-    "name": "⚡️ Speed VPN Pro",
-    "username": "SpeedVPN_pro_bot"
-  },
-  {
-    "id": "connectvpn_robot",
-    "name": "🌐 Connect VPN",
-    "username": "ConnectVPN_robot"
-  },
-  {
-    "id": "shieldvpn_pro_bot",
-    "name": "🛡️ Shield VPN Pro",
-    "username": "ShieldVPN_pro_bot"
-  },
-  {
-    "id": "tunnelvpn_robot",
-    "name": "🚇 Tunnel VPN",
-    "username": "TunnelVPN_robot"
-  },
-  {
-    "id": "privatevpn_robot",
-    "name": "🕶️ Private VPN",
-    "username": "PrivateVPN_robot"
-  },
-  {
-    "id": "freedomvpn_robot",
-    "name": "🕊️ Freedom VPN",
-    "username": "FreedomVPN_robot"
-  },
-  {
-    "id": "securevpn_pro_bot",
-    "name": "🔐 Secure VPN Pro",
-    "username": "SecureVPN_pro_bot"
-  },
-  {
-    "id": "tgvpn_service_bot",
-    "name": "⚡️ TG VPN Service",
-    "username": "TGVPN_service_bot"
-  },
-  {
-    "id": "fastvpn_service_bot",
-    "name": "🚀 Fast VPN Service",
-    "username": "FastVPN_service_bot"
-  },
-  {
-    "id": "vlesskeys_bot",
-    "name": "🔑 VLESS Keys Bot",
-    "username": "VlessKeys_bot"
-  },
-  {
-    "id": "threexui_bot",
-    "name": "🛠 3X-UI VPN Bot",
-    "username": "ThreeXUI_bot"
-  },
-  {
-    "id": "marzbanvpn_bot",
-    "name": "🌐 Marzban VPN Bot",
-    "username": "MarzbanVPN_bot"
-  },
-  {
-    "id": "singboxvpn_bot",
-    "name": "📦 SingBox VPN Bot",
-    "username": "SingBoxVPN_bot"
-  },
-  {
-    "id": "nekoboxvpn_bot",
-    "name": "🐱 NekoBox VPN Bot",
-    "username": "NekoBoxVPN_bot"
-  },
-  {
-    "id": "hiddifyvpn_bot",
-    "name": "🗝️ Hiddify VPN Bot",
-    "username": "HiddifyVPN_bot"
-  },
-  {
-    "id": "amneziavpn_robot",
-    "name": "🛡️ Amnezia VPN Bot",
-    "username": "AmneziaVPN_robot"
-  },
-  {
-    "id": "skorostnoyvpn_bot",
-    "name": "⚡️ Скоростной VPN Бот",
-    "username": "SkorostnoyVPN_bot"
-  },
-  {
-    "id": "lichniyvpn_bot",
-    "name": "👤 Личный VPN Бот",
-    "username": "LichniyVPN_bot"
-  },
-  {
-    "id": "freevpn_service_bot",
-    "name": "🆓 Бесплатный VPN Бот",
-    "username": "FreeVPN_service_bot"
-  },
-  {
-    "id": "buyvpn_service_bot",
-    "name": "🛒 Купить VPN Бот",
-    "username": "BuyVPN_service_bot"
-  },
-  {
-    "id": "xrayvpn_robot",
-    "name": "📡 XRay VPN Bot",
-    "username": "XrayVPN_robot"
-  },
-  {
-    "id": "v2rayvpn_robot",
-    "name": "⚡️ V2Ray VPN Bot",
-    "username": "V2RayVPN_robot"
-  },
-  {
-    "id": "wireguardvpn_robot",
-    "name": "📶 WireGuard VPN Bot",
-    "username": "WireGuardVPN_robot"
-  },
-  {
-    "id": "shadowsocksvpn_robot",
-    "name": "🕶️ Shadowsocks VPN Bot",
-    "username": "ShadowsocksVPN_robot"
-  },
-  {
-    "id": "outlinevpn_robot",
-    "name": "🔑 Outline VPN Bot",
-    "username": "OutlineVPN_robot"
-  },
-  {
-    "id": "vlessvpn_robot",
-    "name": "🌐 VLESS VPN Bot",
-    "username": "VlessVPN_robot"
-  },
-  {
-    "id": "leto_vpn_bot",
-    "name": "🚀 Leto VPN",
-    "username": "leto_vpn_bot"
-  },
-  {
-    "id": "vless_generator_bot",
-    "name": "🔑 VLESS Generator",
-    "username": "vless_generator_bot"
-  },
-  {
-    "id": "borisgetscash_vpn_bot",
-    "name": "🛡️ Boris Gets Cash VPN",
-    "username": "borisgetscash_vpn_bot"
-  },
-  {
-    "id": "first_vpn_click_bot",
-    "name": "⚡️ Fast VPN Click",
-    "username": "First_VPN_Click_bot"
-  },
-  {
-    "id": "vpn_spacev_bot",
-    "name": "🌐 SpaceV VPN",
-    "username": "vpn_spacev_bot"
-  },
-  {
-    "id": "rvs_vpn_bot",
-    "name": "🛠 RVS VPN",
-    "username": "RVS_VPN_bot"
-  },
-  {
-    "id": "codex_vpn_bot",
-    "name": "💻 Codex VPN",
-    "username": "codex_vpn_bot"
-  },
-  {
-    "id": "you_vpn_bot",
-    "name": "👤 You VPN",
-    "username": "you_vpn_bot"
-  },
-  {
-    "id": "fiery_vpn_bot",
-    "name": "🔥 Fiery VPN",
-    "username": "fiery_VPN_bot"
-  },
-  {
-    "id": "a_fast_vpn_bot",
-    "name": "⚡️ A FAST VPN",
-    "username": "A_FAST_VPN_bot"
-  },
-  {
-    "id": "wg_vpn_bot",
-    "name": "🔑 WG VPN Robot",
-    "username": "wg_vpn_bot"
-  },
-  {
-    "id": "vpnpn_bot",
-    "name": "🛡️ VPN PN",
-    "username": "vpnpn_bot"
-  },
-  {
-    "id": "officialvpnbot",
-    "name": "🌐 Official VPN Bot",
-    "username": "OfficialVpnBot"
-  },
-  {
-    "id": "incy_vpn_bot",
-    "name": "🚀 Incy VPN",
-    "username": "incy_vpn_bot"
-  },
-  {
-    "id": "cryptix_vpn_bot",
-    "name": "💎 Cryptix VPN",
-    "username": "cryptix_vpn_bot"
-  },
-  {
-    "id": "tako_vpn_bot",
-    "name": "🤝 Tako VPN",
-    "username": "tako_vpn_bot"
-  },
-  {
-    "id": "h1cloud_vless_bot",
-    "name": "☁️ H1Cloud VLESS",
-    "username": "h1cloud_vless_bot"
-  },
-  {
-    "id": "proxy_master_vpn_bot",
-    "name": "🌐 Proxy Master Bot",
-    "username": "proxy_master_vpn_bot"
-  },
-  {
-    "id": "warp_speed_vpn_bot",
-    "name": "🚀 Warp Speed VPN",
-    "username": "warp_speed_vpn_bot"
-  },
-  {
-    "id": "cyber_guard_vpn_bot",
-    "name": "🛡️ Cyber Guard VPN",
-    "username": "cyber_guard_vpn_bot"
-  },
-  {
-    "id": "turbo_link_vpn_bot",
-    "name": "⚡️ Turbo Link VPN",
-    "username": "turbo_link_vpn_bot"
-  },
-  {
-    "id": "open_vless_bot",
-    "name": "🔑 Open VLESS Bot",
-    "username": "open_vless_bot"
-  },
-  {
-    "id": "direct_vpn_link_bot",
-    "name": "🌐 Direct VPN Link",
-    "username": "direct_vpn_link_bot"
-  },
-  {
-    "id": "sky_tunnel_vpn_bot",
-    "name": "🚀 Sky Tunnel VPN",
-    "username": "sky_tunnel_vpn_bot"
-  },
-  {
-    "id": "iron_shield_vpn_bot",
-    "name": "🛡️ Iron Shield VPN",
-    "username": "iron_shield_vpn_bot"
-  },
-  {
-    "id": "quick_vpn_access_bot",
-    "name": "⚡️ Quick VPN Access",
-    "username": "quick_vpn_access_bot"
-  },
-  {
-    "id": "net_bypass_vpn_bot",
-    "name": "🌐 Net Bypass VPN",
-    "username": "net_bypass_vpn_bot"
-  },
-  {
-    "id": "shadow_pass_vpn_bot",
-    "name": "🕶️ Shadow Pass VPN",
-    "username": "shadow_pass_vpn_bot"
-  },
-  {
-    "id": "rocket_net_vpn_bot",
-    "name": "🚀 Rocket Net VPN",
-    "username": "rocket_net_vpn_bot"
-  },
-  {
-    "id": "safe_net_vpn_bot",
-    "name": "🛡️ Safe Net VPN",
-    "username": "safe_net_vpn_bot"
-  },
-  {
-    "id": "flash_tunnel_vpn_bot",
-    "name": "⚡️ Flash Tunnel VPN",
-    "username": "flash_tunnel_vpn_bot"
-  },
-  {
-    "id": "web_gate_vpn_bot",
-    "name": "🌐 Web Gate VPN",
-    "username": "web_gate_vpn_bot"
-  },
-  {
-    "id": "key_master_vpn_bot",
-    "name": "🔑 Key Master VPN",
-    "username": "key_master_vpn_bot"
-  },
-  {
-    "id": "hyper_vpn_bot",
-    "name": "🚀 Hyper VPN Bot",
-    "username": "hyper_vpn_bot"
-  },
-  {
-    "id": "ultra_shield_vpn_bot",
-    "name": "🛡️ Ultra Shield VPN",
-    "username": "ultra_shield_vpn_bot"
+    "id": "vpn_express_fast_bot",
+    "name": "vpn_express_fast_bot",
+    "username": "vpn_express_fast_bot",
+    "url": "https://t.me/vpn_express_fast_bot"
   },
   {
     "id": "mega_speed_vpn_bot",
-    "name": "⚡️ Mega Speed VPN",
-    "username": "mega_speed_vpn_bot"
+    "name": "mega_speed_vpn_bot",
+    "username": "mega_speed_vpn_bot",
+    "url": "https://t.me/mega_speed_vpn_bot"
   },
   {
-    "id": "global_pass_vpn_bot",
-    "name": "🌐 Global Pass VPN",
-    "username": "global_pass_vpn_bot"
+    "id": "free_fast_vpn_bot",
+    "name": "free_fast_vpn_bot",
+    "username": "free_fast_vpn_bot",
+    "url": "https://t.me/free_fast_vpn_bot"
   },
   {
-    "id": "stealth_mode_vpn_bot",
-    "name": "🕶️ Stealth Mode VPN",
-    "username": "stealth_mode_vpn_bot"
+    "id": "safe_speed_vpn_bot",
+    "name": "safe_speed_vpn_bot",
+    "username": "safe_speed_vpn_bot",
+    "url": "https://t.me/safe_speed_vpn_bot"
   },
   {
-    "id": "sonic_vpn_bot",
-    "name": "🚀 Sonic VPN Bot",
-    "username": "sonic_vpn_bot"
+    "id": "quick_speed_vpn_bot",
+    "name": "quick_speed_vpn_bot",
+    "username": "quick_speed_vpn_bot",
+    "url": "https://t.me/quick_speed_vpn_bot"
   },
   {
-    "id": "defender_net_vpn_bot",
-    "name": "🛡️ Defender Net VPN",
-    "username": "defender_net_vpn_bot"
+    "id": "vpn_free_fast_bot",
+    "name": "vpn_free_fast_bot",
+    "username": "vpn_free_fast_bot",
+    "url": "https://t.me/vpn_free_fast_bot"
   },
   {
-    "id": "rapid_vpn_access_bot",
-    "name": "⚡️ Rapid VPN Access",
-    "username": "rapid_vpn_access_bot"
+    "id": "ultra_secure_vpn_bot",
+    "name": "ultra_secure_vpn_bot",
+    "username": "ultra_secure_vpn_bot",
+    "url": "https://t.me/ultra_secure_vpn_bot"
   },
   {
-    "id": "infinity_tunnel_bot",
-    "name": "🌐 Infinity Tunnel",
-    "username": "infinity_tunnel_bot"
+    "id": "safe_fast_vpn_bot",
+    "name": "safe_fast_vpn_bot",
+    "username": "safe_fast_vpn_bot",
+    "url": "https://t.me/safe_fast_vpn_bot"
   },
   {
-    "id": "access_key_vpn_bot",
-    "name": "🔑 Access Key VPN",
-    "username": "access_key_vpn_bot"
+    "id": "turbo_super_vpn_bot",
+    "name": "turbo_super_vpn_bot",
+    "username": "turbo_super_vpn_bot",
+    "url": "https://t.me/turbo_super_vpn_bot"
   },
   {
-    "id": "cosmos_vpn_bot",
-    "name": "🚀 Cosmos VPN Bot",
-    "username": "cosmos_vpn_bot"
+    "id": "speed_turbo_vpn_bot",
+    "name": "speed_turbo_vpn_bot",
+    "username": "speed_turbo_vpn_bot",
+    "url": "https://t.me/speed_turbo_vpn_bot"
   },
   {
-    "id": "fortress_vpn_bot",
-    "name": "🛡️ Fortress VPN",
-    "username": "fortress_vpn_bot"
+    "id": "hyper_speed_vpn_bot",
+    "name": "hyper_speed_vpn_bot",
+    "username": "hyper_speed_vpn_bot",
+    "url": "https://t.me/hyper_speed_vpn_bot"
   },
   {
-    "id": "express_net_vpn_bot",
-    "name": "⚡️ Express Net VPN",
-    "username": "express_net_vpn_bot"
+    "id": "free_speed_vpn_bot",
+    "name": "free_speed_vpn_bot",
+    "username": "free_speed_vpn_bot",
+    "url": "https://t.me/free_speed_vpn_bot"
   },
   {
-    "id": "atlas_vpn_service_bot",
-    "name": "🌐 Atlas VPN Service",
-    "username": "atlas_vpn_service_bot"
+    "id": "vpn_master_fast_bot",
+    "name": "vpn_master_fast_bot",
+    "username": "vpn_master_fast_bot",
+    "url": "https://t.me/vpn_master_fast_bot"
   },
   {
-    "id": "ghost_tunnel_vpn_bot",
-    "name": "🕶️ Ghost Tunnel VPN",
-    "username": "ghost_tunnel_vpn_bot"
+    "id": "fast_tunnel_vpn_bot",
+    "name": "fast_tunnel_vpn_bot",
+    "username": "fast_tunnel_vpn_bot",
+    "url": "https://t.me/fast_tunnel_vpn_bot"
   },
   {
-    "id": "falcon_vpn_bot",
-    "name": "🚀 Falcon VPN Bot",
-    "username": "falcon_vpn_bot"
+    "id": "smart_speed_vpn_bot",
+    "name": "smart_speed_vpn_bot",
+    "username": "smart_speed_vpn_bot",
+    "url": "https://t.me/smart_speed_vpn_bot"
   },
   {
-    "id": "aegis_vpn_service_bot",
-    "name": "🛡️ Aegis VPN Service",
-    "username": "aegis_vpn_service_bot"
+    "id": "master_fast_vpn_bot",
+    "name": "master_fast_vpn_bot",
+    "username": "master_fast_vpn_bot",
+    "url": "https://t.me/master_fast_vpn_bot"
   },
   {
-    "id": "blaze_vpn_bot",
-    "name": "⚡️ Blaze VPN Bot",
-    "username": "blaze_vpn_bot"
+    "id": "flash_speed_vpn_bot",
+    "name": "flash_speed_vpn_bot",
+    "username": "flash_speed_vpn_bot",
+    "url": "https://t.me/flash_speed_vpn_bot"
   },
   {
-    "id": "horizon_net_vpn_bot",
-    "name": "🌐 Horizon Net VPN",
-    "username": "horizon_net_vpn_bot"
+    "id": "tunnel_fast_vpn_bot",
+    "name": "tunnel_fast_vpn_bot",
+    "username": "tunnel_fast_vpn_bot",
+    "url": "https://t.me/tunnel_fast_vpn_bot"
   },
   {
-    "id": "safe_key_vpn_bot",
-    "name": "🔑 Safe Key VPN",
-    "username": "safe_key_vpn_bot"
+    "id": "lightning_speed_vpn_bot",
+    "name": "lightning_speed_vpn_bot",
+    "username": "lightning_speed_vpn_bot",
+    "url": "https://t.me/lightning_speed_vpn_bot"
   },
   {
-    "id": "meteor_vpn_bot",
-    "name": "🚀 Meteor VPN Bot",
-    "username": "meteor_vpn_bot"
+    "id": "power_speed_vpn_bot",
+    "name": "power_speed_vpn_bot",
+    "username": "power_speed_vpn_bot",
+    "url": "https://t.me/power_speed_vpn_bot"
   },
   {
-    "id": "citadel_vpn_bot",
-    "name": "🛡️ Citadel VPN",
-    "username": "citadel_vpn_bot"
+    "id": "flash_fast_vpn_bot",
+    "name": "flash_fast_vpn_bot",
+    "username": "flash_fast_vpn_bot",
+    "url": "https://t.me/flash_fast_vpn_bot"
   },
   {
-    "id": "velocity_vpn_bot",
-    "name": "⚡️ Velocity VPN",
-    "username": "velocity_vpn_bot"
+    "id": "ultimate_speed_vpn_bot",
+    "name": "ultimate_speed_vpn_bot",
+    "username": "ultimate_speed_vpn_bot",
+    "url": "https://t.me/ultimate_speed_vpn_bot"
   },
   {
-    "id": "prism_vpn_bot",
-    "name": "🌐 Prism VPN Bot",
-    "username": "prism_vpn_bot"
+    "id": "rapid_speed_vpn_bot",
+    "name": "rapid_speed_vpn_bot",
+    "username": "rapid_speed_vpn_bot",
+    "url": "https://t.me/rapid_speed_vpn_bot"
   },
   {
-    "id": "phantom_tunnel_bot",
-    "name": "🕶️ Phantom Tunnel",
-    "username": "phantom_tunnel_bot"
+    "id": "vpn_ninja_fast_bot",
+    "name": "vpn_ninja_fast_bot",
+    "username": "vpn_ninja_fast_bot",
+    "url": "https://t.me/vpn_ninja_fast_bot"
   },
   {
-    "id": "phoenix_vpn_bot",
-    "name": "🚀 Phoenix VPN Bot",
-    "username": "phoenix_vpn_bot"
+    "id": "swift_speed_vpn_bot",
+    "name": "swift_speed_vpn_bot",
+    "username": "swift_speed_vpn_bot",
+    "url": "https://t.me/swift_speed_vpn_bot"
   },
   {
-    "id": "bastion_vpn_bot",
-    "name": "🛡️ Bastion VPN",
-    "username": "bastion_vpn_bot"
+    "id": "sonic_speed_vpn_bot",
+    "name": "sonic_speed_vpn_bot",
+    "username": "sonic_speed_vpn_bot",
+    "url": "https://t.me/sonic_speed_vpn_bot"
   },
   {
-    "id": "dynamo_vpn_bot",
-    "name": "⚡️ Dynamo VPN Bot",
-    "username": "dynamo_vpn_bot"
+    "id": "top_speed_vpn_bot",
+    "name": "top_speed_vpn_bot",
+    "username": "top_speed_vpn_bot",
+    "url": "https://t.me/top_speed_vpn_bot"
   },
   {
-    "id": "zenith_net_vpn_bot",
-    "name": "🌐 Zenith Net VPN",
-    "username": "zenith_net_vpn_bot"
+    "id": "blitz_speed_vpn_bot",
+    "name": "blitz_speed_vpn_bot",
+    "username": "blitz_speed_vpn_bot",
+    "url": "https://t.me/blitz_speed_vpn_bot"
   },
   {
-    "id": "cyber_key_vpn_bot",
-    "name": "🔑 Cyber Key VPN",
-    "username": "cyber_key_vpn_bot"
+    "id": "pro_speed_vpn_bot",
+    "name": "pro_speed_vpn_bot",
+    "username": "pro_speed_vpn_bot",
+    "url": "https://t.me/pro_speed_vpn_bot"
   },
   {
-    "id": "comet_vpn_bot",
-    "name": "🚀 Comet VPN Bot",
-    "username": "comet_vpn_bot"
+    "id": "ultra_speed_fast_bot",
+    "name": "ultra_speed_fast_bot",
+    "username": "ultra_speed_fast_bot",
+    "url": "https://t.me/ultra_speed_fast_bot"
   },
   {
-    "id": "sentinel_vpn_bot",
-    "name": "🛡️ Sentinel VPN",
-    "username": "sentinel_vpn_bot"
+    "id": "speed_demon_vpn_bot",
+    "name": "speed_demon_vpn_bot",
+    "username": "speed_demon_vpn_bot",
+    "url": "https://t.me/speed_demon_vpn_bot"
   },
   {
-    "id": "turbo_charge_vpn_bot",
-    "name": "⚡️ Turbo Charge VPN",
-    "username": "turbo_charge_vpn_bot"
+    "id": "super_speed_fast_bot",
+    "name": "super_speed_fast_bot",
+    "username": "super_speed_fast_bot",
+    "url": "https://t.me/super_speed_fast_bot"
   },
   {
-    "id": "orbit_net_vpn_bot",
-    "name": "🌐 Orbit Net VPN",
-    "username": "orbit_net_vpn_bot"
+    "id": "boost_speed_vpn_bot",
+    "name": "boost_speed_vpn_bot",
+    "username": "boost_speed_vpn_bot",
+    "url": "https://t.me/boost_speed_vpn_bot"
   },
   {
-    "id": "shadow_net_vpn_bot",
-    "name": "🕶️ Shadow Net VPN",
-    "username": "shadow_net_vpn_bot"
+    "id": "prime_speed_vpn_bot",
+    "name": "prime_speed_vpn_bot",
+    "username": "prime_speed_vpn_bot",
+    "url": "https://t.me/prime_speed_vpn_bot"
   },
   {
-    "id": "aurora_vpn_service_bot",
-    "name": "🚀 Aurora VPN Service",
-    "username": "aurora_vpn_service_bot"
+    "id": "rocket_speed_vpn_bot",
+    "name": "rocket_speed_vpn_bot",
+    "username": "rocket_speed_vpn_bot",
+    "url": "https://t.me/rocket_speed_vpn_bot"
   },
   {
-    "id": "guardian_shield_vpn_bot",
-    "name": "🛡️ Guardian Shield VPN",
-    "username": "guardian_shield_vpn_bot"
+    "id": "fast_track_vpn_bot",
+    "name": "fast_track_vpn_bot",
+    "username": "fast_track_vpn_bot",
+    "url": "https://t.me/fast_track_vpn_bot"
   },
   {
-    "id": "impulse_vpn_bot",
-    "name": "⚡️ Impulse VPN Bot",
-    "username": "impulse_vpn_bot"
+    "id": "jet_speed_vpn_bot",
+    "name": "jet_speed_vpn_bot",
+    "username": "jet_speed_vpn_bot",
+    "url": "https://t.me/jet_speed_vpn_bot"
   },
   {
-    "id": "spectrum_vpn_bot",
-    "name": "🌐 Spectrum VPN",
-    "username": "spectrum_vpn_bot"
+    "id": "speed_master_fast_bot",
+    "name": "speed_master_fast_bot",
+    "username": "speed_master_fast_bot",
+    "url": "https://t.me/speed_master_fast_bot"
   },
   {
-    "id": "fast_key_vpn_bot",
-    "name": "🔑 Fast Key VPN",
-    "username": "fast_key_vpn_bot"
+    "id": "high_speed_fast_bot",
+    "name": "high_speed_fast_bot",
+    "username": "high_speed_fast_bot",
+    "url": "https://t.me/high_speed_fast_bot"
   },
   {
-    "id": "galaxy_net_vpn_bot",
-    "name": "🚀 Galaxy Net VPN",
-    "username": "galaxy_net_vpn_bot"
+    "id": "express_speed_fast_bot",
+    "name": "express_speed_fast_bot",
+    "username": "express_speed_fast_bot",
+    "url": "https://t.me/express_speed_fast_bot"
   },
   {
-    "id": "bulwark_vpn_bot",
-    "name": "🛡️ Bulwark VPN",
-    "username": "bulwark_vpn_bot"
+    "id": "turbo_speed_fast_bot",
+    "name": "turbo_speed_fast_bot",
+    "username": "turbo_speed_fast_bot",
+    "url": "https://t.me/turbo_speed_fast_bot"
   },
   {
-    "id": "boost_vpn_bot",
-    "name": "⚡️ Boost VPN Bot",
-    "username": "boost_vpn_bot"
+    "id": "speed_shield_vpn_bot",
+    "name": "speed_shield_vpn_bot",
+    "username": "speed_shield_vpn_bot",
+    "url": "https://t.me/speed_shield_vpn_bot"
   },
   {
-    "id": "meridian_vpn_bot",
-    "name": "🌐 Meridian VPN",
-    "username": "meridian_vpn_bot"
+    "id": "speed_link_vpn_bot",
+    "name": "speed_link_vpn_bot",
+    "username": "speed_link_vpn_bot",
+    "url": "https://t.me/speed_link_vpn_bot"
   },
   {
-    "id": "mirage_vpn_bot",
-    "name": "🕶️ Mirage VPN Bot",
-    "username": "mirage_vpn_bot"
+    "id": "fast_lane_vpn_bot",
+    "name": "fast_lane_vpn_bot",
+    "username": "fast_lane_vpn_bot",
+    "url": "https://t.me/fast_lane_vpn_bot"
   },
   {
-    "id": "nova_net_vpn_bot",
-    "name": "🚀 Nova Net VPN",
-    "username": "nova_net_vpn_bot"
+    "id": "speed_guard_vpn_bot",
+    "name": "speed_guard_vpn_bot",
+    "username": "speed_guard_vpn_bot",
+    "url": "https://t.me/speed_guard_vpn_bot"
   },
   {
-    "id": "armor_vpn_bot",
-    "name": "🛡️ Armor VPN Bot",
-    "username": "armor_vpn_bot"
+    "id": "swift_fast_vpn_bot",
+    "name": "swift_fast_vpn_bot",
+    "username": "swift_fast_vpn_bot",
+    "url": "https://t.me/swift_fast_vpn_bot"
   },
   {
-    "id": "surge_vpn_bot",
-    "name": "⚡️ Surge VPN Bot",
-    "username": "surge_vpn_bot"
+    "id": "rapid_fast_vpn_bot",
+    "name": "rapid_fast_vpn_bot",
+    "username": "rapid_fast_vpn_bot",
+    "url": "https://t.me/rapid_fast_vpn_bot"
   },
   {
-    "id": "equinox_vpn_bot",
-    "name": "🌐 Equinox VPN",
-    "username": "equinox_vpn_bot"
+    "id": "apex_speed_vpn_bot",
+    "name": "apex_speed_vpn_bot",
+    "username": "apex_speed_vpn_bot",
+    "url": "https://t.me/apex_speed_vpn_bot"
   },
   {
-    "id": "prime_key_vpn_bot",
-    "name": "🔑 Prime Key VPN",
-    "username": "prime_key_vpn_bot"
+    "id": "quick_fast_vpn_bot",
+    "name": "quick_fast_vpn_bot",
+    "username": "quick_fast_vpn_bot",
+    "url": "https://t.me/quick_fast_vpn_bot"
   },
   {
-    "id": "pulsar_vpn_bot",
-    "name": "🚀 Pulsar VPN Bot",
-    "username": "pulsar_vpn_bot"
+    "id": "lightning_fast_vpn_bot",
+    "name": "lightning_fast_vpn_bot",
+    "username": "lightning_fast_vpn_bot",
+    "url": "https://t.me/lightning_fast_vpn_bot"
   },
   {
-    "id": "aegis_net_vpn_bot",
-    "name": "🛡️ Aegis Net VPN",
-    "username": "aegis_net_vpn_bot"
+    "id": "speed_wave_vpn_bot",
+    "name": "speed_wave_vpn_bot",
+    "username": "speed_wave_vpn_bot",
+    "url": "https://t.me/speed_wave_vpn_bot"
   },
   {
-    "id": "swift_vpn_bot",
-    "name": "⚡️ Swift VPN Bot",
-    "username": "swift_vpn_bot"
+    "id": "sonic_fast_vpn_bot",
+    "name": "sonic_fast_vpn_bot",
+    "username": "sonic_fast_vpn_bot",
+    "url": "https://t.me/sonic_fast_vpn_bot"
   },
   {
-    "id": "cosmos_net_vpn_bot",
-    "name": "🌐 Cosmos Net VPN",
-    "username": "cosmos_net_vpn_bot"
+    "id": "speed_boost_vpn_bot",
+    "name": "speed_boost_vpn_bot",
+    "username": "speed_boost_vpn_bot",
+    "url": "https://t.me/speed_boost_vpn_bot"
   },
   {
-    "id": "pw_vpn_bot",
-    "name": "POWER.VPN",
-    "username": "PW_VPN_BOT"
+    "id": "velocity_fast_vpn_bot",
+    "name": "velocity_fast_vpn_bot",
+    "username": "velocity_fast_vpn_bot",
+    "url": "https://t.me/velocity_fast_vpn_bot"
   },
   {
-    "id": "fck_rkn_bot",
-    "name": "BlancVPN | Быстрый и надежный VPN",
-    "username": "FCK_RKN_bot"
+    "id": "jet_fast_vpn_bot",
+    "name": "jet_fast_vpn_bot",
+    "username": "jet_fast_vpn_bot",
+    "url": "https://t.me/jet_fast_vpn_bot"
   },
   {
-    "id": "corsair_vpn_bot",
-    "name": "CorsairVPN 🌐 Бесплатный ВПН",
-    "username": "corsair_vpn_bot"
+    "id": "rocket_fast_vpn_bot",
+    "name": "rocket_fast_vpn_bot",
+    "username": "rocket_fast_vpn_bot",
+    "url": "https://t.me/rocket_fast_vpn_bot"
   },
   {
-    "id": "red_jin_bot",
-    "name": "Red Jin VPN",
-    "username": "red_jin_bot"
+    "id": "velocity_speed_vpn_bot",
+    "name": "velocity_speed_vpn_bot",
+    "username": "velocity_speed_vpn_bot",
+    "url": "https://t.me/velocity_speed_vpn_bot"
   },
   {
-    "id": "rvpnplus_bot",
-    "name": "R-VPN Plus AI",
-    "username": "rvpnplus_bot"
+    "id": "blitz_fast_vpn_bot",
+    "name": "blitz_fast_vpn_bot",
+    "username": "blitz_fast_vpn_bot",
+    "url": "https://t.me/blitz_fast_vpn_bot"
   },
   {
-    "id": "doodlevpn_bot",
-    "name": "Doodle VPN",
-    "username": "DoodleVPN_bot"
+    "id": "speed_flow_vpn_bot",
+    "name": "speed_flow_vpn_bot",
+    "username": "speed_flow_vpn_bot",
+    "url": "https://t.me/speed_flow_vpn_bot"
   },
   {
-    "id": "relokant_net_bot",
-    "name": "Relokant VPN",
-    "username": "relokant_net_bot"
+    "id": "hyper_fast_vpn_bot",
+    "name": "hyper_fast_vpn_bot",
+    "username": "hyper_fast_vpn_bot",
+    "url": "https://t.me/hyper_fast_vpn_bot"
   },
   {
-    "id": "coffeevpnone_bot",
-    "name": "CoffeeVPN ☕️ Обход белых списков",
-    "username": "CoffeeVPNone_bot"
+    "id": "speed_pulse_vpn_bot",
+    "name": "speed_pulse_vpn_bot",
+    "username": "speed_pulse_vpn_bot",
+    "url": "https://t.me/speed_pulse_vpn_bot"
   },
   {
-    "id": "hanmewbot",
-    "name": "Hanmew VPN",
-    "username": "HanmewBOT"
+    "id": "speed_rush_vpn_bot",
+    "name": "speed_rush_vpn_bot",
+    "username": "speed_rush_vpn_bot",
+    "url": "https://t.me/speed_rush_vpn_bot"
   },
   {
-    "id": "maximumvpn_official_bot",
-    "name": "MAXIMUM VPN",
-    "username": "MaximumVPN_official_bot"
+    "id": "boost_fast_vpn_bot",
+    "name": "boost_fast_vpn_bot",
+    "username": "boost_fast_vpn_bot",
+    "url": "https://t.me/boost_fast_vpn_bot"
   },
   {
-    "id": "vbot_vpn_bot",
-    "name": "ИТ решения | VPN | Happ | INCY",
-    "username": "vbot_vpn_bot"
+    "id": "prime_fast_vpn_bot",
+    "name": "prime_fast_vpn_bot",
+    "username": "prime_fast_vpn_bot",
+    "url": "https://t.me/prime_fast_vpn_bot"
   },
   {
-    "id": "happ_ibot",
-    "name": "Space VPN 🚀",
-    "username": "Happ_ibot"
+    "id": "apex_fast_vpn_bot",
+    "name": "apex_fast_vpn_bot",
+    "username": "apex_fast_vpn_bot",
+    "url": "https://t.me/apex_fast_vpn_bot"
   },
   {
-    "id": "crypn_happ_bot",
-    "name": "CryPN | v2RayTun | Happ | VPN",
-    "username": "crypn_happ_bot"
+    "id": "high_speed_vpn_bot",
+    "name": "high_speed_vpn_bot",
+    "username": "high_speed_vpn_bot",
+    "url": "https://t.me/high_speed_vpn_bot"
   },
   {
-    "id": "happvpn_ru_bot",
-    "name": "HYPE VPN Russia",
-    "username": "happvpn_ru_bot"
+    "id": "speed_zone_vpn_bot",
+    "name": "speed_zone_vpn_bot",
+    "username": "speed_zone_vpn_bot",
+    "url": "https://t.me/speed_zone_vpn_bot"
   },
   {
-    "id": "happivpn_bot",
-    "name": "HappiVPN",
-    "username": "HappiVPN_bot"
+    "id": "speed_net_vpn_bot",
+    "name": "speed_net_vpn_bot",
+    "username": "speed_net_vpn_bot",
+    "url": "https://t.me/speed_net_vpn_bot"
   },
   {
-    "id": "happ_vpns_robot",
-    "name": "⚡️ HAPPY VPN — Официальный бот",
-    "username": "happ_vpns_robot"
+    "id": "speed_hub_vpn_bot",
+    "name": "speed_hub_vpn_bot",
+    "username": "speed_hub_vpn_bot",
+    "url": "https://t.me/speed_hub_vpn_bot"
   },
   {
-    "id": "raytune_bot",
-    "name": "v2rayTun VPN | VLESS | HAPP",
-    "username": "RayTune_bot"
+    "id": "speed_box_vpn_bot",
+    "name": "speed_box_vpn_bot",
+    "username": "speed_box_vpn_bot",
+    "url": "https://t.me/speed_box_vpn_bot"
   },
   {
-    "id": "v2box_v2ray_bot",
-    "name": "R-Box V2Ray VPN",
-    "username": "v2box_v2ray_bot"
+    "id": "speed_gate_vpn_bot",
+    "name": "speed_gate_vpn_bot",
+    "username": "speed_gate_vpn_bot",
+    "url": "https://t.me/speed_gate_vpn_bot"
   },
   {
-    "id": "warpguardbot",
-    "name": "Cloudflare WARP для AmneziaWG",
-    "username": "warpGuardBot"
+    "id": "speed_core_vpn_bot",
+    "name": "speed_core_vpn_bot",
+    "username": "speed_core_vpn_bot",
+    "url": "https://t.me/speed_core_vpn_bot"
   },
   {
-    "id": "vpn444_bot",
-    "name": "VPN 8 > Доступ к интернету",
-    "username": "vpn444_bot"
+    "id": "speed_pass_vpn_bot",
+    "name": "speed_pass_vpn_bot",
+    "username": "speed_pass_vpn_bot",
+    "url": "https://t.me/speed_pass_vpn_bot"
   },
   {
-    "id": "vpnchik_bot",
-    "name": "VPNchik Bot",
-    "username": "VPNchik_bot"
+    "id": "speed_key_vpn_bot",
+    "name": "speed_key_vpn_bot",
+    "username": "speed_key_vpn_bot",
+    "url": "https://t.me/speed_key_vpn_bot"
   },
   {
-    "id": "sodavpn_bot",
-    "name": "SodaVPN",
-    "username": "SodaVPN_bot"
+    "id": "speed_port_vpn_bot",
+    "name": "speed_port_vpn_bot",
+    "username": "speed_port_vpn_bot",
+    "url": "https://t.me/speed_port_vpn_bot"
   },
   {
-    "id": "maxvpn_xbot",
-    "name": "MaxVPN - Лучший ВПН Бот",
-    "username": "MaxVPN_xbot"
+    "id": "speed_line_vpn_bot",
+    "name": "speed_line_vpn_bot",
+    "username": "speed_line_vpn_bot",
+    "url": "https://t.me/speed_line_vpn_bot"
   },
   {
-    "id": "getvpn_xbot",
-    "name": "GetVPN - Скоростной ВПН",
-    "username": "GetVPN_xbot"
+    "id": "speed_pro_vpn_bot",
+    "name": "speed_pro_vpn_bot",
+    "username": "speed_pro_vpn_bot",
+    "url": "https://t.me/speed_pro_vpn_bot"
   },
   {
-    "id": "vpnos_bot",
-    "name": "osVPN | Быстрый и Надежный VPN",
-    "username": "VPNos_bot"
+    "id": "speed_run_vpn_bot",
+    "name": "speed_run_vpn_bot",
+    "username": "speed_run_vpn_bot",
+    "url": "https://t.me/speed_run_vpn_bot"
   },
   {
-    "id": "xankavpn_bot",
-    "name": "xankaVPN",
-    "username": "xankaVPN_bot"
+    "id": "speed_route_vpn_bot",
+    "name": "speed_route_vpn_bot",
+    "username": "speed_route_vpn_bot",
+    "url": "https://t.me/speed_route_vpn_bot"
   },
   {
-    "id": "vpnghostbot",
-    "name": "ghostCloud VPN",
-    "username": "vpnghostbot"
+    "id": "speed_way_vpn_bot",
+    "name": "speed_way_vpn_bot",
+    "username": "speed_way_vpn_bot",
+    "url": "https://t.me/speed_way_vpn_bot"
   },
   {
-    "id": "vpndirectbot",
-    "name": "VPN Direct",
-    "username": "vpndirectbot"
+    "id": "speed_drive_vpn_bot",
+    "name": "speed_drive_vpn_bot",
+    "username": "speed_drive_vpn_bot",
+    "url": "https://t.me/speed_drive_vpn_bot"
   },
   {
-    "id": "nordexvpn_bot",
-    "name": "NORDEX VPN 👍 Быстрый ВПН",
-    "username": "nordexvpn_bot"
+    "id": "speed_cast_vpn_bot",
+    "name": "speed_cast_vpn_bot",
+    "username": "speed_cast_vpn_bot",
+    "url": "https://t.me/speed_cast_vpn_bot"
   },
   {
-    "id": "abrekvpnbot",
-    "name": "ABREK VPN",
-    "username": "abrekvpnbot"
+    "id": "speed_path_vpn_bot",
+    "name": "speed_path_vpn_bot",
+    "username": "speed_path_vpn_bot",
+    "url": "https://t.me/speed_path_vpn_bot"
   },
   {
-    "id": "fastvpntgbot",
-    "name": "Тун-Тун VPN | Быстрый ВПН",
-    "username": "fastvpntgbot"
+    "id": "speed_point_vpn_bot",
+    "name": "speed_point_vpn_bot",
+    "username": "speed_point_vpn_bot",
+    "url": "https://t.me/speed_point_vpn_bot"
   },
   {
-    "id": "star_link_vpn_bot",
-    "name": "STAR VPN | PREMIUM",
-    "username": "STAR_LINK_VPN_bot"
+    "id": "speed_spot_vpn_bot",
+    "name": "speed_spot_vpn_bot",
+    "username": "speed_spot_vpn_bot",
+    "url": "https://t.me/speed_spot_vpn_bot"
   },
   {
-    "id": "star_vpn_official_bot",
-    "name": "MayaNet Star VPN Provider",
-    "username": "star_vpn_official_bot"
+    "id": "speed_grid_vpn_bot",
+    "name": "speed_grid_vpn_bot",
+    "username": "speed_grid_vpn_bot",
+    "url": "https://t.me/speed_grid_vpn_bot"
   },
   {
-    "id": "storm_vpn_bot",
-    "name": "VPN Connector Storm",
-    "username": "storm_vpn_bot"
+    "id": "speed_base_vpn_bot",
+    "name": "speed_base_vpn_bot",
+    "username": "speed_base_vpn_bot",
+    "url": "https://t.me/speed_base_vpn_bot"
   },
   {
-    "id": "stormplussupportbot",
-    "name": "Storm VPN Support & Keys",
-    "username": "stormplussupportbot"
+    "id": "speed_node_vpn_bot",
+    "name": "speed_node_vpn_bot",
+    "username": "speed_node_vpn_bot",
+    "url": "https://t.me/speed_node_vpn_bot"
   },
   {
-    "id": "shtormvpnbot",
-    "name": "ShtormVPN",
-    "username": "ShtormVPNBot"
+    "id": "speed_star_vpn_bot",
+    "name": "speed_star_vpn_bot",
+    "username": "speed_star_vpn_bot",
+    "url": "https://t.me/speed_star_vpn_bot"
   },
   {
-    "id": "vpnfail_bot",
-    "name": "🥷 VPNfail Bot 🤖 B2B",
-    "username": "vpnfail_bot"
+    "id": "speed_beam_vpn_bot",
+    "name": "speed_beam_vpn_bot",
+    "username": "speed_beam_vpn_bot",
+    "url": "https://t.me/speed_beam_vpn_bot"
   },
   {
-    "id": "asbvpn_bot",
-    "name": "ASB VPN",
-    "username": "asbvpn_bot"
+    "id": "speed_sky_vpn_bot",
+    "name": "speed_sky_vpn_bot",
+    "username": "speed_sky_vpn_bot",
+    "url": "https://t.me/speed_sky_vpn_bot"
   },
   {
-    "id": "safe_vpnrobot",
-    "name": "Safe VPN Robot",
-    "username": "Safe_VpnRobot"
+    "id": "speed_ray_vpn_bot",
+    "name": "speed_ray_vpn_bot",
+    "username": "speed_ray_vpn_bot",
+    "url": "https://t.me/speed_ray_vpn_bot"
   },
   {
-    "id": "warp_generator_bot",
-    "name": "Warp Generator Bot",
-    "username": "warp_generator_bot"
+    "id": "speed_spark_vpn_bot",
+    "name": "speed_spark_vpn_bot",
+    "username": "speed_spark_vpn_bot",
+    "url": "https://t.me/speed_spark_vpn_bot"
   },
   {
-    "id": "mrnord_bot",
-    "name": "Nordvpn Bot",
-    "username": "MrNord_Bot"
+    "id": "speed_blaze_vpn_bot",
+    "name": "speed_blaze_vpn_bot",
+    "username": "speed_blaze_vpn_bot",
+    "url": "https://t.me/speed_blaze_vpn_bot"
   },
   {
-    "id": "nordvpn87_bot",
-    "name": "Nord VPN 🚀",
-    "username": "Nordvpn87_bot"
+    "id": "speed_storm_vpn_bot",
+    "name": "speed_storm_vpn_bot",
+    "username": "speed_storm_vpn_bot",
+    "url": "https://t.me/speed_storm_vpn_bot"
   },
   {
-    "id": "nord_generator_bot",
-    "name": "Nord VPN Generator",
-    "username": "nord_generator_bot"
+    "id": "speed_flame_vpn_bot",
+    "name": "speed_flame_vpn_bot",
+    "username": "speed_flame_vpn_bot",
+    "url": "https://t.me/speed_flame_vpn_bot"
+  },
+  {
+    "id": "speed_flare_vpn_bot",
+    "name": "speed_flare_vpn_bot",
+    "username": "speed_flare_vpn_bot",
+    "url": "https://t.me/speed_flare_vpn_bot"
+  },
+  {
+    "id": "speed_surge_vpn_bot",
+    "name": "speed_surge_vpn_bot",
+    "username": "speed_surge_vpn_bot",
+    "url": "https://t.me/speed_surge_vpn_bot"
+  },
+  {
+    "id": "speed_force_vpn_bot",
+    "name": "speed_force_vpn_bot",
+    "username": "speed_force_vpn_bot",
+    "url": "https://t.me/speed_force_vpn_bot"
+  },
+  {
+    "id": "speed_power_fast_bot",
+    "name": "speed_power_fast_bot",
+    "username": "speed_power_fast_bot",
+    "url": "https://t.me/speed_power_fast_bot"
+  },
+  {
+    "id": "speed_energy_vpn_bot",
+    "name": "speed_energy_vpn_bot",
+    "username": "speed_energy_vpn_bot",
+    "url": "https://t.me/speed_energy_vpn_bot"
+  },
+  {
+    "id": "zhukovskyvpnbot",
+    "name": "Жуковский VPN",
+    "username": "zhukovskyvpnbot",
+    "url": "https://t.me/zhukovskyvpnbot"
+  },
+  {
+    "id": "obhodchikvpnbot",
+    "name": "Обходчик VPN",
+    "username": "obhodchikvpnbot",
+    "url": "https://t.me/obhodchikvpnbot"
+  },
+  {
+    "id": "bezlimitnyvpnbot",
+    "name": "Безлимитный VPN",
+    "username": "bezlimitnyvpnbot",
+    "url": "https://t.me/bezlimitnyvpnbot"
+  },
+  {
+    "id": "skorostnoyvpnbot",
+    "name": "Скоростной VPN",
+    "username": "skorostnoyvpnbot",
+    "url": "https://t.me/skorostnoyvpnbot"
+  },
+  {
+    "id": "zashchitnikvpnbot",
+    "name": "Защитник VPN",
+    "username": "zashchitnikvpnbot",
+    "url": "https://t.me/zashchitnikvpnbot"
+  },
+  {
+    "id": "bezopasnyvpnbot",
+    "name": "Безопасный VPN",
+    "username": "bezopasnyvpnbot",
+    "url": "https://t.me/bezopasnyvpnbot"
+  },
+  {
+    "id": "anonimnyvpnbot",
+    "name": "Анонимный VPN",
+    "username": "anonimnyvpnbot",
+    "url": "https://t.me/anonimnyvpnbot"
+  },
+  {
+    "id": "sputnikvpnbot",
+    "name": "Спутник VPN",
+    "username": "sputnikvpnbot",
+    "url": "https://t.me/sputnikvpnbot"
+  },
+  {
+    "id": "raketavpnbot",
+    "name": "Ракета VPN",
+    "username": "raketavpnbot",
+    "url": "https://t.me/raketavpnbot"
+  },
+  {
+    "id": "strelavpnbot",
+    "name": "Стрела VPN",
+    "username": "strelavpnbot",
+    "url": "https://t.me/strelavpnbot"
+  },
+  {
+    "id": "molniyavpnbot",
+    "name": "Молния VPN",
+    "username": "molniyavpnbot",
+    "url": "https://t.me/molniyavpnbot"
+  },
+  {
+    "id": "vihrvpnbot",
+    "name": "Вихрь VPN",
+    "username": "vihrvpnbot",
+    "url": "https://t.me/vihrvpnbot"
+  },
+  {
+    "id": "shchitvpnbot",
+    "name": "Щит VPN",
+    "username": "shchitvpnbot",
+    "url": "https://t.me/shchitvpnbot"
+  },
+  {
+    "id": "svobodnovpnbot",
+    "name": "Свободно VPN",
+    "username": "svobodnovpnbot",
+    "url": "https://t.me/svobodnovpnbot"
+  },
+  {
+    "id": "bystrovpnbot",
+    "name": "Быстро VPN",
+    "username": "bystrovpnbot",
+    "url": "https://t.me/bystrovpnbot"
+  },
+  {
+    "id": "nadezhnovpnbot",
+    "name": "Надежно VPN",
+    "username": "nadezhnovpnbot",
+    "url": "https://t.me/nadezhnovpnbot"
+  },
+  {
+    "id": "pryamovpnbot",
+    "name": "Прямо VPN",
+    "username": "pryamovpnbot",
+    "url": "https://t.me/pryamovpnbot"
+  },
+  {
+    "id": "legkovpnbot",
+    "name": "Легко VPN",
+    "username": "legkovpnbot",
+    "url": "https://t.me/legkovpnbot"
+  },
+  {
+    "id": "prostovpnbot",
+    "name": "Просто VPN",
+    "username": "prostovpnbot",
+    "url": "https://t.me/prostovpnbot"
+  },
+  {
+    "id": "dostupnovpnbot",
+    "name": "Доступно VPN",
+    "username": "dostupnovpnbot",
+    "url": "https://t.me/dostupnovpnbot"
+  },
+  {
+    "id": "stabilnovpnbot",
+    "name": "Стабильно VPN",
+    "username": "stabilnovpnbot",
+    "url": "https://t.me/stabilnovpnbot"
+  },
+  {
+    "id": "skrytovpnbot",
+    "name": "Скрыто VPN",
+    "username": "skrytovpnbot",
+    "url": "https://t.me/skrytovpnbot"
+  },
+  {
+    "id": "nevidimovpnbot",
+    "name": "Невидимо VPN",
+    "username": "nevidimovpnbot",
+    "url": "https://t.me/nevidimovpnbot"
+  },
+  {
+    "id": "antizapretvpnbot",
+    "name": "Антизапрет VPN",
+    "username": "antizapretvpnbot",
+    "url": "https://t.me/antizapretvpnbot"
   }
 ]

@@ -98,6 +98,7 @@ function syncUserToSupabase(user) {
     owned: user.owned || ['pen'],
     promocodes: user.promocodes || [],
     vpn_keys: user.vpnKeys || [],
+    visited_bots: user.visitedBots || [],
     updated_at: new Date().toISOString()
   };
   supabaseRequest('/rest/v1/losy_users', 'POST', row, {
@@ -148,6 +149,7 @@ async function hydrateDbFromSupabase() {
             owned: row.owned || ['pen'],
             promocodes: row.promocodes || [],
             vpnKeys: row.vpn_keys || [],
+            visitedBots: row.visited_bots || [],
             updatedAt: rowTime
           };
           restoredCount++;
@@ -176,6 +178,7 @@ function getOrCreateUser(userData) {
       owned: ['pen'],
       promocodes: [],
       vpnKeys: [],
+      visitedBots: [],
       updatedAt: Date.now()
     };
     saveDb();
@@ -185,6 +188,7 @@ function getOrCreateUser(userData) {
     if (userData.first_name) db.users[tid].firstName = userData.first_name;
     if (!db.users[tid].vpnKeys) db.users[tid].vpnKeys = [];
     if (!db.users[tid].promocodes) db.users[tid].promocodes = [];
+    if (!db.users[tid].visitedBots) db.users[tid].visitedBots = [];
   }
   return db.users[tid];
 }
@@ -545,8 +549,30 @@ const server = http.createServer((req, res) => {
             balance: targetUser.balance,
             ownedCount: targetUser.owned ? targetUser.owned.length : 0,
             promosUsed: targetUser.promocodes ? targetUser.promocodes.length : 0,
-            vpnKeysCount: targetUser.vpnKeys ? targetUser.vpnKeys.length : 0
+            vpnKeysCount: targetUser.vpnKeys ? targetUser.vpnKeys.length : 0,
+            visitedBots: targetUser.visitedBots || [],
+            visitedCount: targetUser.visitedBots ? targetUser.visitedBots.length : 0
           }
+        }));
+        return;
+      }
+
+      if (pathname === '/api/user/visit' && req.method === 'POST') {
+        const botId = String(data.botId || '').trim().toLowerCase();
+        const userId = String(data.userId || authUser.id);
+        const targetUser = getOrCreateUser({ id: userId, username: data.username, first_name: data.firstName });
+        if (!targetUser.visitedBots) targetUser.visitedBots = [];
+        if (botId && !targetUser.visitedBots.includes(botId)) {
+          targetUser.visitedBots.push(botId);
+          targetUser.updatedAt = Date.now();
+          saveDb();
+          syncUserToSupabase(targetUser);
+        }
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({
+          ok: true,
+          visitedBots: targetUser.visitedBots,
+          visitedCount: targetUser.visitedBots.length
         }));
         return;
       }
@@ -631,6 +657,26 @@ const server = http.createServer((req, res) => {
       res.end(JSON.stringify({ ok: false, error: 'Not found' }));
     });
     return;
+  }
+
+  // Редирект-ссылка с трекингом: /r/:userId/:botId
+  if (pathname.startsWith('/r/')) {
+    const parts = pathname.split('/').filter(Boolean); // ['r', userId, botId]
+    if (parts.length >= 3) {
+      const targetUserId = parts[1];
+      const botId = parts[2].toLowerCase();
+      const targetUser = getOrCreateUser({ id: targetUserId });
+      if (!targetUser.visitedBots) targetUser.visitedBots = [];
+      if (botId && !targetUser.visitedBots.includes(botId)) {
+        targetUser.visitedBots.push(botId);
+        targetUser.updatedAt = Date.now();
+        saveDb();
+        syncUserToSupabase(targetUser);
+      }
+      res.writeHead(302, { 'Location': `https://t.me/${botId}?start=losy` });
+      res.end();
+      return;
+    }
   }
 
   // СТАТИКА
