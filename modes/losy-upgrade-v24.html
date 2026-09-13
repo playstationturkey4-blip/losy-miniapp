@@ -2212,105 +2212,309 @@ body {
 }
 
 /* ===================================================
-   ПОРАЖЕНИЕ: АНИМАЦИЯ ДЛЯ ПРЕДМЕТА СТАВКИ («СГОРЕВШИЙ ПРЕДМЕТ»)
-   Выразительная, сочная и плавная анимация на левой карточке (ставка)
+   ПОРАЖЕНИЕ: УНИКАЛЬНАЯ АНИМАЦИЯ СГОРАНИЯ И ГЛИТЧА («CYBER-DISINTEGRATE»)
+   100% чистая визуальная физика без всплывающих надписей!
    =================================================== */
 
-/* Левая карточка (ставка): физическое покачивание сгорания и опечаленный спад */
+/* Левая карточка (ставка): глитч-сотрясение, перегрузка и 3D-осадка */
 .ug-card--stake.lost,
 .machine-rocket.rocket-left.lost {
-  animation: stakeCardDefeat 1.35s cubic-bezier(0.25, 1, 0.5, 1) both !important;
+  animation: stakeCyberGlitchLoss 1.35s cubic-bezier(0.22, 1, 0.36, 1) both !important;
   transform-origin: center bottom;
   will-change: transform, filter;
 }
 
-@keyframes stakeCardDefeat {
+@keyframes stakeCyberGlitchLoss {
   0% {
     transform: perspective(800px) translate3d(0, 0, 0) rotate(0deg) scale(1);
+    filter: drop-shadow(0 0 0 transparent);
   }
+  /* 1. Мощный удар и короткое замыкание: микро-глитч сотрясение */
+  8% {
+    transform: perspective(800px) translate3d(-7px, -4px, -10px) rotate(-3deg) scale(0.97);
+  }
+  16% {
+    transform: perspective(800px) translate3d(6px, 2px, -8px) rotate(2.5deg) scale(0.98);
+  }
+  24% {
+    transform: perspective(800px) translate3d(-4px, 1px, -12px) rotate(-1.5deg) scale(0.96);
+  }
+  32% {
+    transform: perspective(800px) translate3d(3px, -1px, -10px) rotate(1deg) scale(0.965);
+  }
+  /* 2. Оседание под тяжестью выгорания */
+  48% {
+    transform: perspective(800px) translate3d(0, 8px, -20px) rotate(0deg) scale(0.93);
+  }
+  70% {
+    transform: perspective(800px) translate3d(0, 10px, -24px) rotate(0deg) scale(0.92);
+  }
+  88% {
+    transform: perspective(800px) translate3d(0, 5px, -12px) rotate(0deg) scale(0.95);
+  }
+  /* 3. Спокойный возврат пустой платформы в исходную позицию */
+  100% {
+    transform: perspective(800px) translate3d(0, 0, 0) rotate(0deg) scale(1);
+  }
+}
+
+/* Рамка карточки ставки: короткое замыкание, неоновый импульс сгорания и голографический срез */
+.ug-card--stake.lost .ug-card__frame-box {
+  animation: stakeFrameOverload 1.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+  will-change: filter;
+  position: relative;
+  overflow: hidden;
+}
+
+@keyframes stakeFrameOverload {
+  0% {
+    filter: drop-shadow(0 0 8px rgba(59, 232, 255, 0.32));
+  }
+  /* Яркая неоновая вспышка короткого замыкания (красно-малиновая перегрузка) */
   12% {
-    /* Резкое вздрагивание при сгорании */
-    transform: perspective(800px) translate3d(-6px, -2px, -8px) rotate(-2.5deg) scale(0.97);
+    filter: drop-shadow(0 0 28px rgba(255, 46, 99, 1)) drop-shadow(0 0 45px rgba(255, 71, 87, 0.7));
   }
-  28% {
-    transform: perspective(800px) translate3d(5px, 2px, -12px) rotate(2deg) scale(0.96);
+  24% {
+    filter: drop-shadow(0 0 14px rgba(255, 46, 99, 0.7));
   }
-  45% {
-    transform: perspective(800px) translate3d(-3px, 6px, -18px) rotate(-1.2deg) scale(0.94);
+  36% {
+    filter: drop-shadow(0 0 32px rgba(255, 71, 87, 0.95)) drop-shadow(0 0 50px rgba(255, 107, 129, 0.5));
   }
   65% {
-    /* Опечаленный спад вниз */
-    transform: perspective(800px) translate3d(0, 9px, -22px) rotate(0deg) scale(0.93);
-  }
-  85% {
-    transform: perspective(800px) translate3d(0, 7px, -14px) rotate(0deg) scale(0.95);
+    filter: drop-shadow(0 0 16px rgba(255, 71, 87, 0.5));
   }
   100% {
-    transform: perspective(800px) translate3d(0, 0, 0) rotate(0deg) scale(1);
+    filter: drop-shadow(0 0 8px rgba(59, 232, 255, 0.32));
   }
 }
 
-/* Рамка карточки ставки: неоновый алый импульс сгорания ставки */
-.ug-card--stake.lost .ug-card__frame-box {
-  animation: stakeLossPulse 1.35s cubic-bezier(0.25, 1, 0.5, 1) both;
-  will-change: filter;
+/* Голографический луч сбоя/сканирования, разрезающий карточку при поражении */
+.ug-card--stake.lost .ug-card__frame-box::after {
+  content: '';
+  position: absolute;
+  inset: -20%;
+  background: linear-gradient(
+    135deg,
+    transparent 30%,
+    rgba(255, 71, 87, 0.6) 48%,
+    rgba(255, 255, 255, 0.9) 50%,
+    rgba(255, 71, 87, 0.6) 52%,
+    transparent 70%
+  );
+  transform: translateY(-130%) rotate(25deg);
+  animation: defeatHoloScan 0.6s 0.05s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  pointer-events: none;
+  z-index: 7;
 }
 
-@keyframes stakeLossPulse {
+@keyframes defeatHoloScan {
   0% {
-    filter: drop-shadow(0 0 8px rgba(59, 232, 255, 0.32));
+    transform: translateY(-130%) rotate(25deg);
+    opacity: 0;
   }
-  18% {
-    filter: drop-shadow(0 0 24px rgba(255, 61, 119, 0.85)) drop-shadow(0 0 40px rgba(255, 61, 119, 0.45));
-  }
-  50% {
-    filter: drop-shadow(0 0 16px rgba(255, 71, 87, 0.6)) drop-shadow(0 0 28px rgba(255, 40, 70, 0.3));
-  }
-  80% {
-    filter: drop-shadow(0 0 10px rgba(255, 71, 87, 0.35));
+  25% {
+    opacity: 1;
   }
   100% {
-    filter: drop-shadow(0 0 8px rgba(59, 232, 255, 0.32));
+    transform: translateY(130%) rotate(25deg);
+    opacity: 0;
   }
 }
 
-/* Предмет ставки внутри карточки: покачивание, обесцвечивание (сгорание в пепел) и приглушение */
+/* Предмет ставки: хроматический глитч, раскаливание докрасна, распад в пепел и мягкое растворение */
 .ug-card--stake.lost .ug-card__item img,
 .ug-card--stake.is-loss-gray .ug-card__item img {
-  animation: stakeItemLoss 1.35s cubic-bezier(0.25, 1, 0.5, 1) both !important;
+  animation: stakeItemDisintegrate 1.35s cubic-bezier(0.22, 1, 0.36, 1) both !important;
   will-change: transform, filter, opacity;
 }
 
-@keyframes stakeItemLoss {
+@keyframes stakeItemDisintegrate {
   0% {
     transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
     filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.65));
     opacity: 1;
   }
-  15% {
-    transform: translate3d(-5px, -3px, 0) scale(0.93) rotate(-3deg);
-    filter: drop-shadow(0 0 18px rgba(255, 61, 119, 0.75)) brightness(1.2);
+  /* 1. Электро-удар и хроматический глитч (RGB split) */
+  8% {
+    transform: translate3d(-6px, -3px, 0) scale(1.05) rotate(-3deg);
+    filter: drop-shadow(-4px 0 #FF2E63) drop-shadow(4px 0 #08D9D6) brightness(1.4);
+    opacity: 1;
+  }
+  18% {
+    transform: translate3d(5px, 2px, 0) scale(0.96) rotate(2deg);
+    filter: drop-shadow(3px 0 #FF2E63) drop-shadow(-3px 0 #08D9D6) brightness(1.25);
     opacity: 0.95;
   }
+  /* 2. Раскалённые угли (насыщенный раскалённый огненный цвет) */
   35% {
-    transform: translate3d(4px, 2px, 0) scale(0.89) rotate(2deg);
-    filter: grayscale(0.5) brightness(0.8) drop-shadow(0 0 14px rgba(255, 71, 87, 0.5));
-    opacity: 0.8;
+    transform: translate3d(-2px, 4px, 0) scale(0.91) rotate(-1deg);
+    filter: grayscale(0.2) sepia(0.8) hue-rotate(-20deg) saturate(3) drop-shadow(0 0 16px #FF4757);
+    opacity: 0.85;
   }
+  /* 3. Распад на пепел, опускание вниз */
   60% {
-    transform: translate3d(0, 7px, 0) scale(0.84) rotate(0deg);
-    filter: grayscale(0.9) brightness(0.6) drop-shadow(0 4px 10px rgba(0, 0, 0, 0.8));
-    opacity: 0.65;
+    transform: translate3d(0, 8px, 0) scale(0.84) rotate(0deg);
+    filter: grayscale(0.95) brightness(0.4) blur(0.8px) drop-shadow(0 0 8px rgba(255, 71, 87, 0.4));
+    opacity: 0.45;
   }
-  85% {
-    transform: translate3d(0, 5px, 0) scale(0.88) rotate(0deg);
-    filter: grayscale(0.8) brightness(0.7);
+  80% {
+    transform: translate3d(0, 10px, 0) scale(0.80) rotate(0deg);
+    filter: grayscale(1) brightness(0.2) blur(1.5px);
+    opacity: 0.15;
+  }
+  /* 4. Полное растворение */
+  100% {
+    transform: translate3d(0, 12px, 0) scale(0.75) rotate(0deg);
+    filter: grayscale(1) brightness(0);
+    opacity: 0;
+  }
+}
+
+/* ===================================================
+   КОНТЕЙНЕР ЭФФЕКТОВ ПОРАЖЕНИЯ (ИСКРЫ, УДАРНАЯ ВОЛНА, УГЛИ)
+   =================================================== */
+.ug-card-defeat-fx {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 8;
+  overflow: hidden;
+  border-radius: 18px;
+}
+
+/* Ударная кольцевая волна сбоя */
+.ug-defeat-shockwave {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 90px;
+  height: 90px;
+  margin-left: -45px;
+  margin-top: -45px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 71, 87, 0.9);
+  box-shadow: 0 0 18px rgba(255, 71, 87, 0.8), inset 0 0 14px rgba(255, 46, 99, 0.6);
+  pointer-events: none;
+  animation: defeatShockwavePop 0.65s cubic-bezier(0.15, 0.85, 0.35, 1) forwards;
+}
+
+@keyframes defeatShockwavePop {
+  0% {
+    transform: scale(0.3);
+    opacity: 1;
+  }
+  70% {
     opacity: 0.75;
   }
   100% {
-    transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
-    filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.65));
+    transform: scale(1.65);
+    opacity: 0;
+  }
+}
+
+/* Ядерная микро-вспышка в центре карточки */
+.ug-defeat-core-flash {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 14px;
+  height: 14px;
+  margin-left: -7px;
+  margin-top: -7px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #FFFFFF 20%, #FF2E63 70%, transparent 100%);
+  box-shadow: 0 0 22px #FF2E63;
+  pointer-events: none;
+  animation: defeatCoreFlash 0.35s ease-out forwards;
+}
+
+@keyframes defeatCoreFlash {
+  0% {
+    transform: scale(0.5);
     opacity: 1;
+  }
+  40% {
+    transform: scale(2.2);
+    opacity: 0.95;
+  }
+  100% {
+    transform: scale(0.1);
+    opacity: 0;
+  }
+}
+
+/* Электрические микро-дуги короткого замыкания */
+.ug-defeat-arc {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 38px;
+  height: 2px;
+  margin-left: -19px;
+  margin-top: -1px;
+  background: linear-gradient(90deg, transparent, #3BE8FF 50%, #FF4757 80%, transparent);
+  box-shadow: 0 0 6px #3BE8FF;
+  transform-origin: center center;
+  transform: rotate(var(--rot, 0deg)) scaleX(0);
+  animation: defeatArcSnap 0.3s var(--delay, 0s) ease-out forwards;
+}
+
+@keyframes defeatArcSnap {
+  0% {
+    transform: rotate(var(--rot, 0deg)) scaleX(0);
+    opacity: 1;
+  }
+  50% {
+    transform: rotate(var(--rot, 0deg)) scaleX(1.3);
+    opacity: 1;
+  }
+  100% {
+    transform: rotate(var(--rot, 0deg)) scaleX(0.2) translateX(15px);
+    opacity: 0;
+  }
+}
+
+/* Горящие угли и частицы пепла, поднимающиеся вверх с физической турбулентностью */
+.ug-defeat-ember {
+  position: absolute;
+  user-select: none;
+  pointer-events: none;
+  will-change: transform, opacity;
+  animation: defeatEmberRise var(--dur, 1s) var(--delay, 0s) cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+.ug-defeat-ember.is-dot {
+  width: var(--size, 3.5px);
+  height: var(--size, 3.5px);
+  border-radius: 50%;
+  box-shadow: 0 0 8px currentColor, 0 0 14px currentColor;
+}
+
+.ug-defeat-ember.is-spark {
+  font-size: var(--size, 8px);
+  line-height: 1;
+  filter: drop-shadow(0 0 6px currentColor);
+}
+
+@keyframes defeatEmberRise {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) translate3d(0, 0, 0) scale(0.4) rotate(0deg);
+  }
+  15% {
+    opacity: 1;
+    transform: translate(-50%, -50%) translate3d(calc(var(--drift-x) * 0.25), calc(var(--rise-y) * 0.2), 0) scale(1.1) rotate(20deg);
+  }
+  50% {
+    opacity: 0.9;
+    transform: translate(-50%, -50%) translate3d(calc(var(--drift-x) * 0.65), calc(var(--rise-y) * 0.55), 0) scale(0.9) rotate(-15deg);
+  }
+  80% {
+    opacity: 0.45;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) translate3d(var(--drift-x), var(--rise-y), 0) scale(0.3) rotate(45deg);
   }
 }
 
@@ -6372,6 +6576,7 @@ function clearLostState() {
     r.classList.remove('lost', 'won', 'is-loss-gray', 'has-win-shimmer', 'stake--spent', 'stake--updated');
   });
   document.querySelectorAll('.ug-card-salute').forEach(s => s.remove());
+  document.querySelectorAll('.ug-card-defeat-fx').forEach(s => s.remove());
   const upgradeBtn = document.getElementById('upgradeBtn');
   if (upgradeBtn) {
     upgradeBtn.classList.remove('btn--won');
@@ -6615,19 +6820,22 @@ function doUpgrade() {
         }, 1200);
       }, 2200);
     } else {
-      // ПОРАЖЕНИЕ:
-      // Анимация проигрыша воспроизводится СТРОГО на карточке предмета, на который ставил игрок (stakeEl)!
-      // Во время анимации карточка сохраняет сгоревший предмет, не сменяясь на ручку или новый предмет.
+      // ПОРАЖЕНИЕ (УНИКАЛЬНАЯ АНИМАЦИЯ БЕЗ НАДПИСЕЙ):
+      // Анимация воспроизводится СТРОГО на карточке предмета, на который ставил игрок (stakeEl)!
+      // Никаких всплывающих надписей: ударная волна, электро-дуги, раскаливание и горящие угли!
       targetEl.classList.remove('won', 'lost');
       stakeEl.classList.remove('won');
       stakeEl.classList.add('lost', 'is-loss-gray');
+      spawnDefeatEmbers(stakeEl);
       playResult('lose');
-      spawnNextTime();
 
       if (el.upgradeBtn) {
         el.upgradeBtn.disabled = true;
-        el.upgradeBtn.textContent = 'НЕ ПОВЕЗЛО';
+        el.upgradeBtn.textContent = '…';
       }
+
+      const loseBanner = document.getElementById('wheelLoseBanner');
+      if (loseBanner) loseBanner.classList.remove('active');
 
       clearLostStateTimer();
       lossStateTimer = setTimeout(() => {
@@ -7032,6 +7240,81 @@ function spawnCardMiniSalute(targetEl) {
   }, 2200);
 }
 window.spawnCardMiniSalute = spawnCardMiniSalute;
+
+// УНИКАЛЬНАЯ АНИМАЦИЯ ПОРАЖЕНИЯ (БЕЗ НАДПИСЕЙ):
+// Кибер-глитч, импульсная ударная волна, электро-дуги и горящие угли сгорающего предмета ставки
+function spawnDefeatEmbers(stakeEl) {
+  if (!stakeEl) return;
+  const frameBox = stakeEl.querySelector('.ug-card__frame-box');
+  if (!frameBox) return;
+
+  frameBox.querySelectorAll('.ug-card-defeat-fx').forEach(s => s.remove());
+
+  const fxWrap = document.createElement('div');
+  fxWrap.className = 'ug-card-defeat-fx';
+  frameBox.appendChild(fxWrap);
+
+  // 1. Неоновая кольцевая ударная волна сбоя (shockwave ring)
+  const shockwave = document.createElement('div');
+  shockwave.className = 'ug-defeat-shockwave';
+  fxWrap.appendChild(shockwave);
+
+  // 2. Вспышка перегрузки в центре карточки
+  const coreFlash = document.createElement('div');
+  coreFlash.className = 'ug-defeat-core-flash';
+  fxWrap.appendChild(coreFlash);
+
+  // 3. Электрические микро-дуги короткого замыкания (spark arcs)
+  for (let i = 0; i < 6; i++) {
+    const arc = document.createElement('div');
+    arc.className = 'ug-defeat-arc';
+    arc.style.setProperty('--rot', `${i * 60 + (Math.random() * 30 - 15)}deg`);
+    arc.style.setProperty('--delay', `${(i * 0.03 + Math.random() * 0.04).toFixed(2)}s`);
+    fxWrap.appendChild(arc);
+  }
+
+  // 4. Горящие угли и пепел (ember particles, летящие вверх с физической турбулентностью)
+  const emberColors = ['#FF4757', '#FF6B81', '#FFA502', '#FF7F50', '#FF3838', '#FFFFFF', '#08D9D6'];
+  const emberCount = 24;
+
+  for (let i = 0; i < emberCount; i++) {
+    const ember = document.createElement('div');
+    const isSpark = Math.random() > 0.4;
+    ember.className = `ug-defeat-ember ${isSpark ? 'is-spark' : 'is-dot'}`;
+
+    // Спавнятся из центра и контура предмета
+    const startX = 50 + (Math.random() * 36 - 18);
+    const startY = 50 + (Math.random() * 30 - 15);
+    
+    // Вектор разлёта: взмывают вверх с колыханием влево/вправо
+    const driftX = (Math.random() * 56 - 28);
+    const riseY = -(45 + Math.random() * 65);
+    const size = isSpark ? (6 + Math.random() * 4) : (3 + Math.random() * 4);
+    const dur = 0.8 + Math.random() * 0.55;
+    const delay = Math.random() * 0.35;
+    const color = emberColors[Math.floor(Math.random() * emberColors.length)];
+
+    ember.style.left = `${startX}%`;
+    ember.style.top = `${startY}%`;
+    ember.style.setProperty('--drift-x', `${driftX.toFixed(1)}px`);
+    ember.style.setProperty('--rise-y', `${riseY.toFixed(1)}px`);
+    ember.style.setProperty('--size', `${size.toFixed(1)}px`);
+    ember.style.setProperty('--dur', `${dur.toFixed(2)}s`);
+    ember.style.setProperty('--delay', `${delay.toFixed(2)}s`);
+    ember.style.color = color;
+    ember.style.backgroundColor = isSpark ? 'transparent' : color;
+    if (isSpark) {
+      ember.textContent = Math.random() > 0.5 ? '✦' : '•';
+    }
+
+    fxWrap.appendChild(ember);
+  }
+
+  setTimeout(() => {
+    fxWrap.remove();
+  }, 1600);
+}
+window.spawnDefeatEmbers = spawnDefeatEmbers;
 
 // Короткие фразы поражения прямо внутри круга колеса (шрифт Bebas Neue + Unbounded)
 const LOSE_PHRASES = [
