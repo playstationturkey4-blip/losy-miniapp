@@ -16,6 +16,21 @@
       ],
       "updatedAt": 1789303818733
     },
+    "9999999": {
+      "id": "9999999",
+      "username": "testuser",
+      "firstName": "Тестер",
+      "balance": 200000,
+      "owned": [
+        "pen"
+      ],
+      "promocodes": [],
+      "vpnKeys": [],
+      "visitedBots": [
+        "hitvpnbot"
+      ],
+      "updatedAt": 0
+    },
     "guest_local": {
       "id": "guest_local",
       "username": "",
@@ -73,20 +88,75 @@
       "visitedBots": [],
       "updatedAt": 1789306913948
     },
-    "9999999": {
-      "id": "9999999",
-      "username": "testuser",
-      "firstName": "Тестер",
+    "guest_ry96buivmtzvmrpl": {
+      "id": "guest_ry96buivmtzvmrpl",
+      "username": "",
+      "firstName": "Игрок",
       "balance": 200000,
+      "spaceCoins": 0,
       "owned": [
         "pen"
       ],
       "promocodes": [],
       "vpnKeys": [],
-      "visitedBots": [
-        "hitvpnbot"
+      "visitedBots": [],
+      "updatedAt": 1789307744479
+    },
+    "guest_onqcq6tqmtzvnby8": {
+      "id": "guest_onqcq6tqmtzvnby8",
+      "username": "",
+      "firstName": "Игрок",
+      "balance": 200000,
+      "spaceCoins": 0,
+      "owned": [
+        "pen"
       ],
-      "updatedAt": 0
+      "promocodes": [],
+      "vpnKeys": [],
+      "visitedBots": [],
+      "updatedAt": 1789307770703
+    },
+    "guest_kct2kj14mtzvonr2": {
+      "id": "guest_kct2kj14mtzvonr2",
+      "username": "",
+      "firstName": "Игрок",
+      "balance": 200000,
+      "spaceCoins": 0,
+      "owned": [
+        "pen"
+      ],
+      "promocodes": [],
+      "vpnKeys": [],
+      "visitedBots": [],
+      "updatedAt": 1789307832655
+    },
+    "guest_peqilg7zmtzvpqxt": {
+      "id": "guest_peqilg7zmtzvpqxt",
+      "username": "",
+      "firstName": "Игрок",
+      "balance": 200000,
+      "spaceCoins": 0,
+      "owned": [
+        "pen"
+      ],
+      "promocodes": [],
+      "vpnKeys": [],
+      "visitedBots": [],
+      "updatedAt": 1789307883460
+    },
+    "guest_9220378b": {
+      "id": "guest_9220378b",
+      "username": "",
+      "firstName": "Гость",
+      "balance": 99999999,
+      "spaceCoins": 0,
+      "owned": [
+        "pen"
+      ],
+      "promocodes": [],
+      "vpnKeys": [],
+      "visitedBots": [],
+      "updatedAt": 1789308025417
     }
   },
   "sessions": {}

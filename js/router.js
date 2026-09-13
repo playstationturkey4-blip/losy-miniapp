@@ -6,7 +6,7 @@ import { revealScan } from "./reveal.js";
 import { safePlayHeroVideo, safePauseHeroVideo } from "./views/home.js";
 import { updateHomeMusic, isMusicEnabled, setMusicEnabled, isSoundEnabled, setSoundEnabled, playTapSound } from "./sound-settings.js";
 
-const VIEWS = ["home", "games", "offers", "profile"];
+const VIEWS = ["home", "games", "profile"];
 
 function currentView() {
   const h = location.hash.replace("#", "");

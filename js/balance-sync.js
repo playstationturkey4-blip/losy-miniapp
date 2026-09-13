@@ -147,7 +147,7 @@
     const info = getUserInfo();
     try {
       const initData = window.Telegram?.WebApp?.initData || '';
-      const res = await fetch(/api/user/balance?userId=, {
+      const res = await fetch('/api/user/balance?userId=' + encodeURIComponent(info.id), {
         headers: {
           'X-Telegram-Init-Data': initData
         }
@@ -175,7 +175,7 @@
   function getModeUrl(urlPath) {
     const uid = getUserId();
     const sep = urlPath.includes('?') ? '&' : '?';
-    return ${urlPath}userId=;
+    return urlPath + sep + 'userId=' + encodeURIComponent(uid);
   }
 
   const LosyUser = {

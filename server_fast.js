@@ -367,25 +367,20 @@ const server = http.createServer((req, res) => {
       const initData = req.headers['x-telegram-init-data'] || data.initData || parsedUrl.query.initData;
       let authUser = verifyTelegramWebAppData(initData);
       
-      if (!authUser && data.user && data.user.id) {
-        authUser = {
-          id: String(data.user.id),
-          first_name: data.user.first_name || data.user.firstName || 'Игрок',
-          username: data.user.username || ''
-        };
-      } else if (!authUser && (data.userId || parsedUrl.query.userId)) {
-        const uid = String(data.userId || parsedUrl.query.userId);
-        authUser = {
-          id: uid,
-          first_name: data.firstName || data.first_name || 'Игрок',
-          username: data.username || ''
-        };
-      } else if (!authUser && (data.guestId || parsedUrl.query.guestId || req.headers['x-guest-id'])) {
-        const gid = String(data.guestId || parsedUrl.query.guestId || req.headers['x-guest-id']);
-        authUser = { id: gid, first_name: 'Гость' };
-      } else if (!authUser) {
-        const randomGuest = 'guest_' + crypto.randomBytes(4).toString('hex');
-        authUser = { id: randomGuest, first_name: 'Гость' };
+      if (!authUser) {
+        // Не авторизован через Telegram HMAC — работаем в безопасном изолированном гостевом режиме
+        const rawId = String(data.userId || data.user?.id || parsedUrl.query.userId || data.guestId || parsedUrl.query.guestId || req.headers['x-guest-id'] || '');
+        if (rawId && rawId.startsWith('guest_')) {
+          authUser = {
+            id: rawId,
+            first_name: data.firstName || data.first_name || 'Гость',
+            username: ''
+          };
+        } else {
+          // Запрещаем модифицировать чужие числовые Telegram ID без валидной подписи!
+          const randomGuest = 'guest_' + crypto.randomBytes(4).toString('hex');
+          authUser = { id: randomGuest, first_name: 'Гость', username: '' };
+        }
       }
 
       const user = getOrCreateUser(authUser);
@@ -724,6 +719,25 @@ const server = http.createServer((req, res) => {
     pathname = '/modes/losy-upgrade-v24.html';
   }
   if (pathname === '/') pathname = '/index.html';
+
+  // СТРОГАЯ ЗАЩИТА: Блокировка доступа к исходному коду, базам данных и скрытым файлам
+  const SENSITIVE_FILES = ['server_fast.js', 'server_db.json', 'bot.py', 'dockerfile', 'package.json', 'package-lock.json', '_headers', 'readme.txt'];
+  const SENSITIVE_EXTS = ['.py', '.pyc', '.json', '.env', '.sh', '.sql', '.log', '.md', '.bak'];
+
+  const normalizedLower = pathname.toLowerCase();
+  const fileBaseName = path.basename(normalizedLower);
+  const fileExt = path.extname(normalizedLower);
+
+  if (
+    pathname.includes('..') ||
+    pathname.includes('/.') ||
+    SENSITIVE_FILES.includes(fileBaseName) ||
+    SENSITIVE_EXTS.includes(fileExt)
+  ) {
+    res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
+    res.end('404 Not Found');
+    return;
+  }
 
   let filePath = path.normalize(path.join(ROOT_DIR, pathname));
   if (!filePath.startsWith(ROOT_DIR)) {

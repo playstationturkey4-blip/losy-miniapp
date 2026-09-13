@@ -36,7 +36,7 @@ export function renderVpnTeaser() {
       <span class="vpn__tag">VPN · Каталог</span>
       <h2 class="vpn__title" id="vpn-title">Бесплатный пробный период VPN</h2>
       <p class="vpn__text">Каталог Telegram-ботов и сервисов, где можно получить VPN бесплатно. Играй, зарабатывай валюту и открывай специальные предложения.</p>
-      <a class="btn btn--primary" href="#offers">Смотреть предложения</a>
+      <a class="btn btn--primary" href="#games">Выбрать игру</a>
     </section>
   `;
 }

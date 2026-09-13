@@ -6,9 +6,8 @@ import { initReveal, revealScan } from "./reveal.js";
 import { initRouter, initTopbar, initCarouselHints, initBalance, initProfileBalances, initProfileSettings } from "./router.js";
 import { initUnifiedCurrency, initGlobalTapSounds, initHomeMusic } from "./sound-settings.js";
 import { renderModeCards, renderVpnTeaser, initHero } from "./views/home.js";
-import { renderOffers } from "./views/offers.js";
 import { renderAbout } from "./views/about.js";
-import { initVpnExchange, initInventory, syncServerBalance } from "./views/exchange.js";
+import { syncServerBalance } from "./views/exchange.js";
 
 /* Пользователь Telegram → аватар/имя */
 function initUser() {
@@ -25,7 +24,6 @@ function boot() {
   initTelegram();
   renderModeCards();
   renderVpnTeaser();
-  renderOffers();
   renderAbout();
   initUser();
   initHero();
@@ -36,8 +34,6 @@ function boot() {
   initBalance();
   initProfileBalances();
   initProfileSettings();
-  initVpnExchange();
-  initInventory();
   syncServerBalance();
   initReveal();
   revealScan();

@@ -111,191 +111,6 @@
     .toggle-switch input:checked + .toggle-slider:before {
       transform: translateX(20px);
     }
-    .badge--vpn {
-      background: linear-gradient(135deg, rgba(59, 232, 255, 0.2), rgba(0, 119, 255, 0.35));
-      color: #3be8ff;
-      border: 1px solid rgba(59, 232, 255, 0.45);
-      font-weight: 700;
-      letter-spacing: 0.3px;
-    }
-    .badge--inv {
-      background: linear-gradient(135deg, rgba(255, 184, 0, 0.2), rgba(255, 115, 0, 0.35));
-      color: #ffb800;
-      border: 1px solid rgba(255, 184, 0, 0.45);
-      font-weight: 700;
-      letter-spacing: 0.3px;
-    }
-    .econ__cell--action {
-      cursor: pointer;
-      transition: transform 0.15s ease, border-color 0.2s ease, background 0.2s ease;
-    }
-    .econ__cell--action:hover, .econ__cell--action:active {
-      transform: translateY(-2px);
-      border-color: rgba(59, 232, 255, 0.4);
-      background: rgba(255, 255, 255, 0.08);
-    }
-    .exchange-balance-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 12px;
-      padding: 10px 14px;
-      margin: 14px 0 16px;
-      font-size: 14px;
-      color: rgba(255, 255, 255, 0.7);
-    }
-    .exchange-balance-bar strong {
-      color: #ffd700;
-      font-size: 16px;
-      font-weight: 700;
-    }
-    .tariff-card {
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid rgba(255, 255, 255, 0.07);
-      border-radius: 14px;
-      padding: 14px;
-      margin-bottom: 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      transition: border-color 0.2s ease, background 0.2s ease;
-    }
-    .tariff-card:hover {
-      border-color: rgba(59, 232, 255, 0.35);
-      background: rgba(255, 255, 255, 0.06);
-    }
-    .tariff-card__header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .tariff-card__title {
-      font-size: 15px;
-      font-weight: 700;
-      color: #fff;
-    }
-    .tariff-card__desc {
-      font-size: 12px;
-      color: rgba(255, 255, 255, 0.6);
-      line-height: 1.4;
-    }
-    .tariff-card__footer {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 4px;
-      padding-top: 8px;
-      border-top: 1px solid rgba(255, 255, 255, 0.05);
-    }
-    .tariff-price {
-      font-size: 14px;
-      font-weight: 700;
-      color: #ffd700;
-    }
-    .tariff-btn {
-      background: linear-gradient(135deg, #00d2ff 0%, #0066ff 100%);
-      color: #fff;
-      border: none;
-      padding: 7px 14px;
-      border-radius: 9px;
-      font-size: 13px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: opacity 0.15s ease, transform 0.15s ease;
-    }
-    .tariff-btn:active {
-      transform: scale(0.96);
-    }
-    .tariff-btn:disabled {
-      opacity: 0.45;
-      cursor: not-allowed;
-      background: rgba(255, 255, 255, 0.15);
-    }
-    .inv-subtitle {
-      font-size: 14px;
-      font-weight: 700;
-      color: rgba(255, 255, 255, 0.85);
-      margin-bottom: 10px;
-      letter-spacing: 0.2px;
-    }
-    .vpn-key-card {
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid rgba(59, 232, 255, 0.25);
-      border-radius: 12px;
-      padding: 12px;
-      margin-bottom: 10px;
-    }
-    .vpn-key-card__header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 6px;
-    }
-    .vpn-key-card__title {
-      font-size: 13px;
-      font-weight: 700;
-      color: #fff;
-    }
-    .vpn-key-code-wrap {
-      background: rgba(0, 0, 0, 0.4);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 8px;
-      padding: 8px 10px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin: 8px 0;
-    }
-    .vpn-key-code {
-      font-family: monospace;
-      font-size: 13px;
-      color: #3be8ff;
-      font-weight: 700;
-      letter-spacing: 0.5px;
-    }
-    .btn-key-action {
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      color: #fff;
-      padding: 5px 10px;
-      border-radius: 6px;
-      font-size: 12px;
-      font-weight: 600;
-      cursor: pointer;
-    }
-    .btn-key-action:active {
-      background: rgba(255, 255, 255, 0.2);
-    }
-    .vpn-key-actions {
-      display: flex;
-      gap: 8px;
-      margin-top: 8px;
-    }
-    .btn-open-bot {
-      flex: 1;
-      text-align: center;
-      background: linear-gradient(135deg, #00d2ff 0%, #0066ff 100%);
-      color: #fff;
-      text-decoration: none;
-      padding: 6px 10px;
-      border-radius: 7px;
-      font-size: 12px;
-      font-weight: 700;
-    }
-    .skin-item-card {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 8px;
-      padding: 6px 10px;
-      margin: 4px;
-      font-size: 12px;
-      color: #fff;
-    }
   </style>
 
   <!-- Единый оптимизированный CSS бандл оболочки -->
@@ -309,7 +124,7 @@
       <img src="/logo/losyvpn-logo.png" alt="" width="34" height="34" />
       <span>LOSY<em>VPN</em></span>
     </a>
-    <a class="topbar__balance" href="#offers" aria-label="Баланс валюты LOSY">
+    <a class="topbar__balance" href="#profile" aria-label="Баланс валюты LOSY">
       <img class="coin" src="/assets/coin.png" alt="🪙" width="20" height="20" aria-hidden="true" />
       <span data-balance>0</span>
     </a>
@@ -351,8 +166,8 @@
           <p class="hero__slogan">Находи VPN-предложения с бесплатным пробным периодом — и зарабатывай награды в играх.</p>
 
           <div class="hero__cta">
-            <a class="btn btn--primary" href="#offers">Получить VPN</a>
-            <a class="btn btn--ghost" href="#games">Играть</a>
+            <a class="btn btn--primary" href="#games">Игровые режимы</a>
+            <a class="btn btn--ghost" href="#profile">Мой профиль</a>
           </div>
 
           <button class="hero__about" type="button" data-open-sheet="aboutSheet">Что такое LOSY?</button>
@@ -417,18 +232,6 @@
     </section>
 
     <!-- ============================================================
-         VIEW: OFFERS (основная ценность)
-         ============================================================ -->
-    <section class="view" data-view="offers">
-      <div class="page">
-        <h1 class="section-title page__title">Предложения</h1>
-        <p class="section-sub">Каталог Telegram-ботов и сервисов с бесплатным пробным периодом VPN. Раздел наполняется.</p>
-        <div class="offers__list" style="margin-top:22px;">
-          <!-- рендерит js/views/offers.js -->
-        </div>
-      </div>
-    </section>
-    <!-- ============================================================
          VIEW: PROFILE (UI foundation экономики — без реальных курсов)
          ============================================================ -->
     <section class="view" data-view="profile">
@@ -442,19 +245,11 @@
         </div>
 
         <h2 class="section-title" style="margin-bottom:12px;">Экономика <em>LOSY</em></h2>
-        <p class="section-sub">Играй в режимы — зарабатывай золотые монеты. Обменивай на реальные VPN-ключи и скины!</p>
-        <div class="econ">
+        <p class="section-sub">Играй в режимы и зарабатывай золотые монеты!</p>
+        <div class="econ" style="grid-template-columns: 1fr;">
           <div class="econ__cell">
             <span class="econ__label">Золотые монеты</span>
             <span class="econ__value" id="profileGold">200 000</span>
-          </div>
-          <div class="econ__cell econ__cell--action" data-open-sheet="vpnExchangeSheet" role="button" tabindex="0">
-            <span class="econ__label">Обмен на VPN</span>
-            <span class="badge badge--vpn">⚡ Обменять</span>
-          </div>
-          <div class="econ__cell econ__cell--action" data-open-sheet="inventorySheet" role="button" tabindex="0">
-            <span class="econ__label">Инвентарь</span>
-            <span class="badge badge--inv">🎒 Открыть</span>
           </div>
         </div>
 
@@ -498,10 +293,6 @@
       <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="6.5" width="18" height="11" rx="4" stroke="currentColor" stroke-width="1.8"/><path d="M8 10v4M6 12h4M15.5 11h.01M18 13.5h.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
       <span>Игры</span>
     </a>
-    <a class="bottomnav__item" href="#offers" data-nav="offers" aria-current="false">
-      <svg viewBox="0 0 24 24" fill="none"><path d="M4 6.5A3.5 3.5 0 0 1 7.5 3h9A3.5 3.5 0 0 1 20 6.5v6a3.5 3.5 0 0 1-3.5 3.5H9l-4.2 3.4c-.5.4-.8.1-.8-.4z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
-      <span>Предложения</span>
-    </a>
     <a class="bottomnav__item" href="#profile" data-nav="profile" aria-current="false">
       <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.8"/><path d="M4.5 20a7.5 7.5 0 0 1 15 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
       <span>Профиль</span>
@@ -518,89 +309,6 @@
       </button>
       <div data-about-body>
         <!-- рендерит js/app.js из data.js -->
-      </div>
-    </div>
-  </div>
-
-  <!-- ===== VPN Exchange bottom sheet ===== -->
-  <div class="sheet" id="vpnExchangeSheet" role="dialog" aria-modal="true" aria-labelledby="vpn-exchange-title">
-    <div class="sheet__backdrop"></div>
-    <div class="sheet__panel">
-      <div class="sheet__grab" aria-hidden="true"></div>
-      <button class="sheet__close" type="button" aria-label="Закрыть">
-        <svg viewBox="0 0 24 24" fill="none"><path d="M5 5l14 14M19 5L5 19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-      </button>
-      <div class="vpn-exchange-sheet-content">
-        <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
-          <div style="width:44px;height:44px;border-radius:12px;background:rgba(234,179,8,0.15);display:flex;align-items:center;justify-content:center;font-size:24px;border:1px solid rgba(234,179,8,0.3);">⚡</div>
-          <div>
-            <h2 id="vpn-exchange-title" style="margin:0;font-size:20px;font-weight:700;color:var(--c-text);">Обмен на VPN</h2>
-            <div style="font-size:13px;color:var(--c-muted);">Обменивайте игровое золото на реальные подписки</div>
-          </div>
-        </div>
-
-        <div class="exchange-balance-bar">
-          <div>
-            <span class="exchange-balance-bar__label">Доступно монет:</span>
-            <div class="exchange-balance-bar__val"><span id="exchangeCurrentBalance">0</span> 🪙</div>
-          </div>
-          <button class="btn btn--secondary btn--sm" id="btnRefreshTariffs" type="button" style="padding:6px 12px;font-size:12px;">Обновить</button>
-        </div>
-
-        <div id="tariffsContainer" style="display:flex;flex-direction:column;gap:12px;margin-bottom:16px;">
-          <!-- Рендерится из JS -->
-        </div>
-
-        <div id="exchangeSuccessCard" style="display:none;background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);border-radius:16px;padding:16px;margin-top:12px;text-align:center;">
-          <div style="font-size:28px;margin-bottom:6px;">🎉</div>
-          <div style="font-weight:700;font-size:16px;color:#22c55e;margin-bottom:4px;">Подписка успешно получена!</div>
-          <div style="font-size:13px;color:var(--c-muted);margin-bottom:12px;">Ваш уникальный ключ активации:</div>
-          <div style="background:rgba(0,0,0,0.3);border:1px dashed rgba(34,197,94,0.5);border-radius:8px;padding:10px;font-family:monospace;font-size:15px;letter-spacing:1px;font-weight:700;color:#fff;margin-bottom:12px;user-select:all;" id="newVpnKeyCode">LOSY-KEY</div>
-          <div style="display:flex;gap:8px;">
-            <button class="btn btn--secondary" id="btnCopyGeneratedKey" style="flex:1;font-size:13px;" type="button">📋 Скопировать</button>
-            <a class="btn btn--primary" id="btnLaunchVpnBot" href="#" target="_blank" style="flex:1;font-size:13px;text-decoration:none;">🚀 Включить VPN</a>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ===== Inventory bottom sheet ===== -->
-  <div class="sheet" id="inventorySheet" role="dialog" aria-modal="true" aria-labelledby="inventory-title">
-    <div class="sheet__backdrop"></div>
-    <div class="sheet__panel">
-      <div class="sheet__grab" aria-hidden="true"></div>
-      <button class="sheet__close" type="button" aria-label="Закрыть">
-        <svg viewBox="0 0 24 24" fill="none"><path d="M5 5l14 14M19 5L5 19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-      </button>
-      <div class="inventory-sheet-content">
-        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
-          <div style="width:44px;height:44px;border-radius:12px;background:rgba(168,85,247,0.15);display:flex;align-items:center;justify-content:center;font-size:24px;border:1px solid rgba(168,85,247,0.3);">🎒</div>
-          <div>
-            <h2 id="inventory-title" style="margin:0;font-size:20px;font-weight:700;color:var(--c-text);">Инвентарь игрока</h2>
-            <div style="font-size:13px;color:var(--c-muted);">Ваши активные ключи VPN и скины ракет</div>
-          </div>
-        </div>
-
-        <div style="margin-bottom:20px;">
-          <h3 style="font-size:14px;font-weight:700;color:var(--c-muted);text-transform:uppercase;letter-spacing:0.5px;margin:0 0 10px 0;display:flex;align-items:center;gap:6px;">
-            <span>🔑 Ключи VPN</span>
-            <span id="inventoryVpnCount" style="background:rgba(255,255,255,0.1);padding:2px 8px;border-radius:10px;font-size:11px;color:var(--c-text);">0</span>
-          </h3>
-          <div id="inventoryVpnList" style="display:flex;flex-direction:column;gap:10px;">
-            <!-- Рендерится из JS -->
-          </div>
-        </div>
-
-        <div>
-          <h3 style="font-size:14px;font-weight:700;color:var(--c-muted);text-transform:uppercase;letter-spacing:0.5px;margin:0 0 10px 0;display:flex;align-items:center;gap:6px;">
-            <span>🚀 Коллекция ракет</span>
-            <span id="inventorySkinsCount" style="background:rgba(255,255,255,0.1);padding:2px 8px;border-radius:10px;font-size:11px;color:var(--c-text);">1</span>
-          </h3>
-          <div id="inventorySkinsList" style="display:grid;grid-template-columns:repeat(2, 1fr);gap:10px;">
-            <!-- Рендерится из JS -->
-          </div>
-        </div>
       </div>
     </div>
   </div>
