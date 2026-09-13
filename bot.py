@@ -306,17 +306,24 @@ def build_vpn_keyboard(user_visited, page=0, filter_mode='all', query=None):
             types.InlineKeyboardButton(f_all_text, callback_data="vpn_f:all")
         )
 
-    # Кнопки ботов на текущей странице
+    # Кнопки ботов на текущей странице (прямой переход без подтверждений в 1 клик)
     for b in page_bots:
         is_visited = b['id'] in visited_set
+        bot_url = f"https://t.me/{b['username'].lstrip('@')}"
         if is_visited:
             btn_title = f"{b['name']} (Был тут) ✅"
         else:
             btn_title = f"⚡ {b['name']}"
 
-        # Callback открывает детальную карточку бота и отмечает его как посещенный
-        cb_data = f"v_open:{b['id']}:{page}:{filter_mode}"
-        markup.row(types.InlineKeyboardButton(text=btn_title, callback_data=cb_data))
+        markup.row(types.InlineKeyboardButton(text=btn_title, url=bot_url))
+
+    # Быстрая отметка ботов текущей страницы (для учета в профиле)
+    unvisited_on_page = [b['id'] for b in page_bots if b['id'] not in visited_set]
+    if unvisited_on_page:
+        markup.row(types.InlineKeyboardButton(
+            f"✅ Отметить эти {len(unvisited_on_page)} бот(а) как посещённые",
+            callback_data=f"v_mark_page:{page}:{filter_mode}"
+        ))
 
     # Пагинационная строка
     q_encoded = f":{query[:15]}" if query else ""
@@ -369,7 +376,7 @@ def build_vpn_detail_keyboard(bot_item, return_page=0, filter_mode='all'):
     - Кнопка перехода в профиль
     """
     markup = types.InlineKeyboardMarkup(row_width=1)
-    direct_url = f"https://t.me/{bot_item['username']}?start=losy"
+    direct_url = f"https://t.me/{bot_item['username'].lstrip('@')}"
     btn_open = types.InlineKeyboardButton(f"🚀 Запустить @{bot_item['username']}", url=direct_url)
     
     if filter_mode == 'unvisited':
@@ -415,7 +422,7 @@ def get_promo_keyboard(user_id=None):
 def get_random_bot_keyboard(rand_bot):
     """Клавиатура для случайного бота"""
     markup = types.InlineKeyboardMarkup(row_width=1)
-    direct_url = f"https://t.me/{rand_bot['username']}?start=losy"
+    direct_url = f"https://t.me/{rand_bot['username'].lstrip('@')}"
     btn_open = types.InlineKeyboardButton(f"⚡ Открыть @{rand_bot['username']}", url=direct_url)
     btn_next = types.InlineKeyboardButton("🎲 Другой случайный VPN", callback_data="vpn_rnd")
     btn_cat = types.InlineKeyboardButton(f"🛡️ Весь каталог ({len(VPN_BOTS)})", callback_data="vpn_p:0:all")
@@ -457,7 +464,7 @@ def get_vpn_catalog_text(user_visited, page=0, filter_mode='all', query=None):
             f"🔍 <b>Поиск по каталогу: «{query}»</b>\n\n"
             f"⚡ Найдено: <b>{total_items}</b> сервисов\n"
             f"📄 Страница: <b>{page + 1}</b> из <b>{total_pages}</b>\n\n"
-            f"👇 <i>Нажмите на кнопку бота, чтобы открыть его:</i>"
+            f"👇 <i>Нажмите на любого бота для моментального перехода:</i>"
         )
 
     if filter_mode == 'unvisited':
@@ -466,7 +473,7 @@ def get_vpn_catalog_text(user_visited, page=0, filter_mode='all', query=None):
             f"🎯 <b>Осталось открыть:</b> <b>{unvisited_count}</b> из <b>{len(VPN_BOTS)}</b> ботов\n"
             f"✅ <b>Уже посещено:</b> <b>{visited_count}</b> ботов\n"
             f"📄 Страница: <b>{page + 1}</b> из <b>{total_pages}</b>\n\n"
-            f"💡 <i>Нажмите на любого бота ниже — он откроется и сразу отметится как <b>«(Был тут) ✅»</b>!</i>"
+            f"💡 <i>Нажмите на любого бота ниже — вы моментально перейдете к нему в Telegram!</i>"
         )
     elif filter_mode == 'visited':
         return (
@@ -482,7 +489,7 @@ def get_vpn_catalog_text(user_visited, page=0, filter_mode='all', query=None):
             f"🌐 Всего сервисов: <b>{len(VPN_BOTS)}</b>\n"
             f"📊 <b>Ваш прогресс:</b> <b>{visited_count}</b> посещено | <b>{unvisited_count}</b> осталось\n"
             f"📄 Страница: <b>{page + 1}</b> из <b>{total_pages}</b>\n\n"
-            f"💡 <i>С отметкой <b>«(Был тут) ✅»</b> — вы уже открывали. Со значком <b>⚡</b> — вы ещё не заходили.</i>"
+            f"💡 <i>Клик по боту сразу переносит вас в чат. Для учета в профиле используйте кнопку «Отметить».</i>"
         )
 
 def get_vpn_detail_text(bot_item, is_visited=True):
@@ -806,6 +813,33 @@ def handle_callbacks(call):
 
         caption = get_vpn_detail_text(bot_item, is_visited=True)
         kb = build_vpn_detail_keyboard(bot_item, return_page=page, filter_mode=filter_mode)
+        send_or_edit_screen(chat_id, 'vpn', caption, kb, call=call)
+
+    # 4.1 Быстрая отметка ботов текущей страницы как посещённых
+    elif data.startswith("v_mark_page:"):
+        parts = data.split(":")
+        page = int(parts[1]) if len(parts) > 1 and parts[1].isdigit() else 0
+        filter_mode = parts[2] if len(parts) > 2 else 'all'
+
+        user = get_user_data(user_id, username, first_name)
+        items = filter_bots(filter_mode=filter_mode, query=None, visited_list=user['visitedBots'])
+        start_idx = page * ITEMS_PER_PAGE
+        page_bots = items[start_idx : start_idx + ITEMS_PER_PAGE]
+
+        marked_count = 0
+        for b in page_bots:
+            if b['id'] not in user['visitedBots']:
+                record_bot_visit(user_id, b['id'], username, first_name)
+                marked_count += 1
+
+        try:
+            bot.answer_callback_query(call.id, f"✅ Отмечено ботов: +{marked_count}!")
+        except Exception:
+            pass
+
+        updated_user = get_user_data(user_id, username, first_name)
+        caption = get_vpn_catalog_text(updated_user['visitedBots'], page=page, filter_mode=filter_mode)
+        kb = build_vpn_keyboard(updated_user['visitedBots'], page=page, filter_mode=filter_mode)
         send_or_edit_screen(chat_id, 'vpn', caption, kb, call=call)
 
     # 5. Мой профиль
