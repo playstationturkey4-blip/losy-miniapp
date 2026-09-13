@@ -71,16 +71,16 @@ load_vpn_bots()
 ITEMS_PER_PAGE = 6
 
 def get_app_url(user_id=None):
-    """Возвращает актуальный URL Mini App, опционально с параметром userId"""
+    """Возвращает актуальный URL Mini App с обязательным trailing slash и параметром userId"""
     base = "https://losy-miniapp.onrender.com"
     if os.environ.get("RENDER_EXTERNAL_URL"):
         base = os.environ.get("RENDER_EXTERNAL_URL").rstrip('/')
     elif os.environ.get("APP_URL"):
         base = os.environ.get("APP_URL").rstrip('/')
     
-    # Принудительный сброс кэша Telegram WebView (v=88)
-    sep = "&" if "?" in base else "?"
-    url = f"{base}{sep}v=88"
+    # Обязательный trailing slash перед query-параметрами для соответствия RFC и WebApp
+    clean_base = base.rstrip('/') + '/'
+    url = f"{clean_base}?v=89"
     if user_id:
         url += f"&userId={user_id}"
     return url

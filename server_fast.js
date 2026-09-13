@@ -359,6 +359,7 @@ const server = http.createServer((req, res) => {
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  res.setHeader('Content-Security-Policy', "frame-ancestors 'self' https://web.telegram.org https://*.telegram.org telegram: t.me;");
 
   if (req.method === 'OPTIONS') {
     res.writeHead(200);
@@ -728,7 +729,7 @@ const server = http.createServer((req, res) => {
   if (pathname === '/upgrade' || pathname === '/game' || pathname === '/play') {
     pathname = '/modes/losy-upgrade-v24.html';
   }
-  if (pathname === '/') pathname = '/index.html';
+  if (!pathname || pathname === '/' || pathname === '') pathname = '/index.html';
 
   // СТРОГАЯ ЗАЩИТА: Блокировка доступа к исходному коду, базам данных и скрытым файлам
   const SENSITIVE_FILES = ['server_fast.js', 'server_db.json', 'bot.py', 'dockerfile', 'package.json', 'package-lock.json', '_headers', 'readme.txt'];
@@ -948,7 +949,7 @@ server.listen(PORT, '0.0.0.0', async () => {
         menu_button: {
           type: 'web_app',
           text: '🚀 Играть',
-          web_app: { url: `${publicUrl}?v=88` }
+          web_app: { url: `${publicUrl.replace(/\/$/, '')}/?v=89` }
         }
       });
       const req = https.request({
