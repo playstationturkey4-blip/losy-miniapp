@@ -4,6 +4,7 @@
   "description": "LOSY Telegram Mini App and Bot",
   "main": "server_fast.js",
   "scripts": {
+    "postinstall": "pip3 install --no-cache-dir -r requirements.txt || pip install -r requirements.txt || true",
     "start": "node server_fast.js"
   },
   "dependencies": {

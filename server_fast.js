@@ -903,5 +903,35 @@ server.listen(PORT, '0.0.0.0', async () => {
       console.error('Menu button update error:', btnErr.message);
     }
   }
+
+  // 4. Автоматический запуск Telegram-бота как фонового сервиса
+  if (process.env.AUTOSTART_BOT !== 'false') {
+    const { spawn } = require('child_process');
+    let botProc = null;
+    function launchTelegramBot() {
+      const pythonCmd = process.platform === 'win32' ? 'python' : 'python3';
+      console.log(`🤖 [BOT LAUNCHER]: Запуск Telegram-бота (${pythonCmd} bot.py)...`);
+      try {
+        botProc = spawn(pythonCmd, ['bot.py'], {
+          cwd: ROOT_DIR,
+          stdio: 'inherit',
+          env: { ...process.env, PYTHONUNBUFFERED: '1' }
+        });
+
+        botProc.on('exit', (code, signal) => {
+          console.warn(`[!] Telegram-бот завершился (код: ${code}, сигнал: ${signal}). Перезапуск через 4 сек...`);
+          setTimeout(launchTelegramBot, 4000);
+        });
+
+        botProc.on('error', (err) => {
+          console.error('[-] Ошибка запуска bot.py:', err.message);
+        });
+      } catch (err) {
+        console.error('[-] Исключение при запуске bot.py:', err.message);
+      }
+    }
+    launchTelegramBot();
+  }
 });
+
 
