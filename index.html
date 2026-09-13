@@ -114,7 +114,7 @@
   </style>
 
   <!-- Единый оптимизированный CSS бандл оболочки -->
-  <link rel="stylesheet" href="/dist/shell.bundle.css?v=70" />
+  <link rel="stylesheet" href="/dist/shell.bundle.css?v=75" />
 </head>
 <body>
 
@@ -314,13 +314,23 @@
   </div>
 
   <!-- Единый менеджер персонального баланса и идентификации -->
-  <script src="/js/balance-sync.js?v=73"></script>
+  <script src="/js/balance-sync.js?v=75"></script>
   <!-- Оболочка: единый высокоскоростной бандл -->
-  <script type="module" src="/dist/app.bundle.js?v=73"></script>
+  <script type="module" src="/dist/app.bundle.js?v=75"></script>
   <script>
+    // Принудительно сбрасываем устаревший кэш ServiceWorker Telegram WebView
     if ('serviceWorker' in navigator) {
-      window.addEventListener('load', function () {
-        navigator.serviceWorker.register('/sw.js?v=71').catch(function () {});
+      navigator.serviceWorker.getRegistrations().then(function (registrations) {
+        for (let registration of registrations) {
+          registration.unregister();
+        }
+      });
+    }
+    if ('caches' in window) {
+      caches.keys().then(function (names) {
+        for (let name of names) {
+          caches.delete(name);
+        }
       });
     }
   </script>

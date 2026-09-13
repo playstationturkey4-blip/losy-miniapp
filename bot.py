@@ -77,9 +77,13 @@ def get_app_url(user_id=None):
         base = os.environ.get("RENDER_EXTERNAL_URL").rstrip('/')
     elif os.environ.get("APP_URL"):
         base = os.environ.get("APP_URL").rstrip('/')
+    
+    # Принудительный сброс кэша Telegram WebView (v=75)
+    sep = "&" if "?" in base else "?"
+    url = f"{base}{sep}v=75"
     if user_id:
-        return f"{base}?userId={user_id}"
-    return base
+        url += f"&userId={user_id}"
+    return url
 
 # -------------------------------------------------------------
 # 2. БАЗА ДАННЫХ И ТРЕКИНГ ПОСЕЩЕНИЙ ("БЫЛ ТУТ")
