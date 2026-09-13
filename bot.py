@@ -224,7 +224,7 @@ def get_main_reply_keyboard():
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     btn_app = types.KeyboardButton("🚀 Запустить Mini App", web_app=types.WebAppInfo(url=app_url))
     btn_vpn = types.KeyboardButton("🛡️ Список VPN (401)")
-    btn_promo = types.KeyboardButton("🎁 Промокод")
+    btn_promo = types.KeyboardButton("🎁 Промокод (Скоро)")
     btn_profile = types.KeyboardButton("👤 Мой профиль")
     btn_random = types.KeyboardButton("🎲 Случайный VPN")
     btn_search = types.KeyboardButton("🔍 Поиск VPN")
@@ -249,7 +249,7 @@ def get_main_inline_keyboard():
         callback_data="vpn_p:0"
     )
     btn_promo = types.InlineKeyboardButton(
-        text="🎁 Промокод (+50 000 золота)",
+        text="🎁 Промокод (Скоро)",
         callback_data="menu_promo"
     )
     btn_profile = types.InlineKeyboardButton(
@@ -346,13 +346,13 @@ def build_vpn_keyboard(page=0, query=None):
     return markup
 
 def get_promo_keyboard():
-    """Клавиатура раздела промокодов"""
+    """Клавиатура раздела промокодов (заглушка)"""
     markup = types.InlineKeyboardMarkup(row_width=1)
-    btn_enter = types.InlineKeyboardButton("✍️ Ввести промокод", callback_data="input_promo")
     app_url = get_app_url()
     btn_app = types.InlineKeyboardButton("🚀 Запустить Mini App", web_app=types.WebAppInfo(url=app_url))
-    btn_back = types.InlineKeyboardButton("« Назад в главное меню", callback_data="menu_home")
-    markup.add(btn_enter, btn_app, btn_back)
+    btn_vpn = types.InlineKeyboardButton(f"🛡️ Каталог VPN ({len(VPN_BOTS)} ботов)", callback_data="vpn_p:0")
+    btn_back = types.InlineKeyboardButton("« В главное меню", callback_data="menu_home")
+    markup.add(btn_app, btn_vpn, btn_back)
     return markup
 
 def get_profile_keyboard():
@@ -360,10 +360,9 @@ def get_profile_keyboard():
     markup = types.InlineKeyboardMarkup(row_width=1)
     app_url = get_app_url()
     btn_app = types.InlineKeyboardButton("🎮 Играть в Mini App", web_app=types.WebAppInfo(url=app_url))
-    btn_promo = types.InlineKeyboardButton("🎁 Активировать промокод", callback_data="menu_promo")
     btn_vpn = types.InlineKeyboardButton(f"🛡️ Каталог VPN ({len(VPN_BOTS)})", callback_data="vpn_p:0")
     btn_back = types.InlineKeyboardButton("« В главное меню", callback_data="menu_home")
-    markup.add(btn_app, btn_promo, btn_vpn, btn_back)
+    markup.add(btn_app, btn_vpn, btn_back)
     return markup
 
 def get_random_bot_keyboard(rand_bot):
@@ -389,7 +388,7 @@ def get_welcome_text(name):
         f"🚀 <b>Что доступно в боте:</b>\n"
         f"• <b>Mini App</b> — игры «Ракета», «Бомбы» 5x5 и рулетка «CS:GO Апгрейд» с общим балансом монет.\n"
         f"• <b>Каталог VPN</b> — более <b>{len(VPN_BOTS)} проверенных ботов</b> в 1 клик с бесплатным тестом.\n"
-        f"• <b>Промокоды</b> — секретные бонусы и моментальное начисление золота на серверный баланс.\n\n"
+        f"• <b>Промокоды</b> — эксклюзивные промокоды на золото и подписки (скоро открытие).\n\n"
         f"👇 <i>Выберите нужный раздел в меню ниже:</i>"
     )
 
@@ -415,13 +414,12 @@ def get_vpn_catalog_text(page=0, query=None):
 
 def get_promo_text():
     return (
-        "🎁 <b>Система промокодов LOSY:</b>\n\n"
-        "Активируйте секретные промокоды и получайте золотые монеты прямо на свой игровой аккаунт Mini App!\n\n"
-        "🔥 <b>Стартовый бонус для игроков:</b>\n"
-        "<code>LOSY2026</code> — даёт <b>+50 000 золота</b>!\n\n"
-        "💡 <b>Как активировать:</b>\n"
-        "• Нажмите <b>«✍️ Ввести промокод»</b> ниже или\n"
-        "• Отправьте команду: <code>/promo ТВОЙ_КОД</code>"
+        "🎁 <b>Раздел промокодов LOSY:</b>\n\n"
+        "⏳ <b>Техническое обновление</b>\n\n"
+        "Система промокодов временно находится на обновлении. "
+        "Совсем скоро здесь будут доступны эксклюзивные бонусные коды на золото "
+        "и подарочные подписки на VPN!\n\n"
+        "🎮 <i>Пока вы можете играть в Mini App и копить монеты для обмена на VPN!</i>"
     )
 
 def get_profile_text(user):
@@ -528,21 +526,16 @@ def handle_random_command(message):
 
 @bot.message_handler(commands=['promo'])
 def handle_promo_command(message):
-    parts = message.text.split(maxsplit=1)
-    if len(parts) > 1:
-        code = parts[1].strip()
-        process_promo_activation(message, code)
-    else:
-        caption = get_promo_text()
-        kb = get_promo_keyboard()
-        if os.path.exists(IMG_PROMO):
-            try:
-                with open(IMG_PROMO, 'rb') as photo:
-                    bot.send_photo(message.chat.id, photo=photo, caption=caption, reply_markup=kb)
-                    return
-            except Exception:
-                pass
-        bot.send_message(message.chat.id, caption, reply_markup=kb)
+    caption = get_promo_text()
+    kb = get_promo_keyboard()
+    if os.path.exists(IMG_PROMO):
+        try:
+            with open(IMG_PROMO, 'rb') as photo:
+                bot.send_photo(message.chat.id, photo=photo, caption=caption, reply_markup=kb)
+                return
+        except Exception:
+            pass
+    bot.send_message(message.chat.id, caption, reply_markup=kb)
 
 @bot.message_handler(commands=['profile'])
 def handle_profile_command(message):
@@ -562,7 +555,7 @@ def handle_text_buttons(message):
 
     if text in ["🛡️ Список VPN (401)", "🛡️ Список VPN", "Список VPN", "VPN", "vpn"]:
         handle_vpn(message)
-    elif text in ["🎁 Промокод", "Промокод", "промокод"]:
+    elif text in ["🎁 Промокод (Скоро)", "🎁 Промокоды (Скоро)", "🎁 Промокод", "Промокод", "промокод", "промокоды"]:
         handle_promo_command(message)
     elif text in ["👤 Мой профиль", "Профиль", "профиль"]:
         handle_profile_command(message)
@@ -576,7 +569,7 @@ def handle_text_buttons(message):
         # Проверяем, не промокод ли отправлен напрямую
         clean_text = text.upper()
         if clean_text in ['LOSY2026', 'START', 'VPNWIN', 'VIP']:
-            process_promo_activation(message, clean_text)
+            handle_promo_command(message)
         else:
             bot.send_message(
                 message.chat.id,
@@ -680,15 +673,13 @@ def handle_callbacks(call):
                 pass
         bot.send_message(chat_id, caption, reply_markup=kb)
 
-    # 6. Ввод промокода через инлайн кнопку
+    # 6. Ввод промокода (заглушка)
     elif data == "input_promo":
-        msg = bot.send_message(
+        bot.send_message(
             chat_id,
-            "✍️ <b>Введите промокод в ответном сообщении:</b>\n\n"
-            "<i>(Например: <code>LOSY2026</code> или отправьте «Отмена» для возврата)</i>",
-            reply_markup=types.ForceReply(selective=True)
+            get_promo_text(),
+            reply_markup=get_promo_keyboard()
         )
-        bot.register_next_step_handler(msg, step_receive_promo)
 
     # 7. Профиль
     elif data == "menu_profile":
