@@ -11,6 +11,7 @@
 
   <title>Ракета — LOSYVPN</title>
   <meta name="description" content="Игровой режим Ракета в LOSYVPN" />
+  <script src="/js/balance-sync.js?v=73"></script>
 
   <meta name="theme-color" content="#05070a" />
 
@@ -2259,11 +2260,15 @@ function cacheDOM() {
 }
 
 function loadState() {
-  const savedSpace = parseInt(localStorage.getItem(STORE.space), 10);
-  if (!isNaN(savedSpace) && savedSpace >= 0) {
-    game.space = savedSpace;
+  if (window.LosyUser) {
+    game.space = window.LosyUser.getBalance();
   } else {
-    game.space = 200000;
+    const savedSpace = parseInt(localStorage.getItem(STORE.space), 10);
+    if (!isNaN(savedSpace) && savedSpace >= 0) {
+      game.space = savedSpace;
+    } else {
+      game.space = 200000;
+    }
   }
 
   try {
@@ -2273,11 +2278,25 @@ function loadState() {
 }
 
 function saveSpace() {
-  localStorage.setItem(STORE.space, String(game.space));
-  try {
-    window.dispatchEvent(new CustomEvent('losy:balance'));
-  } catch (e) {}
+  if (window.LosyUser) {
+    window.LosyUser.saveBalance(game.space);
+  } else {
+    localStorage.setItem(STORE.space, String(game.space));
+    try {
+      window.dispatchEvent(new CustomEvent('losy:balance'));
+    } catch (e) {}
+  }
 }
+
+window.addEventListener('losy:balance', () => {
+  if (game.phase === 'idle' || game.phase === 'result') {
+    const b = window.LosyUser ? window.LosyUser.getBalance() : parseInt(localStorage.getItem(STORE.space), 10);
+    if (!isNaN(b) && b >= 0 && b !== game.space) {
+      game.space = b;
+      updateUI();
+    }
+  }
+});
 
 // ========================================
 // СОБЫТИЯ

@@ -6,9 +6,11 @@ import { icon } from "../icons.js";
 /* --- Карточки режимов во всех каруселях (home-compact и games-large) --- */
 export function renderModeCards() {
   for (const car of document.querySelectorAll("[data-mode-carousel]")) {
-    car.innerHTML = MODES.map((m) => `
+    car.innerHTML = MODES.map((m) => {
+      const modeUrl = window.LosyUser ? window.LosyUser.getModeUrl(m.url) : m.url;
+      return `
       <div class="carousel__item" data-reveal>
-        <a class="gcard gcard--${m.accent}" href="${m.url}" aria-label="Играть в ${m.name}">
+        <a class="gcard gcard--${m.accent}" href="${modeUrl}" aria-label="Играть в ${m.name}">
           <div class="gcard__media">
             <img src="${m.cover}" alt="Обложка режима ${m.name}" loading="lazy" width="600" height="600">
             <div class="gcard__scrim"></div>
@@ -20,7 +22,8 @@ export function renderModeCards() {
           </div>
         </a>
       </div>
-    `).join("");
+    `;
+    }).join("");
   }
 }
 

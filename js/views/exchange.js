@@ -34,6 +34,7 @@ const DEFAULT_TARIFFS = [
 ];
 
 function getStoredBalance() {
+  if (window.LosyUser) return window.LosyUser.getBalance();
   try {
     const v = localStorage.getItem("losyBalance");
     if (v === null) return 200000;
@@ -146,8 +147,11 @@ async function handleExchangeClick(tariffId) {
     if (data.ok && data.vpnItem) {
       haptic("success");
       // Обновляем баланс
-      localStorage.setItem("losyBalance", data.balance);
-      window.dispatchEvent(new Event("losy:balance"));
+      if (window.LosyUser) window.LosyUser.saveBalance(data.balance);
+      else {
+        localStorage.setItem("losyBalance", data.balance);
+        window.dispatchEvent(new Event("losy:balance"));
+      }
 
       // Сохраняем в кэш ключей
       const keys = getStoredVpnKeys();
@@ -193,8 +197,11 @@ async function handleExchangeClick(tariffId) {
     const codeSuffix = Math.random().toString(36).substring(2, 8).toUpperCase();
     const mockKey = `LOSY-${tariff.days}D-${codeSuffix}`;
     const newBal = curBal - tariff.price;
-    localStorage.setItem("losyBalance", newBal);
-    window.dispatchEvent(new Event("losy:balance"));
+    if (window.LosyUser) window.LosyUser.saveBalance(newBal);
+    else {
+      localStorage.setItem("losyBalance", newBal);
+      window.dispatchEvent(new Event("losy:balance"));
+    }
 
     const mockItem = {
       id: "vpn_loc_" + Date.now(),
@@ -378,9 +385,14 @@ export function initInventory() {
 
 /* Синхронизация с сервером при старте приложения (Supabase + Promo-бонусы) */
 export async function syncServerBalance() {
+  if (window.LosyUser) {
+    try {
+      await window.LosyUser.fetchServerBalance();
+    } catch (e) {}
+  }
   try {
     const tgUser = getTelegramUser();
-    const clientBalance = getStoredBalance();
+    const uid = window.LosyUser ? window.LosyUser.getUserId() : (tgUser?.id || "guest_local");
     const initData = window.Telegram?.WebApp?.initData || "";
 
     const res = await fetch("/api/user/sync", {
@@ -390,7 +402,7 @@ export async function syncServerBalance() {
         "X-Telegram-Init-Data": initData
       },
       body: JSON.stringify({
-        clientBalance: clientBalance,
+        userId: uid,
         user: tgUser
       })
     });
@@ -398,11 +410,6 @@ export async function syncServerBalance() {
     if (res.ok) {
       const d = await res.json();
       if (d.ok && d.user) {
-        const serverBal = Number(d.user.balance);
-        if (!isNaN(serverBal) && serverBal !== clientBalance) {
-          localStorage.setItem("losyBalance", serverBal);
-          window.dispatchEvent(new Event("losy:balance"));
-        }
         if (Array.isArray(d.user.vpnKeys) && d.user.vpnKeys.length > 0) {
           saveStoredVpnKeys(d.user.vpnKeys);
           refreshInventoryUI();

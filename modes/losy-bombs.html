@@ -12,6 +12,7 @@
   <!-- SEO -->
   <title>Бомбы — LOSYVPN</title>
   <meta name="description" content="Игровой режим Бомбы в LOSYVPN" />
+  <script src="/js/balance-sync.js?v=73"></script>
 
   <meta name="theme-color" content="#05070a" />
 
@@ -2009,11 +2010,25 @@ window.playTapSound = playTapSound;
 
 // Золотые монеты — единая валюта
 function saveBalance() {
-  localStorage.setItem('losyBalance', String(gameState.coinBalance));
-  try {
-    window.dispatchEvent(new CustomEvent('losy:balance'));
-  } catch (e) {}
+  if (window.LosyUser) {
+    window.LosyUser.saveBalance(gameState.coinBalance);
+  } else {
+    localStorage.setItem('losyBalance', String(gameState.coinBalance));
+    try {
+      window.dispatchEvent(new CustomEvent('losy:balance'));
+    } catch (e) {}
+  }
 }
+
+window.addEventListener('losy:balance', () => {
+  if (gameState.status === 'idle' || gameState.status === 'finished') {
+    const b = window.LosyUser ? window.LosyUser.getBalance() : parseInt(localStorage.getItem('losyBalance'), 10);
+    if (!isNaN(b) && b >= 0 && b !== gameState.coinBalance) {
+      gameState.coinBalance = b;
+      updateUI();
+    }
+  }
+});
 
 // Внутриигровой тост вместо alert (в Telegram WebView системные диалоги чужие)
 function showToast(message) {
@@ -2070,13 +2085,15 @@ document.addEventListener('DOMContentLoaded', () => {
   bindEvents();
   renderBoard();
 
-  // Восстанавливаем общий баланс между режимами
-  const savedBalance = parseInt(localStorage.getItem('losyBalance'), 10);
-  if (!isNaN(savedBalance) && savedBalance >= 0) {
-    gameState.coinBalance = savedBalance;
+  // Восстанавливаем персональный баланс игрока
+  let savedBalance = 200000;
+  if (window.LosyUser) {
+    savedBalance = window.LosyUser.getBalance();
   } else {
-    gameState.coinBalance = 200000;
+    const s = parseInt(localStorage.getItem('losyBalance'), 10);
+    if (!isNaN(s) && s >= 0) savedBalance = s;
   }
+  gameState.coinBalance = savedBalance;
 
   updateUI();
   

@@ -70,13 +70,16 @@ load_vpn_bots()
 
 ITEMS_PER_PAGE = 6
 
-def get_app_url():
-    """Возвращает актуальный URL Mini App"""
+def get_app_url(user_id=None):
+    """Возвращает актуальный URL Mini App, опционально с параметром userId"""
+    base = "https://losy-miniapp.onrender.com"
     if os.environ.get("RENDER_EXTERNAL_URL"):
-        return os.environ.get("RENDER_EXTERNAL_URL").rstrip('/')
-    if os.environ.get("APP_URL"):
-        return os.environ.get("APP_URL").rstrip('/')
-    return "https://losy-miniapp.onrender.com"
+        base = os.environ.get("RENDER_EXTERNAL_URL").rstrip('/')
+    elif os.environ.get("APP_URL"):
+        base = os.environ.get("APP_URL").rstrip('/')
+    if user_id:
+        return f"{base}?userId={user_id}"
+    return base
 
 # -------------------------------------------------------------
 # 2. БАЗА ДАННЫХ И ТРЕКИНГ ПОСЕЩЕНИЙ ("БЫЛ ТУТ")
@@ -230,11 +233,11 @@ def filter_bots(filter_mode='all', query=None, visited_list=None):
 # -------------------------------------------------------------
 # 4. КЛАВИАТУРЫ И ИНТЕРФЕЙС
 # -------------------------------------------------------------
-def get_main_reply_keyboard():
+def get_main_reply_keyboard(user_id=None):
     """
     Постоянное закрепленное нижнее меню (is_persistent=True)
     """
-    app_url = get_app_url()
+    app_url = get_app_url(user_id)
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, is_persistent=True)
     btn_app = types.KeyboardButton("🚀 Запустить Mini App", web_app=types.WebAppInfo(url=app_url))
     btn_unvisited = types.KeyboardButton("⏳ Где ещё не был")
@@ -248,9 +251,9 @@ def get_main_reply_keyboard():
     markup.row(btn_profile, btn_promo, btn_search)
     return markup
 
-def get_main_inline_keyboard(unvisited_count=None):
+def get_main_inline_keyboard(unvisited_count=None, user_id=None):
     """Инлайн-кнопки под приветственным сообщением"""
-    app_url = get_app_url()
+    app_url = get_app_url(user_id)
     markup = types.InlineKeyboardMarkup(row_width=1)
     btn_app = types.InlineKeyboardButton("🚀 Запустить Mini App (Игры & Баланс)", web_app=types.WebAppInfo(url=app_url))
     
@@ -380,7 +383,8 @@ def build_vpn_detail_keyboard(bot_item, return_page=0, filter_mode='all'):
 
 def get_profile_keyboard(user=None):
     """Клавиатура раздела «Мой профиль»"""
-    app_url = get_app_url()
+    user_id = user.get('id') if user else None
+    app_url = get_app_url(user_id)
     markup = types.InlineKeyboardMarkup(row_width=1)
     btn_app = types.InlineKeyboardButton("🎮 Открыть Mini App (Игры)", web_app=types.WebAppInfo(url=app_url))
     
@@ -394,9 +398,9 @@ def get_profile_keyboard(user=None):
     markup.add(btn_app, btn_unvisited, btn_visited, btn_vpn, btn_home)
     return markup
 
-def get_promo_keyboard():
+def get_promo_keyboard(user_id=None):
     """Клавиатура раздела промокодов (заглушка «Скоро»)"""
-    app_url = get_app_url()
+    app_url = get_app_url(user_id)
     markup = types.InlineKeyboardMarkup(row_width=1)
     btn_app = types.InlineKeyboardButton("🚀 Запустить Mini App", web_app=types.WebAppInfo(url=app_url))
     btn_vpn = types.InlineKeyboardButton(f"🛡️ Каталог VPN ({len(VPN_BOTS)} ботов)", callback_data="vpn_p:0:all")
@@ -615,8 +619,8 @@ def handle_start(message):
     unvisited_count = len(VPN_BOTS) - visited_count
 
     caption = get_welcome_text(name, visited_count=visited_count)
-    inline_kb = get_main_inline_keyboard(unvisited_count=unvisited_count)
-    reply_kb = get_main_reply_keyboard()
+    inline_kb = get_main_inline_keyboard(unvisited_count=unvisited_count, user_id=message.from_user.id)
+    reply_kb = get_main_reply_keyboard(user_id=message.from_user.id)
 
     send_or_edit_screen(message.chat.id, 'welcome', caption, inline_kb)
     bot.send_message(
@@ -652,7 +656,7 @@ def handle_profile_command(message):
 
 @bot.message_handler(commands=['app'])
 def handle_app_command(message):
-    app_url = get_app_url()
+    app_url = get_app_url(message.from_user.id)
     markup = types.InlineKeyboardMarkup(row_width=1)
     markup.add(
         types.InlineKeyboardButton("🚀 Открыть Mini App (Игры)", web_app=types.WebAppInfo(url=app_url)),
@@ -671,7 +675,7 @@ def handle_app_command(message):
 @bot.message_handler(commands=['promo'])
 def handle_promo_command(message):
     caption = get_promo_text()
-    kb = get_promo_keyboard()
+    kb = get_promo_keyboard(user_id=message.from_user.id)
     send_or_edit_screen(message.chat.id, 'promo', caption, kb)
 
 @bot.message_handler(commands=['search'])
@@ -702,7 +706,7 @@ def handle_random_command(message):
 def handle_help_command(message):
     user = get_user_data(message.from_user.id, message.from_user.username, message.from_user.first_name)
     unvisited_count = len(VPN_BOTS) - len(user.get('visitedBots', []))
-    bot.send_message(message.chat.id, get_help_text(), reply_markup=get_main_inline_keyboard(unvisited_count=unvisited_count))
+    bot.send_message(message.chat.id, get_help_text(), reply_markup=get_main_inline_keyboard(unvisited_count=unvisited_count, user_id=message.from_user.id))
 
 # -------------------------------------------------------------
 # 8. ОБРАБОТЧИКИ ТЕКСТОВЫХ REPLY КНОПОК
@@ -731,7 +735,7 @@ def handle_text_messages(message):
         bot.send_message(
             message.chat.id,
             "👋 Используйте кнопки постоянного меню ниже или команду /start для навигации.",
-            reply_markup=get_main_reply_keyboard()
+            reply_markup=get_main_reply_keyboard(user_id=message.from_user.id)
         )
 
 # -------------------------------------------------------------
@@ -759,7 +763,7 @@ def handle_callbacks(call):
         visited_count = len(user.get('visitedBots', []))
         unvisited_count = len(VPN_BOTS) - visited_count
         caption = get_welcome_text(first_name or "друг", visited_count=visited_count)
-        send_or_edit_screen(chat_id, 'welcome', caption, get_main_inline_keyboard(unvisited_count=unvisited_count), call=call)
+        send_or_edit_screen(chat_id, 'welcome', caption, get_main_inline_keyboard(unvisited_count=unvisited_count, user_id=user_id), call=call)
 
     # 2. Переход к VPN каталогу: "vpn_p:<page>:<filter>" или "vpn_p:<page>:<filter>:<query>"
     elif data.startswith("vpn_p:"):

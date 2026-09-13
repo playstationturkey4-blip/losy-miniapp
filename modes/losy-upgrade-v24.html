@@ -3,6 +3,7 @@
 
 <html lang="ru">
 <head>
+  <script src="/js/balance-sync.js?v=73"></script>
   <script>
     window.handleImgError = function(img) {
       if (img.dataset.fallbackDone) return;
@@ -5752,20 +5753,32 @@ function readBalance(key) {
   return isNaN(v) || v < 0 ? 0 : v;
 }
 
-let gold = readBalance(STORE.gold);
+let gold = window.LosyUser ? window.LosyUser.getBalance() : readBalance(STORE.gold);
 let space = 0;
 
-// СТАРТОВЫЙ БОНУС (v69): разово начисляем 200 000 золотых монет
+// СТАРТОВЫЙ БОНУС: разово начисляем 200 000 золотых монет только новым игрокам
 try {
   if (!localStorage.getItem('losyStartBonus_v69')) {
     localStorage.setItem('losyStartBonus_v69', '1');
-    if (gold < 200000) { gold = 200000; localStorage.setItem(STORE.gold, String(gold)); }
+    if (gold <= 0) {
+      gold = 200000;
+      if (window.LosyUser) window.LosyUser.saveBalance(gold);
+      else localStorage.setItem(STORE.gold, String(gold));
+    }
     localStorage.removeItem(STORE.space);
-  } else if (!localStorage.getItem(STORE.gold) || gold < 200000) {
-    gold = 200000;
-    localStorage.setItem(STORE.gold, String(gold));
   }
 } catch (e) {}
+
+window.addEventListener('losy:balance', () => {
+  if (!spinning) {
+    const b = window.LosyUser ? window.LosyUser.getBalance() : readBalance(STORE.gold);
+    if (!isNaN(b) && b >= 0 && b !== gold) {
+      gold = b;
+      if (typeof render === 'function') render();
+    }
+  }
+});
+
 let owned = [];                                    // все ракеты игрока (купил + выиграл)
 let bought = [];                                   // только купленные — НЕ растёт от выигрыша
 let stakeId = localStorage.getItem(STORE.stake);   // что стоит на левой платформе
@@ -5825,10 +5838,16 @@ let lastWonTimer = null;
 const byId = id => SKINS.find(s => s.id === id);
 
 function save() {
-  localStorage.setItem(STORE.gold, String(gold));
+  if (window.LosyUser) {
+    window.LosyUser.saveBalance(gold);
+  } else {
+    localStorage.setItem(STORE.gold, String(gold));
+    try {
+      window.dispatchEvent(new CustomEvent('losy:balance'));
+    } catch (e) {}
+  }
   try {
     localStorage.removeItem(STORE.space);
-    window.dispatchEvent(new CustomEvent('losy:balance'));
   } catch (e) {}
   localStorage.setItem(STORE.owned, JSON.stringify(owned));
   localStorage.setItem(STORE.bought, JSON.stringify(bought));

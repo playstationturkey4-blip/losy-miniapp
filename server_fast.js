@@ -89,11 +89,12 @@ function supabaseRequest(apiPath, method = 'GET', body = null, extraHeaders = {}
 
 function syncUserToSupabase(user) {
   if (!user || !user.id || String(user.id).startsWith('guest_')) return;
+  const safeBalance = (typeof user.balance === 'number' && !isNaN(user.balance)) ? user.balance : 200000;
   const row = {
     id: String(user.id),
     username: user.username || '',
     first_name: user.firstName || '',
-    balance: Number(user.balance || 200000),
+    balance: Number(safeBalance),
     space_coins: Number(user.spaceCoins || 0),
     owned: user.owned || ['pen'],
     promocodes: user.promocodes || [],
@@ -140,11 +141,12 @@ async function hydrateDbFromSupabase() {
         const rowTime = new Date(row.updated_at).getTime();
         const localTime = db.users[row.id]?.updatedAt || 0;
         if (!db.users[row.id] || rowTime > localTime) {
+          const rowBal = (row.balance !== undefined && row.balance !== null && !isNaN(Number(row.balance))) ? Number(row.balance) : 200000;
           db.users[row.id] = {
             id: String(row.id),
             username: row.username || '',
             firstName: row.first_name || 'Игрок',
-            balance: Number(row.balance || 200000),
+            balance: rowBal,
             spaceCoins: Number(row.space_coins || 0),
             owned: row.owned || ['pen'],
             promocodes: row.promocodes || [],
@@ -172,7 +174,7 @@ function getOrCreateUser(userData) {
     db.users[tid] = {
       id: tid,
       username: userData.username || '',
-      firstName: userData.first_name || 'Игрок',
+      firstName: userData.first_name || userData.firstName || 'Игрок',
       balance: 200000,
       spaceCoins: 0,
       owned: ['pen'],
@@ -185,10 +187,14 @@ function getOrCreateUser(userData) {
     syncUserToSupabase(db.users[tid]);
   } else {
     if (userData.username) db.users[tid].username = userData.username;
-    if (userData.first_name) db.users[tid].firstName = userData.first_name;
+    if (userData.first_name || userData.firstName) db.users[tid].firstName = userData.first_name || userData.firstName;
+    if (typeof db.users[tid].balance !== 'number' || isNaN(db.users[tid].balance)) {
+      db.users[tid].balance = 200000;
+    }
     if (!db.users[tid].vpnKeys) db.users[tid].vpnKeys = [];
     if (!db.users[tid].promocodes) db.users[tid].promocodes = [];
     if (!db.users[tid].visitedBots) db.users[tid].visitedBots = [];
+    if (!db.users[tid].owned) db.users[tid].owned = ['pen'];
   }
   return db.users[tid];
 }
@@ -374,29 +380,62 @@ const server = http.createServer((req, res) => {
           first_name: data.firstName || data.first_name || 'Игрок',
           username: data.username || ''
         };
+      } else if (!authUser && (data.guestId || parsedUrl.query.guestId || req.headers['x-guest-id'])) {
+        const gid = String(data.guestId || parsedUrl.query.guestId || req.headers['x-guest-id']);
+        authUser = { id: gid, first_name: 'Гость' };
       } else if (!authUser) {
-        authUser = { id: 'guest_local', first_name: 'Игрок (Demo)' };
+        const randomGuest = 'guest_' + crypto.randomBytes(4).toString('hex');
+        authUser = { id: randomGuest, first_name: 'Гость' };
       }
 
       const user = getOrCreateUser(authUser);
 
-      // 1. Двусторонняя синхронизация баланса и данных игрока
+      // 1. Персональный баланс пользователя (получение и сохранение с сервера)
+      if (pathname === '/api/user/balance') {
+        if (req.method === 'POST') {
+          const rawBal = data.balance !== undefined ? data.balance : data.clientBalance;
+          const newBal = parseInt(rawBal, 10);
+          if (isNaN(newBal) || newBal < 0) {
+            res.writeHead(400, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ ok: false, error: 'Некорректный баланс' }));
+            return;
+          }
+          user.balance = Math.min(100000000, Math.max(0, newBal));
+          user.updatedAt = Date.now();
+          saveDb();
+          syncUserToSupabase(user);
+
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({
+            ok: true,
+            userId: user.id,
+            balance: user.balance,
+            updatedAt: user.updatedAt
+          }));
+          return;
+        }
+
+        // GET
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({
+          ok: true,
+          userId: user.id,
+          balance: user.balance,
+          firstName: user.firstName,
+          username: user.username
+        }));
+        return;
+      }
+
+      // 2. Двусторонняя синхронизация баланса и данных игрока
       if (pathname === '/api/user/sync') {
         const clientBalance = parseInt(data.clientBalance, 10);
-        // Если клиент прислал баланс:
-        // А) Серверный баланс выше (например, после промокода в боте) -> серверный баланс побеждает
-        // Б) Клиентский баланс выше (честная победа в играх) -> проверяем и синхронизируем на сервер
-        if (!isNaN(clientBalance) && clientBalance > 0) {
-          if (clientBalance > user.balance) {
-            const diff = clientBalance - user.balance;
-            // Анти-чит порог: до 10 000 000 за одну сессию синхронизации
-            if (diff <= 10000000) {
-              user.balance = clientBalance;
-              user.updatedAt = Date.now();
-              saveDb();
-              syncUserToSupabase(user);
-            }
-          }
+        // Если передан флаг прямого обновления (например, syncAction === 'set'):
+        if (data.syncAction === 'set' && !isNaN(clientBalance) && clientBalance >= 0) {
+          user.balance = Math.min(100000000, clientBalance);
+          user.updatedAt = Date.now();
+          saveDb();
+          syncUserToSupabase(user);
         }
 
         res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -410,7 +449,8 @@ const server = http.createServer((req, res) => {
             spaceCoins: user.spaceCoins,
             owned: user.owned || ['pen'],
             promocodes: user.promocodes || [],
-            vpnKeys: user.vpnKeys || []
+            vpnKeys: user.vpnKeys || [],
+            visitedBots: user.visitedBots || []
           },
           verified: !user.id.startsWith('guest_')
         }));

@@ -44,6 +44,49 @@
         "vpneucombot"
       ],
       "updatedAt": 0
+    },
+    "user_test_aaa_111": {
+      "id": "user_test_aaa_111",
+      "username": "",
+      "firstName": "Игрок",
+      "balance": 0,
+      "spaceCoins": 0,
+      "owned": [
+        "pen"
+      ],
+      "promocodes": [],
+      "vpnKeys": [],
+      "visitedBots": [],
+      "updatedAt": 1789306914011
+    },
+    "user_test_bbb_222": {
+      "id": "user_test_bbb_222",
+      "username": "",
+      "firstName": "Игрок",
+      "balance": 280000,
+      "spaceCoins": 0,
+      "owned": [
+        "pen"
+      ],
+      "promocodes": [],
+      "vpnKeys": [],
+      "visitedBots": [],
+      "updatedAt": 1789306913948
+    },
+    "9999999": {
+      "id": "9999999",
+      "username": "testuser",
+      "firstName": "Тестер",
+      "balance": 200000,
+      "owned": [
+        "pen"
+      ],
+      "promocodes": [],
+      "vpnKeys": [],
+      "visitedBots": [
+        "hitvpnbot"
+      ],
+      "updatedAt": 0
     }
   },
   "sessions": {}
