@@ -8,6 +8,7 @@ import { initUnifiedCurrency, initGlobalTapSounds, initHomeMusic } from "./sound
 import { renderModeCards, renderVpnTeaser, initHero } from "./views/home.js";
 import { renderOffers } from "./views/offers.js";
 import { renderAbout } from "./views/about.js";
+import { initVpnExchange, initInventory, syncServerBalance } from "./views/exchange.js";
 
 /* Пользователь Telegram → аватар/имя */
 function initUser() {
@@ -35,6 +36,9 @@ function boot() {
   initBalance();
   initProfileBalances();
   initProfileSettings();
+  initVpnExchange();
+  initInventory();
+  syncServerBalance();
   initReveal();
   revealScan();
 }

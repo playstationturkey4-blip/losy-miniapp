@@ -11,12 +11,101 @@ const zlib = require('zlib');
 const crypto = require('crypto');
 const { tunnelmole } = require('tunnelmole');
 
-const BOT_TOKEN = '8873699108:AAExuaVHd3bKOj-3mWdGw2So94U7so2fxcM';
+const https = require('https');
+
+const BOT_TOKEN = process.env.BOT_TOKEN || '8873699108:AAExuaVHd3bKOj-3mWdGw2So94U7so2fxcM';
+const SUPABASE_URL = process.env.SUPABASE_URL || 'https://edltxsziwwvbdnpblxzc.supabase.co';
+const SUPABASE_KEY = process.env.SUPABASE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVkbHR4c3ppd3d2YmRucGJseHpjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE5MjUzNTYsImV4cCI6MjA4NzUwMTM1Nn0._61qClwHcOvsPoh58YijOz1DFv7TEdMg4mSC6Xws7xg';
 const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 8123;
 const ROOT_DIR = __dirname;
 const DB_FILE = path.join(ROOT_DIR, 'server_db.json');
 
-// 1. База данных профилей (Server-Authoritative)
+// Тарифы для реального обмена монет на ключи доступа к VPN
+const VPN_TARIFFS = {
+  'bronze_3d': {
+    id: 'bronze_3d',
+    title: '🥉 Fast VLESS',
+    badge: '3 дня VLESS',
+    price: 50000,
+    days: 3,
+    botUsername: 'FastVlessTrialBot',
+    desc: 'Высокоскоростной VLESS Reality ключ для YouTube 4K и игр без рекламы.'
+  },
+  'silver_7d': {
+    id: 'silver_7d',
+    title: '🥈 HitVPN Pro',
+    badge: '7 дней Pro',
+    price: 100000,
+    days: 7,
+    botUsername: 'hitvpnbot',
+    desc: 'Чистые серверы в Нидерландах и Германии с полной защитой от блокировок.'
+  },
+  'gold_30d': {
+    id: 'gold_30d',
+    title: '🥇 Planet Ultra',
+    badge: '30 дней VIP',
+    price: 250000,
+    days: 30,
+    botUsername: 'PlanetVPNTrialBot',
+    desc: 'Безлимит на месяц: VLESS + Shadowsocks + WireGuard для всех устройств.'
+  }
+};
+
+// 1. Асинхронный клиент Supabase REST API (PostgreSQL в облаке)
+function supabaseRequest(apiPath, method = 'GET', body = null, extraHeaders = {}) {
+  return new Promise((resolve) => {
+    try {
+      const fullUrl = new URL(apiPath, SUPABASE_URL);
+      const req = https.request(fullUrl, {
+        method,
+        headers: {
+          'apikey': SUPABASE_KEY,
+          'Authorization': `Bearer ${SUPABASE_KEY}`,
+          'Content-Type': 'application/json',
+          ...extraHeaders
+        },
+        timeout: 2500
+      }, (res) => {
+        let data = '';
+        res.on('data', c => data += c);
+        res.on('end', () => {
+          try {
+            const parsed = data ? JSON.parse(data) : {};
+            resolve({ ok: res.statusCode >= 200 && res.statusCode < 300, status: res.statusCode, data: parsed });
+          } catch (e) {
+            resolve({ ok: false, status: res.statusCode, error: 'Parse error' });
+          }
+        });
+      });
+      req.on('error', err => resolve({ ok: false, error: err.message }));
+      req.on('timeout', () => { req.destroy(); resolve({ ok: false, error: 'Timeout' }); });
+      if (body) req.write(JSON.stringify(body));
+      req.end();
+    } catch (err) {
+      resolve({ ok: false, error: err.message });
+    }
+  });
+}
+
+function syncUserToSupabase(user) {
+  if (!user || !user.id || String(user.id).startsWith('guest_')) return;
+  const row = {
+    id: String(user.id),
+    username: user.username || '',
+    first_name: user.firstName || '',
+    balance: Number(user.balance || 200000),
+    space_coins: Number(user.spaceCoins || 0),
+    owned: user.owned || ['pen'],
+    promocodes: user.promocodes || [],
+    vpn_keys: user.vpnKeys || [],
+    updated_at: new Date().toISOString()
+  };
+  supabaseRequest('/rest/v1/losy_users', 'POST', row, {
+    'Prefer': 'resolution=merge-duplicates'
+  }).catch(() => {});
+}
+
+// 2. База данных профилей (Двухуровневая: Supabase Cloud + Local File Cache)
 let db = {
   users: {},
   sessions: {}
@@ -39,6 +128,42 @@ function saveDb() {
   }
 }
 
+// Восстановление профилей из облака Supabase при старте сервера (защита от Render reset)
+async function hydrateDbFromSupabase() {
+  try {
+    const res = await supabaseRequest('/rest/v1/losy_users?select=*', 'GET');
+    if (res.ok && Array.isArray(res.data)) {
+      let restoredCount = 0;
+      for (const row of res.data) {
+        if (!row.id) continue;
+        const rowTime = new Date(row.updated_at).getTime();
+        const localTime = db.users[row.id]?.updatedAt || 0;
+        if (!db.users[row.id] || rowTime > localTime) {
+          db.users[row.id] = {
+            id: String(row.id),
+            username: row.username || '',
+            firstName: row.first_name || 'Игрок',
+            balance: Number(row.balance || 200000),
+            spaceCoins: Number(row.space_coins || 0),
+            owned: row.owned || ['pen'],
+            promocodes: row.promocodes || [],
+            vpnKeys: row.vpn_keys || [],
+            updatedAt: rowTime
+          };
+          restoredCount++;
+        }
+      }
+      if (restoredCount > 0) {
+        saveDb();
+        console.log(`☁️ [SUPABASE HYDRATE]: Восстановлено ${restoredCount} профилей игроков из облака`);
+      }
+    }
+  } catch (err) {
+    console.error('Supabase hydrate error:', err.message);
+  }
+}
+hydrateDbFromSupabase();
+
 function getOrCreateUser(userData) {
   const tid = String(userData.id);
   if (!db.users[tid]) {
@@ -49,12 +174,17 @@ function getOrCreateUser(userData) {
       balance: 200000,
       spaceCoins: 0,
       owned: ['pen'],
+      promocodes: [],
+      vpnKeys: [],
       updatedAt: Date.now()
     };
     saveDb();
+    syncUserToSupabase(db.users[tid]);
   } else {
     if (userData.username) db.users[tid].username = userData.username;
     if (userData.first_name) db.users[tid].firstName = userData.first_name;
+    if (!db.users[tid].vpnKeys) db.users[tid].vpnKeys = [];
+    if (!db.users[tid].promocodes) db.users[tid].promocodes = [];
   }
   return db.users[tid];
 }
@@ -224,32 +354,141 @@ const server = http.createServer((req, res) => {
       let data = {};
       try { if (body) data = JSON.parse(body); } catch (e) {}
 
-      const initData = req.headers['x-telegram-init-data'] || data.initData;
+      const initData = req.headers['x-telegram-init-data'] || data.initData || parsedUrl.query.initData;
       let authUser = verifyTelegramWebAppData(initData);
       
-      if (!authUser) {
+      if (!authUser && data.user && data.user.id) {
+        authUser = {
+          id: String(data.user.id),
+          first_name: data.user.first_name || data.user.firstName || 'Игрок',
+          username: data.user.username || ''
+        };
+      } else if (!authUser && (data.userId || parsedUrl.query.userId)) {
+        const uid = String(data.userId || parsedUrl.query.userId);
+        authUser = {
+          id: uid,
+          first_name: data.firstName || data.first_name || 'Игрок',
+          username: data.username || ''
+        };
+      } else if (!authUser) {
         authUser = { id: 'guest_local', first_name: 'Игрок (Demo)' };
       }
 
       const user = getOrCreateUser(authUser);
 
+      // 1. Двусторонняя синхронизация баланса и данных игрока
       if (pathname === '/api/user/sync') {
+        const clientBalance = parseInt(data.clientBalance, 10);
+        // Если клиент прислал баланс:
+        // А) Серверный баланс выше (например, после промокода в боте) -> серверный баланс побеждает
+        // Б) Клиентский баланс выше (честная победа в играх) -> проверяем и синхронизируем на сервер
+        if (!isNaN(clientBalance) && clientBalance > 0) {
+          if (clientBalance > user.balance) {
+            const diff = clientBalance - user.balance;
+            // Анти-чит порог: до 10 000 000 за одну сессию синхронизации
+            if (diff <= 10000000) {
+              user.balance = clientBalance;
+              user.updatedAt = Date.now();
+              saveDb();
+              syncUserToSupabase(user);
+            }
+          }
+        }
+
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({
           ok: true,
           user: {
             id: user.id,
             firstName: user.firstName,
+            username: user.username,
             balance: user.balance,
             spaceCoins: user.spaceCoins,
-            owned: user.owned
+            owned: user.owned || ['pen'],
+            promocodes: user.promocodes || [],
+            vpnKeys: user.vpnKeys || []
           },
           verified: !user.id.startsWith('guest_')
         }));
         return;
       }
 
-      // API связки с Telegram-ботом
+      // 2. Каталог тарифов для обмена монет на VPN
+      if (pathname === '/api/vpn/tariffs') {
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({
+          ok: true,
+          tariffs: Object.values(VPN_TARIFFS),
+          userBalance: user.balance
+        }));
+        return;
+      }
+
+      // 3. Обмен заработанных монет на реальный ключ доступа к VPN
+      if (pathname === '/api/vpn/exchange' && req.method === 'POST') {
+        const tariffId = data.tariffId;
+        const tariff = VPN_TARIFFS[tariffId];
+        if (!tariff) {
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ ok: false, error: 'Тариф не найден' }));
+          return;
+        }
+
+        if (user.balance < tariff.price) {
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({
+            ok: false,
+            error: `Недостаточно золотых монет! Требуется: ${tariff.price.toLocaleString('ru-RU')} 🪙`
+          }));
+          return;
+        }
+
+        // Списываем баланс
+        user.balance -= tariff.price;
+        const codeSuffix = crypto.randomBytes(4).toString('hex').toUpperCase();
+        const vpnCode = `LOSY-${tariff.days}D-${codeSuffix}`;
+
+        const newVpnItem = {
+          id: 'vpn_' + Date.now() + '_' + codeSuffix,
+          tariffId: tariff.id,
+          title: tariff.title,
+          badge: tariff.badge,
+          key: vpnCode,
+          botUsername: tariff.botUsername,
+          botUrl: `https://t.me/${tariff.botUsername}?start=${vpnCode}`,
+          createdAt: Date.now(),
+          expiresDays: tariff.days
+        };
+
+        if (!user.vpnKeys) user.vpnKeys = [];
+        user.vpnKeys.unshift(newVpnItem);
+        user.updatedAt = Date.now();
+        saveDb();
+        syncUserToSupabase(user);
+
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({
+          ok: true,
+          balance: user.balance,
+          vpnItem: newVpnItem,
+          vpnKeys: user.vpnKeys
+        }));
+        return;
+      }
+
+      // 4. Инвентарь игрока (скины ракет + полученные VPN ключи)
+      if (pathname === '/api/user/inventory') {
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({
+          ok: true,
+          ownedSkins: user.owned || ['pen'],
+          vpnKeys: user.vpnKeys || [],
+          balance: user.balance
+        }));
+        return;
+      }
+
+      // 5. API промокодов Telegram-бота
       if (pathname === '/api/bot/promo' && req.method === 'POST') {
         const PROMO_CODES = {
           'LOSY2026': { reward: 50000, desc: 'Приветственный бонус 50 000 золота' },
@@ -280,6 +519,7 @@ const server = http.createServer((req, res) => {
         targetUser.balance = (targetUser.balance || 0) + promo.reward;
         targetUser.updatedAt = Date.now();
         saveDb();
+        syncUserToSupabase(targetUser);
 
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({
@@ -304,7 +544,8 @@ const server = http.createServer((req, res) => {
             username: targetUser.username,
             balance: targetUser.balance,
             ownedCount: targetUser.owned ? targetUser.owned.length : 0,
-            promosUsed: targetUser.promocodes ? targetUser.promocodes.length : 0
+            promosUsed: targetUser.promocodes ? targetUser.promocodes.length : 0,
+            vpnKeysCount: targetUser.vpnKeys ? targetUser.vpnKeys.length : 0
           }
         }));
         return;

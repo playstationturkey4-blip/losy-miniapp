@@ -4,12 +4,13 @@
       "id": "guest_local",
       "username": "",
       "firstName": "Игрок (Demo)",
-      "balance": 850,
+      "balance": 200000,
       "spaceCoins": 100,
       "owned": [
-        "pen",
-        "lit_energy"
+        "pen"
       ],
+      "promocodes": [],
+      "vpnKeys": [],
       "updatedAt": 1789053494472
     }
   },

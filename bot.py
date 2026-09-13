@@ -30,7 +30,7 @@ if sys.stderr and hasattr(sys.stderr, 'reconfigure'):
 import telebot
 from telebot import types
 
-BOT_TOKEN = '8873699108:AAExuaVHd3bKOj-3mWdGw2So94U7so2fxcM'
+BOT_TOKEN = os.environ.get('BOT_TOKEN', '8873699108:AAExuaVHd3bKOj-3mWdGw2So94U7so2fxcM')
 bot = telebot.TeleBot(BOT_TOKEN, parse_mode='HTML')
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -818,4 +818,16 @@ if __name__ == '__main__':
 
     setup_bot_meta()
     print("[*] Polling Telegram updates...")
-    bot.infinity_polling(timeout=20, long_polling_timeout=20)
+    try:
+        bot.infinity_polling(timeout=20, long_polling_timeout=20, skip_pending=True)
+    except telebot.apihelper.ApiTelegramException as api_err:
+        if api_err.error_code == 409:
+            print(f"\n[ℹ️ TELEGRAM CONFLICT (409)]:")
+            print(f"Экземпляр бота уже успешно запущен в облаке (на Render) и обрабатывает сообщения пользователей.")
+            print(f"Локальный опрос остановлен во избежание конфликта. Бот активен и доступен в Telegram!\n")
+        else:
+            print(f"[-] Telegram API error ({api_err.error_code}): {api_err}")
+    except KeyboardInterrupt:
+        print("\n[!] Бот остановлен пользователем.")
+    except Exception as e:
+        print(f"[-] Ошибка polling: {e}")
