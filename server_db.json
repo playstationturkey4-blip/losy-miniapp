@@ -157,6 +157,48 @@
       "vpnKeys": [],
       "visitedBots": [],
       "updatedAt": 1789308025417
+    },
+    "guest_d5ikzewbmtzwfhgq": {
+      "id": "guest_d5ikzewbmtzwfhgq",
+      "username": "",
+      "firstName": "Гость",
+      "balance": 200000,
+      "spaceCoins": 0,
+      "owned": [
+        "pen"
+      ],
+      "promocodes": [],
+      "vpnKeys": [],
+      "visitedBots": [],
+      "updatedAt": 1789309084381
+    },
+    "guest_9pez14j9mtzwiwbl": {
+      "id": "guest_9pez14j9mtzwiwbl",
+      "username": "",
+      "firstName": "Гость",
+      "balance": 200000,
+      "spaceCoins": 0,
+      "owned": [
+        "pen"
+      ],
+      "promocodes": [],
+      "vpnKeys": [],
+      "visitedBots": [],
+      "updatedAt": 1789309243440
+    },
+    "guest_tk76q2wfmtzwk9z7": {
+      "id": "guest_tk76q2wfmtzwk9z7",
+      "username": "",
+      "firstName": "Гость",
+      "balance": 200000,
+      "spaceCoins": 0,
+      "owned": [
+        "pen"
+      ],
+      "promocodes": [],
+      "vpnKeys": [],
+      "visitedBots": [],
+      "updatedAt": 1789309307796
     }
   },
   "sessions": {}

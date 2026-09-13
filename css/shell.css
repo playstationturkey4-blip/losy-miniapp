@@ -2,7 +2,7 @@
    LOSY Mini App — shell: topbar, bottom nav, views
    ============================================================ */
 
-/* Верхняя панель — стекло, уезжает при скролле */
+/* Верхняя панель — строгий нативный блюр */
 .topbar {
   position: fixed;
   top: 0; left: 0; right: 0;
@@ -12,109 +12,120 @@
   gap: 12px;
   height: calc(var(--topbar-h) + var(--sat));
   padding: var(--sat) 16px 0;
-  background: linear-gradient(180deg, rgba(5, 7, 10, .72), rgba(5, 7, 10, .38) 70%, transparent);
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
+  background-color: rgba(13, 14, 18, 0.85);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--line);
   transition: transform var(--t-normal) var(--ease-out);
 }
 .topbar--hidden { transform: translateY(-110%); }
+
 .topbar__brand {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  min-height: 44px;
+  gap: 8px;
+  min-height: 40px;
   font-family: var(--font-brand);
   font-weight: 700;
-  font-size: 18px;
-  letter-spacing: .04em;
+  font-size: 16px;
+  letter-spacing: -0.01em;
 }
-.topbar__brand img { width: 34px; height: 34px; border-radius: 9px; }
-.topbar__brand em { font-style: normal; color: var(--accent); }
-.topbar__balance {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  min-height: 36px;
-  margin-left: auto;
-  padding: 0 13px;
-  border-radius: 999px;
-  border: 1px solid var(--line);
-  background: var(--glass);
-  font-family: var(--font-label);
-  font-weight: 600;
-  font-size: 15px;
-  transition: border-color var(--t-normal) var(--ease-out);
+.topbar__brand img {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
 }
-.topbar__balance:hover { border-color: rgba(59, 232, 255, .5); }
-.topbar__balance .coin {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  object-fit: contain;
-  background: url('/assets/coin.png') center/contain no-repeat;
-  filter: drop-shadow(0 0 6px rgba(250, 204, 21, 0.6));
-  flex-shrink: 0;
-}
-.topbar__balance.is-pulse .coin { animation: coinpulse 1.1s var(--ease-out); }
-@keyframes coinpulse {
-  0% { transform: scale(1); }
-  35% { transform: scale(1.35); filter: drop-shadow(0 0 14px rgba(250, 204, 21, 0.95)); }
-  100% { transform: scale(1); }
+.topbar__brand em {
+  font-style: normal;
+  color: var(--accent);
+  margin-left: 2px;
 }
 
-/* Кнопка профиля (аватар с инициалом) */
+/* Чип баланса в шапке (Telegram Stars Gold style) */
+.topbar__balance {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 34px;
+  margin-left: auto;
+  padding: 0 12px;
+  border-radius: var(--r-pill);
+  border: 1px solid var(--line);
+  background-color: var(--bg-card);
+  font-family: var(--font-brand);
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--gold);
+  transition: background-color var(--t-fast) var(--ease-out), border-color var(--t-fast) var(--ease-out);
+}
+.topbar__balance:active {
+  transform: scale(0.97);
+  background-color: var(--bg-card-hover);
+}
+.topbar__balance .coin {
+  width: 17px;
+  height: 17px;
+  object-fit: contain;
+  background: url('/assets/coin.png') center/contain no-repeat;
+  flex-shrink: 0;
+}
+.topbar__balance.is-pulse .coin {
+  animation: coinpulse 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes coinpulse {
+  0% { transform: scale(1) rotate(0deg); }
+  45% { transform: scale(1.3) rotate(15deg); filter: drop-shadow(0 0 10px rgba(245, 197, 66, 0.8)); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+
+/* Аватар профиля в шапке */
 .topbar__avatar {
   display: grid;
   place-items: center;
-  width: 40px; height: 40px;
+  width: 34px;
+  height: 34px;
   flex: 0 0 auto;
   border-radius: 50%;
   border: 1px solid var(--line);
-  background: linear-gradient(140deg, rgba(59, 232, 255, .22), rgba(143, 123, 255, .28));
+  background-color: var(--bg-card);
   font-family: var(--font-brand);
   font-weight: 600;
-  font-size: 15px;
+  font-size: 13px;
   color: var(--ink);
+  transition: background-color var(--t-fast) var(--ease-out);
 }
-.topbar__avatar:active { transform: scale(.95); }
-
-/* Разделитель под стеклянным топбаром на не-hero экранах */
-.topbar::after {
-  content: "";
-  position: absolute;
-  left: 16px; right: 16px;
-  bottom: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(238, 244, 248, .1), transparent);
+.topbar__avatar:active {
+  transform: scale(0.94);
+  background-color: var(--bg-card-hover);
 }
 
-/* === Views: только активная вкладка в потоке === */
+/* === Views === */
 .view { display: none; }
 .view.is-active { display: block; }
 .view {
-  min-height: 100vh;  /* фолбэк */
+  min-height: 100vh;
   min-height: 100svh;
-  /* запас под fixed topbar + bottom nav */
-  padding-bottom: calc(var(--bottomnav-h) + var(--sab) + 24px);
+  padding-bottom: calc(var(--bottomnav-h) + var(--sab) + 20px);
 }
 
-/* === Bottom navigation (mobile) === */
+/* === Нативный Telegram TabBar (Bottom navigation) === */
 .bottomnav {
   position: fixed;
   left: 0; right: 0; bottom: 0;
   z-index: 40;
   display: flex;
   justify-content: space-around;
-  align-items: stretch;
+  align-items: center;
   height: calc(var(--bottomnav-h) + var(--sab));
   padding: 0 8px var(--sab);
-  background: var(--glass-strong);
-  -webkit-backdrop-filter: blur(18px);
-  backdrop-filter: blur(18px);
+  background-color: rgba(18, 19, 24, 0.94);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
   border-top: 1px solid var(--line);
   padding-left: max(8px, var(--sal));
   padding-right: max(8px, var(--sar));
 }
+
 .bottomnav__item {
   position: relative;
   flex: 1 1 0;
@@ -123,37 +134,51 @@
   align-items: center;
   justify-content: center;
   gap: 3px;
-  min-height: 44px;
-  color: var(--ink-faint);
-  font-family: var(--font-label);
+  height: 48px;
+  color: var(--ink-dim);
+  font-family: var(--font-body);
   font-size: 11px;
-  letter-spacing: .06em;
-  text-transform: uppercase;
-  transition: color var(--t-fast) var(--ease-out);
-}
-.bottomnav__item svg { width: 22px; height: 22px; }
-.bottomnav__item:active { transform: scale(.94); }
-.bottomnav__item.is-active { color: var(--accent); }
-.bottomnav__item.is-active::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  width: 22px; height: 2px;
-  border-radius: 2px;
-  background: var(--accent);
-  box-shadow: 0 0 12px rgba(59, 232, 255, .8);
-}
-.bottomnav__item.is-active svg {
-  filter: drop-shadow(0 0 8px rgba(59, 232, 255, .5));
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+  border-radius: 10px;
+  transition: color var(--t-fast) var(--ease-out), transform var(--t-fast) var(--ease-out);
 }
 
-/* Desktop: bottomnav прячу, topbar превращается в обычную шапку */
+.bottomnav__item svg {
+  width: 22px;
+  height: 22px;
+  stroke-width: 1.8;
+  transition: transform var(--t-fast) var(--ease-out);
+}
+
+.bottomnav__item:active {
+  transform: scale(0.94);
+}
+
+/* Активное состояние — лаконично, цвет Telegram Blue */
+.bottomnav__item.is-active {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.bottomnav__item.is-active svg {
+  stroke: var(--accent);
+  animation: tabpop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes tabpop {
+  0% { transform: scale(0.85); }
+  60% { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+
+/* Desktop */
 @media (min-width: 900px) {
   .bottomnav { display: none; }
   .view { padding-bottom: 0; }
   .topbar {
-    background: rgba(5, 7, 10, .55);
-    border-bottom: 1px solid var(--line);
+    background-color: rgba(13, 14, 18, 0.95);
   }
   .topbar--hidden { transform: none; }
 }
