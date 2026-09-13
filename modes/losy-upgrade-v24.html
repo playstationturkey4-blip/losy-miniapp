@@ -3,7 +3,7 @@
 
 <html lang="ru">
 <head>
-  <script src="/js/balance-sync.js?v=73"></script>
+  <script src="/js/balance-sync.js?v=90"></script>
   <script>
     window.handleImgError = function(img) {
       if (img.dataset.fallbackDone) return;
@@ -5444,12 +5444,23 @@ const LosyAudio = (() => {
   }
 
   let tickTimers = [];
+  let tickSchedulerTimer = null;
+  let tickScheduleQueue = [];
+  let tickQueueIndex = 0;
+  let tickBaseAudioTime = 0;
+  let tickDurationMs = 4000;
 
   function stopWheelTicks() {
+    if (tickSchedulerTimer) {
+      clearInterval(tickSchedulerTimer);
+      tickSchedulerTimer = null;
+    }
     for (let i = 0; i < tickTimers.length; i++) {
       clearTimeout(tickTimers[i]);
     }
     tickTimers = [];
+    tickScheduleQueue = [];
+    tickQueueIndex = 0;
 
     for (let i = 0; i < activeTickSources.length; i++) {
       try {
@@ -5535,6 +5546,7 @@ const LosyAudio = (() => {
     }
 
     const dur = durationMs || 4000;
+    tickDurationMs = dur;
     const times = [];
     let t = 80;
     const maxT = dur - 240;
@@ -5555,49 +5567,97 @@ const LosyAudio = (() => {
       t += interval;
     }
 
-    let buf = buffers['tick'];
-    if (!buf) {
+    if (!buffers['tick']) {
       loadSound('tick').catch(() => {});
     }
 
-    const baseAudioTime = c.currentTime;
-    times.forEach((delay, idx) => {
-      try {
-        const p = delay / dur;
+    tickScheduleQueue = times;
+    tickQueueIndex = 0;
+    tickBaseAudioTime = c.currentTime;
+
+    const scheduleAhead = 0.180; // Окно упреждения: планируем не более 1-2 тиков вперед, 0 блокировок потока!
+
+    function processTickQueue() {
+      if (!soundEnabled || !c || c.state === 'closed') return;
+      const curAudio = c.currentTime;
+      const buf = buffers['tick'];
+
+      while (tickQueueIndex < tickScheduleQueue.length) {
+        const delayMs = tickScheduleQueue[tickQueueIndex];
+        const tickTargetTime = tickBaseAudioTime + delayMs / 1000;
+
+        // Если тик лежит дальше окна упреждения, ждем следующего цикла
+        if (tickTargetTime > curAudio + scheduleAhead) {
+          break;
+        }
+
+        // Если тик устарел более чем на 80 мс, пропускаем
+        if (tickTargetTime < curAudio - 0.080) {
+          tickQueueIndex++;
+          continue;
+        }
+
+        const scheduledTime = Math.max(curAudio + 0.002, tickTargetTime);
+        const idx = tickQueueIndex;
+        const p = delayMs / tickDurationMs;
         const vol = p > 0.6 ? 0.95 - 0.25 * ((p - 0.6) / 0.4) : 0.95;
-        const tickTime = baseAudioTime + delay / 1000;
         const pitch = 0.985 + (idx % 5) * 0.0075;
 
-        if (buf) {
-          const src = c.createBufferSource();
-          src.buffer = buf;
-          src.playbackRate.setValueAtTime(pitch, tickTime);
+        try {
+          if (buf) {
+            if (activeTickSources.length >= 3) {
+              const old = activeTickSources.shift();
+              try { old.stop(); old.disconnect(); } catch (_) {}
+            }
 
-          const microGain = c.createGain();
-          microGain.gain.setValueAtTime(vol, tickTime);
-          microGain.gain.exponentialRampToValueAtTime(0.001, tickTime + 0.075);
+            const src = c.createBufferSource();
+            src.buffer = buf;
+            src.playbackRate.setValueAtTime(pitch, scheduledTime);
 
-          src.connect(microGain);
-          microGain.connect(tickGain || limiter || c.destination);
+            const microGain = c.createGain();
+            microGain.gain.setValueAtTime(vol, scheduledTime);
+            microGain.gain.exponentialRampToValueAtTime(0.001, scheduledTime + 0.075);
 
-          src.start(tickTime);
-          src.stop(tickTime + 0.080);
-          activeTickSources.push(src);
-        } else {
-          const osc = c.createOscillator();
-          const g = c.createGain();
-          osc.type = 'triangle';
-          osc.frequency.setValueAtTime(580 * pitch, tickTime);
-          osc.frequency.exponentialRampToValueAtTime(140 * pitch, tickTime + 0.038);
-          g.gain.setValueAtTime(vol * 0.60, tickTime);
-          g.gain.exponentialRampToValueAtTime(0.001, tickTime + 0.045);
-          osc.connect(g);
-          g.connect(tickGain || limiter || c.destination);
-          osc.start(tickTime);
-          osc.stop(tickTime + 0.05);
-        }
-      } catch (e) {}
-    });
+            src.connect(microGain);
+            microGain.connect(tickGain || limiter || c.destination);
+
+            src.start(scheduledTime);
+            src.stop(scheduledTime + 0.080);
+            activeTickSources.push(src);
+
+            src.onended = () => {
+              try { src.disconnect(); microGain.disconnect(); } catch (_) {}
+              const i = activeTickSources.indexOf(src);
+              if (i !== -1) activeTickSources.splice(i, 1);
+            };
+          } else {
+            const osc = c.createOscillator();
+            const g = c.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(580 * pitch, scheduledTime);
+            osc.frequency.exponentialRampToValueAtTime(140 * pitch, scheduledTime + 0.038);
+            g.gain.setValueAtTime(vol * 0.60, scheduledTime);
+            g.gain.exponentialRampToValueAtTime(0.001, scheduledTime + 0.045);
+            osc.connect(g);
+            g.connect(tickGain || limiter || c.destination);
+            osc.start(scheduledTime);
+            osc.stop(scheduledTime + 0.05);
+          }
+        } catch (e) {}
+
+        tickQueueIndex++;
+      }
+
+      if (tickQueueIndex >= tickScheduleQueue.length) {
+        clearInterval(tickSchedulerTimer);
+        tickSchedulerTimer = null;
+      }
+    }
+
+    // Запуск первого тика
+    processTickQueue();
+    // Интервал планирования каждые 40 мс без нагрузки на CPU
+    tickSchedulerTimer = setInterval(processTickQueue, 40);
   }
 
   function playWinSequence() {
@@ -6619,6 +6679,7 @@ function resetLostState() {
   cancelReturnToTop();
 }
 window.resetLostState = resetLostState;
+window.doUpgrade = doUpgrade;
 
 function doUpgrade() {
   if (spinning) return;
@@ -6908,6 +6969,11 @@ function doUpgrade() {
   LosyAudio.resetTick();
   LosyAudio.scheduleWheelTicks(UPGRADE_SPIN_DURATION, finalAngle, easeSpin);
 
+  if (needleSpinRafId) {
+    cancelAnimationFrame(needleSpinRafId);
+    needleSpinRafId = null;
+  }
+
   if (needleEl) {
     let startTimestamp = null;
     const frame = (now) => {
@@ -6917,21 +6983,23 @@ function doUpgrade() {
       const ang = startRot + finalAngle * eased;
       needleCurrent = ang;
 
-      needleEl.style.transform = `rotate(${ang.toFixed(2)}deg) translateZ(0)`;
+      needleEl.style.transform = `rotate(${ang.toFixed(2)}deg) translate3d(0,0,0)`;
       if (p < 1) {
-        requestAnimationFrame(frame);
+        needleSpinRafId = requestAnimationFrame(frame);
       } else {
-        needleEl.style.transform = `rotate(${ang.toFixed(2)}deg) translateZ(0)`;
+        needleSpinRafId = null;
+        needleEl.style.transform = `rotate(${ang.toFixed(2)}deg) translate3d(0,0,0)`;
         finishRound();
       }
     };
-    requestAnimationFrame(frame);
+    needleSpinRafId = requestAnimationFrame(frame);
   } else {
     finishRound();
   }
 }
 
 // ===== НОВЫЙ ЦЕНТРАЛЬНЫЙ САЛЮТ В КОЛЕСЕ (CANVAS + PARTICLES + AUDIO SYNC) =====
+let needleSpinRafId = null;
 let celebrationRafId = null;
 let celebrationParticles = [];
 window.celebrationParticles = celebrationParticles;
@@ -6939,6 +7007,10 @@ let celebrationTimers = [];
 
 function clearCelebration() {
   clearRoundTimers();
+  if (needleSpinRafId) {
+    cancelAnimationFrame(needleSpinRafId);
+    needleSpinRafId = null;
+  }
   if (!spinning) {
     LosyAudio.stopWheelTicks();
   }

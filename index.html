@@ -33,13 +33,13 @@
   <link rel="preload" href="/assets/fonts/Unbounded-Variable.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="/assets/fonts/Inter-Variable.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="/assets/hero/losy-hero-poster.jpg" as="image" />
-  <link rel="preload" href="/dist/shell.bundle.css?v=89" as="style" />
-  <link rel="modulepreload" href="/dist/app.bundle.js?v=89" />
+  <link rel="preload" href="/dist/shell.bundle.css?v=90" as="style" />
+  <link rel="modulepreload" href="/dist/app.bundle.js?v=90" />
 
   <!-- Фоновая предзагрузка режимов игр -->
-  <link rel="prefetch" href="/modes/losy-upgrade-v24.html?v=89" />
-  <link rel="prefetch" href="/modes/losy-bombs.html?v=89" />
-  <link rel="prefetch" href="/modes/losy-rocket.html?v=89" />
+  <link rel="prefetch" href="/modes/losy-upgrade-v24.html?v=90" />
+  <link rel="prefetch" href="/modes/losy-bombs.html?v=90" />
+  <link rel="prefetch" href="/modes/losy-rocket.html?v=90" />
   <link rel="prefetch" href="/assets/hero/losy-hero-916.mp4" as="video" />
 
   <!-- Critical Inline CSS: мгновенный темный фон и скелет за 0.05 сек -->
@@ -121,10 +121,55 @@
     .toggle-switch input:checked + .toggle-slider:before {
       transform: translateX(20px);
     }
+    /* Скрываем нативные кнопки Play и контролы WebKit / iOS / Android */
+    video::-webkit-media-controls,
+    video::-webkit-media-controls-start-playback-button,
+    video::-webkit-media-controls-play-button,
+    video::-webkit-media-controls-panel,
+    video::-webkit-media-controls-enclosure,
+    video::-webkit-media-controls-overlay-play-button,
+    video::-webkit-media-controls-overlay-enclosure,
+    .hero__video::-webkit-media-controls,
+    .hero__video::-webkit-media-controls-start-playback-button,
+    .hero__video::-webkit-media-controls-play-button,
+    .hero__video::-webkit-media-controls-panel,
+    .hero__video::-webkit-media-controls-enclosure,
+    .hero__video::-webkit-media-controls-overlay-play-button,
+    .hero__video::-webkit-media-controls-overlay-enclosure {
+      -webkit-appearance: none !important;
+      display: none !important;
+      opacity: 0 !important;
+      visibility: hidden !important;
+      pointer-events: none !important;
+    .hero__poster {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 22%;
+      pointer-events: none;
+      z-index: 1;
+    }
+    .hero__video {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 22%;
+      pointer-events: none !important;
+      opacity: 0;
+      transition: opacity 0.35s ease;
+      z-index: 2;
+    }
+    .hero__video.is-live {
+      opacity: 1 !important;
+    }
   </style>
 
   <!-- Единый оптимизированный CSS бандл оболочки -->
-  <link rel="stylesheet" href="/dist/shell.bundle.css?v=89" />
+  <link rel="stylesheet" href="/dist/shell.bundle.css?v=90" />
 </head>
 <body>
 
@@ -150,10 +195,15 @@
     <section class="view is-active" data-view="home">
       <!-- HERO: вертикальная сцена 9:16 -->
       <div class="hero">
+        <img
+          class="hero__poster"
+          src="/assets/hero/losy-hero-poster.jpg"
+          alt=""
+          aria-hidden="true"
+        />
         <video
           id="heroVideo"
           class="hero__video"
-          src="/assets/hero/losy-hero-916.mp4"
           autoplay
           muted
           loop
@@ -163,11 +213,23 @@
           disablepictureinpicture
           controlslist="nodownload nofullscreen noremoteplayback"
           preload="auto"
-          poster="/assets/hero/losy-hero-poster.jpg"
+          tabindex="-1"
           aria-hidden="true"
         >
           <source src="/assets/hero/losy-hero-916.mp4" type="video/mp4" />
         </video>
+        <script>
+          (function() {
+            var v = document.getElementById('heroVideo');
+            if (v) {
+              v.muted = true;
+              v.defaultMuted = true;
+              v.playsInline = true;
+              var p = v.play();
+              if (p && p.catch) p.catch(function(){});
+            }
+          })();
+        </script>
         <div class="hero__shade" aria-hidden="true"></div>
 
         <div class="hero__inner">
@@ -324,9 +386,9 @@
   </div>
 
   <!-- Единый менеджер персонального баланса и идентификации -->
-  <script src="/js/balance-sync.js?v=89"></script>
+  <script src="/js/balance-sync.js?v=90"></script>
   <!-- Оболочка: единый высокоскоростной бандл -->
-  <script defer src="/dist/app.bundle.js?v=89"></script>
+  <script defer src="/dist/app.bundle.js?v=90"></script>
   <script>
     // Принудительно сбрасываем устаревший кэш ServiceWorker Telegram WebView
     if ('serviceWorker' in navigator) {

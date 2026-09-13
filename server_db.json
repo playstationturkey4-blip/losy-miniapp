@@ -241,6 +241,76 @@
       "vpnKeys": [],
       "visitedBots": [],
       "updatedAt": 1789314444514
+    },
+    "8992579617": {
+      "id": "8992579617",
+      "username": "evaonova",
+      "firstName": "Evaona",
+      "balance": 200000,
+      "spaceCoins": 0,
+      "owned": [
+        "pen"
+      ],
+      "promocodes": [],
+      "vpnKeys": [],
+      "visitedBots": [],
+      "updatedAt": 1789313530359
+    },
+    "8627946054": {
+      "id": "8627946054",
+      "username": "PavelDurov52691488",
+      "firstName": "⚰️",
+      "balance": 200000,
+      "spaceCoins": 0,
+      "owned": [
+        "pen"
+      ],
+      "promocodes": [],
+      "vpnKeys": [],
+      "visitedBots": [],
+      "updatedAt": 1789320002335
+    },
+    "guest_dputuxaamu03yydv": {
+      "id": "guest_dputuxaamu03yydv",
+      "username": "",
+      "firstName": "Гость",
+      "balance": 200000,
+      "spaceCoins": 0,
+      "owned": [
+        "pen"
+      ],
+      "promocodes": [],
+      "vpnKeys": [],
+      "visitedBots": [],
+      "updatedAt": 1789321749946
+    },
+    "guest_vg8z6nj5mu03zfnj": {
+      "id": "guest_vg8z6nj5mu03zfnj",
+      "username": "",
+      "firstName": "Гость",
+      "balance": 200000,
+      "spaceCoins": 0,
+      "owned": [
+        "pen"
+      ],
+      "promocodes": [],
+      "vpnKeys": [],
+      "visitedBots": [],
+      "updatedAt": 1789321772289
+    },
+    "guest_1f21646d": {
+      "id": "guest_1f21646d",
+      "username": "",
+      "firstName": "Гость",
+      "balance": 200000,
+      "spaceCoins": 0,
+      "owned": [
+        "pen"
+      ],
+      "promocodes": [],
+      "vpnKeys": [],
+      "visitedBots": [],
+      "updatedAt": 1789322136289
     }
   },
   "sessions": {}

@@ -11,6 +11,17 @@
   max-height: 900px;
   overflow: clip;
 }
+.hero__poster {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 22%;
+  pointer-events: none;
+  z-index: 1;
+}
+
 .hero__video {
   position: absolute;
   inset: 0;
@@ -19,10 +30,43 @@
   object-fit: cover;         /* 9:16 без искажений: кадрируем по центру */
   object-position: center 22%;  /* лицо/персонаж — в верхней трети */
   /* видео нельзя вкл/выкл тапом — играет всегда (нативная пауза/контролы отключены) */
-  pointer-events: none;
+  pointer-events: none !important;
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   user-select: none;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  z-index: 2;
+}
+
+.hero__video.is-live {
+  opacity: 1;
+}
+
+/* Скрываем нативные кнопки Play и любые оверлеи WebKit / iOS / Android */
+.hero__video::-webkit-media-controls,
+.hero__video::-webkit-media-controls-start-playback-button,
+.hero__video::-webkit-media-controls-play-button,
+.hero__video::-webkit-media-controls-panel,
+.hero__video::-webkit-media-controls-enclosure,
+.hero__video::-webkit-media-controls-overlay-play-button,
+.hero__video::-webkit-media-controls-overlay-enclosure,
+video::-webkit-media-controls,
+video::-webkit-media-controls-start-playback-button,
+video::-webkit-media-controls-play-button,
+video::-webkit-media-controls-panel,
+video::-webkit-media-controls-enclosure,
+video::-webkit-media-controls-overlay-play-button,
+video::-webkit-media-controls-overlay-enclosure {
+  -webkit-appearance: none !important;
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  max-width: 0 !important;
+  max-height: 0 !important;
 }
 /* Градиент-оверлей: читаемость текста, но персонаж не перекрываем */
 .hero__shade {

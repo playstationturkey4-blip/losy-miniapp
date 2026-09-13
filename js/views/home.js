@@ -48,19 +48,20 @@ let userGestureHooked = false;
 function hookUserGesture() {
   if (userGestureHooked) return;
   userGestureHooked = true;
+  const events = ["touchstart", "touchend", "pointerdown", "pointerup", "click", "scroll"];
   const onFirstTouch = () => {
-    window.removeEventListener("touchstart", onFirstTouch, true);
-    window.removeEventListener("pointerdown", onFirstTouch, true);
-    window.removeEventListener("click", onFirstTouch, true);
-    window.removeEventListener("scroll", onFirstTouch, true);
+    events.forEach(evt => {
+      window.removeEventListener(evt, onFirstTouch, true);
+      document.removeEventListener(evt, onFirstTouch, true);
+    });
     userGestureHooked = false;
     safePlayHeroVideo();
   };
   const opts = { capture: true, passive: true, once: true };
-  window.addEventListener("touchstart", onFirstTouch, opts);
-  window.addEventListener("pointerdown", onFirstTouch, opts);
-  window.addEventListener("click", onFirstTouch, opts);
-  window.addEventListener("scroll", onFirstTouch, opts);
+  events.forEach(evt => {
+    window.addEventListener(evt, onFirstTouch, opts);
+    document.addEventListener(evt, onFirstTouch, opts);
+  });
 }
 
 export function safePlayHeroVideo() {
@@ -141,6 +142,7 @@ export function initHero() {
 
   // Запуск при готовности медиа-данных и плавное появление
   v.addEventListener("playing", () => v.classList.add("is-live"));
+  v.addEventListener("timeupdate", () => { if (v.currentTime > 0.05) v.classList.add("is-live"); });
   v.addEventListener("loadedmetadata", safePlayHeroVideo);
   v.addEventListener("loadeddata", safePlayHeroVideo);
   v.addEventListener("canplay", safePlayHeroVideo);
