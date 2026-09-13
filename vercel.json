@@ -58,6 +58,14 @@
     {
       "source": "/rocket",
       "destination": "/modes/losy-rocket.html"
+    },
+    {
+      "source": "/api/:path*",
+      "destination": "https://losy-miniapp.onrender.com/api/:path*"
+    },
+    {
+      "source": "/health",
+      "destination": "https://losy-miniapp.onrender.com/health"
     }
   ]
 }

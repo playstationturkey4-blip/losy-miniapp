@@ -345,12 +345,13 @@ const server = http.createServer((req, res) => {
   let pathname = decodeURIComponent(parsedUrl.pathname);
 
   // Мгновенный легковесный ping для keep-alive и health checks
-  if (pathname === '/ping' || pathname === '/health') {
+  if (pathname === '/ping' || pathname === '/health' || pathname === '/api/ping' || pathname === '/api/health') {
+    res.setHeader('Access-Control-Allow-Origin', '*');
     res.writeHead(200, {
-      'Content-Type': 'text/plain; charset=utf-8',
+      'Content-Type': 'application/json; charset=utf-8',
       'Cache-Control': 'no-cache, no-store'
     });
-    res.end('pong');
+    res.end(JSON.stringify({ status: 'ok', uptime: Math.floor(process.uptime()), time: Date.now() }));
     return;
   }
 
@@ -942,14 +943,15 @@ server.listen(PORT, '0.0.0.0', async () => {
 
     const info = `LOCAL: http://localhost:${PORT}\nPUBLIC: ${publicUrl}\n`;
 
-    // Автоматически синхронизируем кнопку 'Играть' в Telegram боте (v=88)
+    // Автоматически синхронизируем кнопку 'Играть' в Telegram боте (v=91 на Vercel)
     try {
       const https = require('https');
+      const miniappUrl = process.env.MINIAPP_URL || 'https://losy-miniapp.vercel.app';
       const payload = JSON.stringify({
         menu_button: {
           type: 'web_app',
           text: '🚀 Играть',
-          web_app: { url: `${publicUrl.replace(/\/$/, '')}/?v=91` }
+          web_app: { url: `${miniappUrl.replace(/\/$/, '')}/?v=91` }
         }
       });
       const req = https.request({
