@@ -344,6 +344,16 @@ const server = http.createServer((req, res) => {
   const parsedUrl = url.parse(req.url, true);
   let pathname = decodeURIComponent(parsedUrl.pathname);
 
+  // Мгновенный легковесный ping для keep-alive и health checks
+  if (pathname === '/ping' || pathname === '/health') {
+    res.writeHead(200, {
+      'Content-Type': 'text/plain; charset=utf-8',
+      'Cache-Control': 'no-cache, no-store'
+    });
+    res.end('pong');
+    return;
+  }
+
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Telegram-Init-Data');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
@@ -869,6 +879,7 @@ try {
     'index.html',
     'dist/app.bundle.js',
     'dist/shell.bundle.css',
+    'js/balance-sync.js',
     'sw.js',
     'vendor/telegram-web-app.js',
     'assets/fonts/Unbounded-Variable.woff2',
@@ -903,6 +914,9 @@ try {
   console.error('Prewarm error:', e.message);
 }
 
+server.keepAliveTimeout = 65000;
+server.headersTimeout = 66000;
+
 server.listen(PORT, '0.0.0.0', async () => {
   console.log(`\n======================================================`);
   console.log(`🚀 [ACCELERATED SERVER RUNNING]: http://0.0.0.0:${PORT}`);
@@ -927,14 +941,14 @@ server.listen(PORT, '0.0.0.0', async () => {
 
     const info = `LOCAL: http://localhost:${PORT}\nPUBLIC: ${publicUrl}\n`;
 
-    // Автоматически синхронизируем кнопку 'Играть' в Telegram боте
+    // Автоматически синхронизируем кнопку 'Играть' в Telegram боте (v=88)
     try {
       const https = require('https');
       const payload = JSON.stringify({
         menu_button: {
           type: 'web_app',
           text: '🚀 Играть',
-          web_app: { url: `${publicUrl}?v=85` }
+          web_app: { url: `${publicUrl}?v=88` }
         }
       });
       const req = https.request({
@@ -948,7 +962,7 @@ server.listen(PORT, '0.0.0.0', async () => {
       }, (resp) => {
         let body = '';
         resp.on('data', c => body += c);
-        resp.on('end', () => console.log('✅ [TELEGRAM BOT]: Chat Menu Button обновлена:', body));
+        resp.on('end', () => console.log('✅ [TELEGRAM BOT]: Chat Menu Button обновлена (v=88):', body));
       });
       req.on('error', (err) => console.error('[-] Telegram API error:', err.message));
       req.write(payload);
@@ -957,6 +971,19 @@ server.listen(PORT, '0.0.0.0', async () => {
       console.error('Menu button update error:', btnErr.message);
     }
   }
+
+  // Render Anti-Sleep Keep-Alive Heartbeat:
+  // Пингует сервер каждые 8 минут, чтобы Render Free tier не засыпал и открывался моментально
+  const keepAliveTarget = publicUrl || process.env.RENDER_EXTERNAL_URL || 'https://losy-miniapp.onrender.com';
+  setInterval(() => {
+    try {
+      const pingUrl = new URL('/ping', keepAliveTarget);
+      const reqMod = pingUrl.protocol === 'https:' ? require('https') : require('http');
+      reqMod.get(pingUrl.href, (r) => {
+        r.resume();
+      }).on('error', () => {});
+    } catch (_) {}
+  }, 8 * 60 * 1000);
 
   // 4. Автоматический запуск Telegram-бота как фонового сервиса
   if (process.env.AUTOSTART_BOT !== 'false') {
