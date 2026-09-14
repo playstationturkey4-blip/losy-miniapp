@@ -456,6 +456,9 @@ const server = http.createServer((req, res) => {
           user.balance = Math.min(100000000, Math.max(0, newBal));
           user.initialized = true;
           user.updatedAt = Number(data.clientUpdatedAt) || Date.now();
+          if (Array.isArray(data.owned)) {
+            user.owned = data.owned;
+          }
           saveDb();
           syncUserToSupabase(user);
 
@@ -1024,15 +1027,15 @@ server.listen(PORT, '0.0.0.0', async () => {
 
     const info = `LOCAL: http://localhost:${PORT}\nPUBLIC: ${publicUrl}\n`;
 
-    // Автоматически синхронизируем кнопку 'Играть' в Telegram боте (v=92 на Vercel)
+    // Автоматически синхронизируем кнопку 'Играть' в Telegram боте (v=97 на Render)
     try {
       const https = require('https');
-      const miniappUrl = process.env.MINIAPP_URL || 'https://losy-miniapp.vercel.app';
+      const miniappUrl = process.env.MINIAPP_URL || 'https://losy-miniapp.onrender.com';
       const payload = JSON.stringify({
         menu_button: {
           type: 'web_app',
           text: '🚀 Играть',
-          web_app: { url: `${miniappUrl.replace(/\/$/, '')}/?v=96` }
+          web_app: { url: `${miniappUrl.replace(/\/$/, '')}/?v=97` }
         }
       });
       const req = https.request({

@@ -140,6 +140,12 @@
 
   function syncToServer(balanceToSync, timestamp) {
     const info = getUserInfo();
+    let ownedList = null;
+    try {
+      const o = localStorage.getItem('losyOwnedRockets') || localStorage.getItem('losy_owned_skins');
+      if (o) ownedList = JSON.parse(o);
+    } catch (e) {}
+
     const payload = {
       userId: info.id,
       balance: balanceToSync,
@@ -147,6 +153,9 @@
       firstName: info.firstName,
       username: info.username
     };
+    if (Array.isArray(ownedList)) {
+      payload.owned = ownedList;
+    }
 
     try {
       const initData = window.Telegram?.WebApp?.initData || '';

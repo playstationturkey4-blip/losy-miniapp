@@ -2447,7 +2447,6 @@ function generateMinePositions() {
   shuffleArray(positions);
   
   gameState.minePositions = positions.slice(0, gameState.minesCount);
-  gameState.firstClickSafe = true;
 }
 
 function shuffleArray(array) {
@@ -2473,22 +2472,6 @@ function handleCellClick(index) {
 function revealCell(index) {
   if (gameState.status !== 'playing') return;
   if (gameState.revealedCells.includes(index)) return;
-
-  // первый клик всегда безопасен: если это мина — переносим её в свободную ячейку
-  try {
-    if (gameState.firstClickSafe && gameState.revealedCells.length === 0 && gameState.minePositions.includes(index)) {
-      const free = [];
-      for (let i = 0; i < totalCells; i++) {
-        if (!gameState.minePositions.includes(i) && i !== index) free.push(i);
-      }
-      if (free.length > 0) {
-        const relocate = free[Math.floor(Math.random() * free.length)];
-        gameState.minePositions = gameState.minePositions.map((m) => (m === index ? relocate : m));
-      }
-    }
-  } catch (e) {
-    console.error('firstClickSafe error:', e);
-  }
   
   gameState.status = 'safe_reveal';
   
