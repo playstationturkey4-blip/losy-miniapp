@@ -13,7 +13,7 @@ export const MODES = [
     id: "bombs",
     name: "Бомбы",
     desc: "Вскрывай ячейки, собирай множители и избегай мин.",
-    url: "/modes/losy-bombs.html?v=70",
+    url: "/modes/losy-bombs.html?v=93",
     cover: "/assets/covers/bombs.webp",
     accent: "bombs",
   },

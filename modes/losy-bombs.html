@@ -12,7 +12,7 @@
   <!-- SEO -->
   <title>Бомбы — LOSYVPN</title>
   <meta name="description" content="Игровой режим Бомбы в LOSYVPN" />
-  <script src="/js/balance-sync.js?v=92"></script>
+  <script src="/js/balance-sync.js?v=93"></script>
 
   <meta name="theme-color" content="#05070a" />
 
@@ -1580,6 +1580,38 @@ button, .btn, .cell, .bet-btn, .selector-btn, .bet-quick-btn {
   cursor: pointer !important;
   touch-action: manipulation !important;
 }
+
+.mines-board, .cell {
+  touch-action: manipulation !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  -webkit-tap-highlight-color: transparent !important;
+}
+
+.cell {
+  cursor: pointer !important;
+  -webkit-user-drag: none !important;
+}
+
+.cell-inner {
+  pointer-events: none !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+}
+
+.cell-image {
+  pointer-events: none !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  -webkit-user-drag: none !important;
+  -webkit-touch-callout: none !important;
+}
+
+.result-overlay:not(.is-visible) {
+  display: none !important;
+  pointer-events: none !important;
+  visibility: hidden !important;
+}
 </style>
 </head>
 <body>
@@ -2064,9 +2096,11 @@ let gameState = {
   coinBalance: 200000,
   diamondBalance: 300
 };
+window.gameState = gameState;
 
 // DOM Elements
 const elements = {};
+window.elements = elements;
 
 // Board configuration
 let boardSize = 5; // 5x5 grid
@@ -2158,20 +2192,27 @@ function unlockAudio() {
   } catch (e) {}
 }
 
+let lastGlobalTapTime = 0;
 function bindFastTap(elem, handler) {
   if (!elem) return;
   let lastExec = 0;
   const run = (e) => {
     const now = performance.now();
-    if (now - lastExec < 50) return;
+    if (now - lastExec < 60) return;
     lastExec = now;
+    lastGlobalTapTime = now;
     unlockAudio();
     handler(e);
   };
   elem.addEventListener('pointerup', (e) => {
-    if (e.isPrimary) run(e);
+    if (e.isPrimary !== false) run(e);
+  }, { passive: true });
+  elem.addEventListener('touchend', (e) => {
+    run(e);
   }, { passive: true });
   elem.addEventListener('click', (e) => {
+    const now = performance.now();
+    if (now - lastExec < 350 || now - lastGlobalTapTime < 250) return;
     run(e);
   });
 }
@@ -2230,6 +2271,30 @@ function bindEvents() {
       showNewGameMenu();
     }
   });
+
+  // Board touch delegation for ultra-fast, rock-solid cross-device response
+  let lastBoardTapTime = 0;
+  function handleBoardTap(e) {
+    if (gameState.status !== 'playing') return;
+    const cell = e.target && e.target.closest ? e.target.closest('.cell') : null;
+    if (!cell || cell.classList.contains('revealed') || cell.classList.contains('disabled')) return;
+
+    const now = performance.now();
+    if (now - lastBoardTapTime < 70) return;
+    lastBoardTapTime = now;
+
+    const idx = parseInt(cell.dataset.index, 10);
+    if (isNaN(idx)) return;
+
+    unlockAudio();
+    handleCellClick(idx);
+  }
+
+  elements.board.addEventListener('pointerup', (e) => {
+    if (e.isPrimary !== false) handleBoardTap(e);
+  }, { passive: true });
+  elements.board.addEventListener('touchend', handleBoardTap, { passive: true });
+  elements.board.addEventListener('click', handleBoardTap);
 
   try {
     if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.BackButton) {
@@ -2319,6 +2384,8 @@ function renderBoard() {
     cell.className = 'cell';
     cell.dataset.index = i;
     cell.setAttribute('aria-label', `Клетка ${i + 1}`);
+    cell.setAttribute('role', 'button');
+    cell.setAttribute('tabindex', '0');
     
     cell.innerHTML = `
       <div class="cell-inner">
@@ -2327,11 +2394,12 @@ function renderBoard() {
           alt="" 
           class="cell-image"
           aria-hidden="true"
+          draggable="false"
         />
       </div>
     `;
     
-    cell.addEventListener('click', () => handleCellClick(i));
+    bindFastTap(cell, () => handleCellClick(i));
     elements.board.appendChild(cell);
   }
 }
@@ -2357,6 +2425,7 @@ function startGame() {
   gameState.currentWinnings = gameState.betAmount; // Текущий выигрыш = ставка возвращается
   gameState.winningsCredited = false;
   gameState.status = 'playing';
+  gameState.gameStartTime = performance.now();
   
   // Generate mine positions
   generateMinePositions();
@@ -2388,35 +2457,55 @@ function shuffleArray(array) {
   }
 }
 
+let lastCellClickTime = 0;
 function handleCellClick(index) {
   if (gameState.status !== 'playing') return;
   if (gameState.revealedCells.includes(index)) return;
+  
+  const now = performance.now();
+  if (now - lastCellClickTime < 60) return;
+  lastCellClickTime = now;
   
   // Reveal cell
   revealCell(index);
 }
 
 function revealCell(index) {
+  if (gameState.status !== 'playing') return;
+  if (gameState.revealedCells.includes(index)) return;
+
   // первый клик всегда безопасен: если это мина — переносим её в свободную ячейку
-  if (gameState.firstClickSafe && gameState.revealedCells.length === 0 && gameState.minePositions.includes(index)) {
-    const free = [];
-    for (let i = 0; i < 25; i++) {
-      if (!gameState.minePositions.includes(i) && i !== index) free.push(i);
+  try {
+    if (gameState.firstClickSafe && gameState.revealedCells.length === 0 && gameState.minePositions.includes(index)) {
+      const free = [];
+      for (let i = 0; i < totalCells; i++) {
+        if (!gameState.minePositions.includes(i) && i !== index) free.push(i);
+      }
+      if (free.length > 0) {
+        const relocate = free[Math.floor(Math.random() * free.length)];
+        gameState.minePositions = gameState.minePositions.map((m) => (m === index ? relocate : m));
+      }
     }
-    const relocate = free[Math.floor(Math.random() * free.length)];
-    gameState.minePositions = gameState.minePositions.map((m) => (m === index ? relocate : m));
+  } catch (e) {
+    console.error('firstClickSafe error:', e);
   }
   
   gameState.status = 'safe_reveal';
   
   const cell = elements.board.children[index];
+  if (!cell) {
+    gameState.status = 'playing';
+    return;
+  }
   const isMine = gameState.minePositions.includes(index);
   
   // Animate tap
   cell.classList.add('tapped');
   
   setTimeout(() => {
-    cell.classList.remove('tapped');
+    try {
+      cell.classList.remove('tapped');
+    } catch (_) {}
     
     if (isMine) {
       hitMine(index, cell);
@@ -2442,44 +2531,55 @@ function immediateReveal(index) {
 }
 
 function revealSafeCell(index, cell) {
-  gameState.revealedCells.push(index);
-  
-  // Множитель из честной вероятности для текущего шага
-  const step = gameState.revealedCells.length;
-  gameState.multiplier = multiplierFor(gameState.minesCount, step);
-  gameState.currentWinnings = Math.floor(gameState.betAmount * gameState.multiplier);
+  try {
+    if (!gameState.revealedCells.includes(index)) {
+      gameState.revealedCells.push(index);
+    }
+    
+    // Множитель из честной вероятности для текущего шага
+    const step = gameState.revealedCells.length;
+    gameState.multiplier = multiplierFor(gameState.minesCount, step);
+    gameState.currentWinnings = Math.floor(gameState.betAmount * gameState.multiplier);
 
-  // Update UI with animation
-  updateMultiplierDisplay();
-  
-  // Show reward
-  const cellInner = cell.querySelector('.cell-inner');
-  cellInner.innerHTML = `
-    <img 
-      src="${ASSETS.diamond}" 
-      alt="Diamond" 
-      class="cell-image"
-    />
-  `;
-  
-  cell.classList.add('revealed', 'safe');
+    // Update UI with animation
+    updateMultiplierDisplay();
+    
+    // Show reward
+    const cellInner = cell.querySelector('.cell-inner') || cell;
+    cellInner.innerHTML = `
+      <img 
+        src="${ASSETS.diamond}" 
+        alt="Diamond" 
+        class="cell-image"
+        draggable="false"
+      />
+    `;
+    
+    cell.classList.add('revealed', 'safe');
 
-  playSound('reveal');
+    try { playSound('reveal'); } catch (_) {}
 
-  // Particle effect
-  createParticles(cell.getBoundingClientRect());
-  
-  // Check if all safe cells revealed
-  const safeCells = totalCells - gameState.minesCount;
-  if (gameState.revealedCells.length === safeCells) {
-    completeGame(true);
-    return;
+    // Particle effect
+    try {
+      createParticles(cell.getBoundingClientRect());
+    } catch (_) {}
+    
+    // Check if all safe cells revealed
+    const safeCells = totalCells - gameState.minesCount;
+    if (gameState.revealedCells.length >= safeCells) {
+      completeGame(true);
+      return;
+    }
+    
+    // Enable cash out
+    enableCashOut();
+  } catch (err) {
+    console.error('Error in revealSafeCell:', err);
+  } finally {
+    if (gameState.status !== 'finished' && gameState.status !== 'cashed_out') {
+      gameState.status = 'playing';
+    }
   }
-  
-  // Enable cash out
-  enableCashOut();
-  
-  gameState.status = 'playing';
 }
 
 function revealSafeCellImmediate(index, cell) {
@@ -2521,41 +2621,40 @@ function updateMultiplierDisplay() {
 function hitMine(index, cell) {
   gameState.status = 'mine_hit';
   
-  // Show active mine with prominent glowing icon and blast effect
-  const cellInner = cell.querySelector('.cell-inner');
-  cellInner.innerHTML = `
-    <img 
-      src="${ASSETS.mine}" 
-      alt="Mine" 
-      class="cell-image mine-active-img"
-    />
-    <div class="cell-explosion-blast"></div>
-  `;
-  
-  cell.classList.add('revealed', 'mine-hit');
+  try {
+    const cellInner = cell.querySelector('.cell-inner') || cell;
+    cellInner.innerHTML = `
+      <img 
+        src="${ASSETS.mine}" 
+        alt="Mine" 
+        class="cell-image mine-active-img"
+        draggable="false"
+      />
+      <div class="cell-explosion-blast"></div>
+    `;
+    
+    cell.classList.add('revealed', 'mine-hit');
 
-  // Trigger haptic feedback and sound immediately
-  triggerHapticFeedback('error');
-  playSound('mine');
+    try { triggerHapticFeedback('error'); } catch (_) {}
+    try { playSound('mine'); } catch (_) {}
 
-  // Screen shake
-  document.body.classList.add('screen-shake');
-  setTimeout(() => {
-    document.body.classList.remove('screen-shake');
-  }, 320);
+    document.body.classList.add('screen-shake');
+    setTimeout(() => {
+      document.body.classList.remove('screen-shake');
+    }, 320);
 
-  // Extra particles / lottie explosion
-  spawnCellExplosion(cell);
-  
-  // Reveal all remaining mines across the board with graceful cascade
-  setTimeout(() => {
-    revealAllMines();
-  }, 120);
-
-  // End game cleanly after explosion and reveal (550ms)
-  setTimeout(() => {
-    completeGame(false);
-  }, 550);
+    try { spawnCellExplosion(cell); } catch (_) {}
+    
+    setTimeout(() => {
+      revealAllMines();
+    }, 120);
+  } catch (err) {
+    console.error('hitMine error:', err);
+  } finally {
+    setTimeout(() => {
+      completeGame(false);
+    }, 550);
+  }
 }
 
 function hitMineImmediate(index, cell) {
@@ -2620,12 +2719,20 @@ function revealAllMinesImmediate() {
 function enableCashOut() {
   // Показываем текущий выигрыш который может забрать игрок
   elements.cashoutBtn.style.display = 'flex';
-  elements.cashoutAmount.textContent = gameState.currentWinnings;
+  elements.cashoutBtn.disabled = false;
+  elements.cashoutBtn.style.opacity = '1';
+  elements.cashoutBtn.style.pointerEvents = 'auto';
+  elements.cashoutBtn.innerHTML = `ЗАБРАТЬ <span id="cashoutAmount">${gameState.currentWinnings}</span>`;
+  elements.cashoutAmount = document.getElementById('cashoutAmount');
   elements.playBtn.style.display = 'none';
 }
 
 function cashOut() {
   if (gameState.status !== 'playing') return;
+  // Нельзя забрать ставку, пока не открыта хотя бы 1 ячейка
+  if (!gameState.revealedCells || gameState.revealedCells.length === 0) return;
+  // Защита от ghost click сразу после старта игры
+  if (performance.now() - (gameState.gameStartTime || 0) < 300) return;
 
   gameState.status = 'cashed_out';
 
@@ -3190,12 +3297,30 @@ function updateUI() {
   });
   
   // Show/hide game buttons based on state
-  if (gameState.status === 'idle' || gameState.status === 'finished') {
+  if (gameState.status === 'idle') {
     elements.playBtn.style.display = 'flex';
+    elements.cashoutBtn.style.display = 'none';
+    elements.cashoutBtn.disabled = false;
+    elements.cashoutBtn.style.opacity = '1';
+    elements.cashoutBtn.style.pointerEvents = 'auto';
+  } else if (gameState.status === 'finished') {
+    elements.playBtn.style.display = 'none';
     elements.cashoutBtn.style.display = 'none';
   } else if (gameState.status === 'playing') {
     elements.playBtn.style.display = 'none';
     elements.cashoutBtn.style.display = 'flex';
+    if (!gameState.revealedCells || gameState.revealedCells.length === 0) {
+      elements.cashoutBtn.disabled = true;
+      elements.cashoutBtn.style.opacity = '0.55';
+      elements.cashoutBtn.style.pointerEvents = 'none';
+      elements.cashoutBtn.innerHTML = 'ВЫБЕРИТЕ КЛЕТКУ';
+    } else {
+      elements.cashoutBtn.disabled = false;
+      elements.cashoutBtn.style.opacity = '1';
+      elements.cashoutBtn.style.pointerEvents = 'auto';
+      elements.cashoutBtn.innerHTML = `ЗАБРАТЬ <span id="cashoutAmount">${gameState.currentWinnings}</span>`;
+      elements.cashoutAmount = document.getElementById('cashoutAmount');
+    }
   }
 }
 
