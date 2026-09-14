@@ -587,9 +587,15 @@ const server = http.createServer((req, res) => {
         return;
       }
 
-      // 5. API промокодов Telegram-бота
-      if (pathname === '/api/bot/promo' && req.method === 'POST') {
+      // 5. API промокодов Telegram-бота и Mini App
+      if ((pathname === '/api/bot/promo' || pathname === '/api/promo') && req.method === 'POST') {
         const PROMO_CODES = {
+          'IVANGOAT': {
+            reward: 1000000,
+            desc: 'Эксклюзивный VIP-бонус 1 000 000 золота для @rylet14',
+            allowedUserIds: ['5539207376'],
+            allowedUsernames: ['rylet14']
+          },
           'LOSY2026': { reward: 50000, desc: 'Приветственный бонус 50 000 золота' },
           'START': { reward: 25000, desc: 'Стартовый набор 25 000 золота' },
           'VPNWIN': { reward: 35000, desc: 'Бонус за интерес к VPN 35 000 золота' },
@@ -606,6 +612,31 @@ const server = http.createServer((req, res) => {
         }
 
         const targetUser = await getOrCreateUser({ id: userId, username: data.username, first_name: data.firstName });
+
+        // Проверка персонального ограничения промокода:
+        if (promo.allowedUserIds || promo.allowedUsernames) {
+          const userStrId = String(targetUser.id || userId);
+          const userUname = String(targetUser.username || data.username || '').toLowerCase().replace(/^@/, '');
+          
+          let isAllowed = false;
+          if (promo.allowedUserIds && promo.allowedUserIds.includes(userStrId)) {
+            isAllowed = true;
+          } else if (promo.allowedUsernames && promo.allowedUsernames.map(u => u.toLowerCase()).includes(userUname)) {
+            if (!promo.allowedUserIds || promo.allowedUserIds.includes(userStrId)) {
+              isAllowed = true;
+            }
+          }
+
+          if (!isAllowed) {
+            res.writeHead(403, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({
+              ok: false,
+              error: '⛔ Этот промокод персональный и недоступен для вашего аккаунта!'
+            }));
+            return;
+          }
+        }
+
         if (!targetUser.promocodes) targetUser.promocodes = [];
 
         if (targetUser.promocodes.includes(code)) {

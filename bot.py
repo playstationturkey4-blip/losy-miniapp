@@ -37,7 +37,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 ASSETS_DIR = os.path.join(BASE_DIR, 'assets', 'bot')
 DB_FILE = os.path.join(BASE_DIR, 'server_db.json')
 VPN_BOTS_FILE = os.path.join(BASE_DIR, 'vpn_bots.json')
-SERVER_API_URL = os.environ.get("SERVER_API_URL", "http://127.0.0.1:8123")
+SERVER_API_URL = os.environ.get("SERVER_API_URL") or f"http://127.0.0.1:{os.environ.get('PORT', '8123')}"
 
 # Изображения экранов (легко заменяются при отправке новых файлов)
 IMAGES = {
@@ -204,6 +204,56 @@ def record_bot_visit(user_id, bot_id, username="", first_name=""):
     except Exception:
         pass
 
+def apply_promo_code(user_id, code, username="", first_name=""):
+    """
+    Отправляет запрос активации промокода на сервер API (/api/bot/promo):
+    - Поддерживает эксклюзивный промокод IvanGoat для @rylet14 (1 000 000 монет)
+    - Проверяет права доступа и одноразовость
+    - Обновляет баланс и синхронизирует с Supabase
+    """
+    clean_code = str(code or '').strip()
+    if not clean_code:
+        return {'ok': False, 'error': 'Промокод не может быть пустым!'}
+
+    endpoints = [
+        f"{SERVER_API_URL}/api/bot/promo",
+        "https://losy-miniapp.onrender.com/api/bot/promo"
+    ]
+    unique_endpoints = []
+    for ep in endpoints:
+        if ep not in unique_endpoints:
+            unique_endpoints.append(ep)
+
+    payload = json.dumps({
+        'userId': str(user_id),
+        'code': clean_code,
+        'username': username or "",
+        'firstName': first_name or ""
+    }).encode('utf-8')
+
+    last_error = None
+    for ep in unique_endpoints:
+        try:
+            req = urllib.request.Request(
+                ep,
+                data=payload,
+                headers={'Content-Type': 'application/json', 'User-Agent': 'LosyBot/2.0'}
+            )
+            with urllib.request.urlopen(req, timeout=4.0) as resp:
+                data = json.loads(resp.read().decode('utf-8'))
+                return data
+        except urllib.error.HTTPError as he:
+            try:
+                err_data = json.loads(he.read().decode('utf-8'))
+                return err_data
+            except Exception:
+                last_error = f"Ошибка сервера ({he.code})"
+        except Exception as e:
+            last_error = str(e)
+
+    return {'ok': False, 'error': last_error or 'Не удалось связаться с сервером активации'}
+
+
 # -------------------------------------------------------------
 # 3. ФИЛЬТРАЦИЯ И ПОИСК БОТОВ
 # -------------------------------------------------------------
@@ -263,7 +313,7 @@ def get_main_inline_keyboard(unvisited_count=None, user_id=None):
     
     btn_vpn = types.InlineKeyboardButton(f"🛡️ Полный каталог VPN ({len(VPN_BOTS)} ботов)", callback_data="vpn_p:0:all")
     btn_profile = types.InlineKeyboardButton("👤 Мой профиль (посещенные боты)", callback_data="menu_profile")
-    btn_promo = types.InlineKeyboardButton("🎁 Промокод (Скоро)", callback_data="menu_promo")
+    btn_promo = types.InlineKeyboardButton("🎁 Промокод", callback_data="menu_promo")
     btn_rnd = types.InlineKeyboardButton("🎲 Случайный VPN", callback_data="vpn_rnd")
     markup.add(btn_app, btn_unvisited, btn_vpn, btn_profile, btn_promo, btn_rnd)
     return markup
@@ -407,13 +457,14 @@ def get_profile_keyboard(user=None):
     return markup
 
 def get_promo_keyboard(user_id=None):
-    """Клавиатура раздела промокодов (заглушка «Скоро»)"""
+    """Клавиатура раздела промокодов"""
     app_url = get_app_url(user_id)
     markup = types.InlineKeyboardMarkup(row_width=1)
+    btn_enter = types.InlineKeyboardButton("✏️ Ввести промокод", callback_data="promo_enter")
     btn_app = types.InlineKeyboardButton("🚀 Запустить Mini App", web_app=types.WebAppInfo(url=app_url))
-    btn_vpn = types.InlineKeyboardButton(f"🛡️ Каталог VPN ({len(VPN_BOTS)} ботов)", callback_data="vpn_p:0:all")
+    btn_profile = types.InlineKeyboardButton("👤 Мой профиль (баланс)", callback_data="menu_profile")
     btn_home = types.InlineKeyboardButton("« В главное меню", callback_data="menu_home")
-    markup.add(btn_app, btn_vpn, btn_home)
+    markup.add(btn_enter, btn_app, btn_profile, btn_home)
     return markup
 
 def get_random_bot_keyboard(rand_bot):
@@ -539,13 +590,16 @@ def get_profile_text(user):
     lines.append(f"\n⚡ <i>Баланс и посещения полностью синхронизированы с Mini App!</i>")
     return "\n".join(lines)
 
-def get_promo_text():
+def get_promo_text(user=None):
+    bal_str = f"{user.get('balance', 200000):,}".replace(",", " ") if user else "200 000"
     return (
-        "🎁 <b>Раздел «Промокод»:</b>\n\n"
-        "⏳ <b>Раздел находится в разработке (Скоро!)</b>\n\n"
-        "Здесь появится ввод секретных промокодов на бесплатное золото, "
-        "скины ракет и подарочные VIP-ключи для VPN.\n\n"
-        "🎮 <i>Пока вы можете копить монеты в Mini App и тестировать ботов из каталога!</i>"
+        "🎁 <b>Активация промокодов LOSY:</b>\n\n"
+        f"💰 <b>Ваш текущий баланс:</b> <b>{bal_str}</b> 🪙\n\n"
+        "Активируйте промокод, чтобы получить бесплатные золотые монеты для игр "
+        "и обмена на премиальные ключи VPN!\n\n"
+        "⚡ <b>Как активировать:</b>\n"
+        "• Отправьте команду: <code>/promo ВАШ_КОД</code> (например, <code>/promo IvanGoat</code>)\n"
+        "• Или нажмите кнопку <b>«✏️ Ввести промокод»</b> ниже."
     )
 
 def get_random_bot_text(rand_bot):
@@ -682,7 +736,14 @@ def handle_app_command(message):
 
 @bot.message_handler(commands=['promo'])
 def handle_promo_command(message):
-    caption = get_promo_text()
+    parts = (message.text or "").strip().split(maxsplit=1)
+    if len(parts) > 1 and parts[1].strip():
+        code = parts[1].strip()
+        process_user_promo(message.chat.id, message.from_user, code)
+        return
+
+    user = get_user_data(message.from_user.id, message.from_user.username, message.from_user.first_name)
+    caption = get_promo_text(user)
     kb = get_promo_keyboard(user_id=message.from_user.id)
     send_or_edit_screen(message.chat.id, 'promo', caption, kb)
 
@@ -846,11 +907,22 @@ def handle_callbacks(call):
         kb = get_profile_keyboard(user)
         send_or_edit_screen(chat_id, 'profile', caption, kb, call=call)
 
-    # 6. Промокоды (Скоро)
+    # 6. Промокоды
     elif data == "menu_promo":
-        caption = get_promo_text()
-        kb = get_promo_keyboard()
+        user = get_user_data(user_id, username, first_name)
+        caption = get_promo_text(user)
+        kb = get_promo_keyboard(user_id=user_id)
         send_or_edit_screen(chat_id, 'promo', caption, kb, call=call)
+
+    elif data == "promo_enter":
+        msg = bot.send_message(
+            chat_id,
+            "🎁 <b>Активация промокода:</b>\n\n"
+            "Введите и отправьте ваш промокод в ответном сообщении.\n"
+            "<i>(Или отправьте «Отмена» для возврата)</i>",
+            reply_markup=types.ForceReply(selective=True)
+        )
+        bot.register_next_step_handler(msg, step_receive_promo)
 
     # 7. Случайный VPN
     elif data == "vpn_rnd":
@@ -870,6 +942,61 @@ def handle_callbacks(call):
             reply_markup=types.ForceReply(selective=True)
         )
         bot.register_next_step_handler(msg, step_receive_search)
+
+# -------------------------------------------------------------
+# 9.1 ОБРАБОТКА ВВОДА ПРОМОКОДА
+# -------------------------------------------------------------
+def step_receive_promo(message):
+    code = (message.text or "").strip()
+    if code.lower() in ["отмена", "cancel", "/cancel", "назад"]:
+        bot.send_message(message.chat.id, "❌ Ввод промокода отменен.", reply_markup=get_main_reply_keyboard(user_id=message.from_user.id))
+        return
+    process_user_promo(message.chat.id, message.from_user, code)
+
+def process_user_promo(chat_id, from_user, code):
+    user_id = from_user.id
+    username = from_user.username or ""
+    first_name = from_user.first_name or ""
+
+    res = apply_promo_code(user_id, code, username, first_name)
+    app_url = get_app_url(user_id)
+
+    if res.get('ok'):
+        reward = res.get('reward', 0)
+        new_balance = res.get('newBalance', 0)
+        desc = res.get('desc', '')
+
+        reward_str = f"{reward:,}".replace(",", " ")
+        new_bal_str = f"{new_balance:,}".replace(",", " ")
+
+        caption = (
+            f"🎉 <b>Промокод «{code}» успешно активирован!</b>\n\n"
+            f"💰 <b>Начислено:</b> <b>+{reward_str}</b> 🪙\n"
+            f"💎 <b>Новый баланс:</b> <b>{new_bal_str}</b> 🪙\n"
+        )
+        if desc:
+            caption += f"\n✨ <i>{desc}</i>\n"
+        caption += "\n⚡ <i>Монеты уже зачислены и доступны в вашем профиле и играх!</i>"
+
+        markup = types.InlineKeyboardMarkup(row_width=1)
+        markup.add(
+            types.InlineKeyboardButton("🚀 Открыть Mini App (Играть)", web_app=types.WebAppInfo(url=app_url)),
+            types.InlineKeyboardButton("👤 Проверить баланс в профиле", callback_data="menu_profile"),
+            types.InlineKeyboardButton("« В главное меню", callback_data="menu_home")
+        )
+        send_or_edit_screen(chat_id, 'promo', caption, markup)
+    else:
+        err_msg = res.get('error', 'Промокод не существует или истёк.')
+        caption = (
+            f"❌ <b>Ошибка активации промокода:</b>\n\n"
+            f"{err_msg}"
+        )
+        markup = types.InlineKeyboardMarkup(row_width=1)
+        markup.add(
+            types.InlineKeyboardButton("✏️ Попробовать другой код", callback_data="promo_enter"),
+            types.InlineKeyboardButton("« В главное меню", callback_data="menu_home")
+        )
+        send_or_edit_screen(chat_id, 'promo', caption, markup)
 
 # -------------------------------------------------------------
 # 10. ШАГИ ПОИСКА
@@ -929,7 +1056,7 @@ def setup_bot_meta():
             types.BotCommand("vpn", f"🛡️ Каталог {len(VPN_BOTS)} проверенных VPN"),
             types.BotCommand("profile", "👤 Мой профиль и посещенные боты"),
             types.BotCommand("app", "🚀 Запустить Mini App"),
-            types.BotCommand("promo", "🎁 Промокод (Скоро)"),
+            types.BotCommand("promo", "🎁 Активировать промокод"),
             types.BotCommand("search", "🔍 Быстрый поиск VPN"),
             types.BotCommand("random", "🎲 Случайный VPN"),
             types.BotCommand("help", "ℹ️ Информация о сервисе LOSY")

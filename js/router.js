@@ -108,9 +108,77 @@ export function initProfileBalances() {
     if (g) g.textContent = read().toLocaleString("ru-RU");
   };
   fill();
+  initPromoCode();
   window.addEventListener("pageshow", fill);
   window.addEventListener("losy:balance", fill);
   window.addEventListener("storage", fill);
+}
+
+/* Активация промокодов в профиле игрока */
+export function initPromoCode() {
+  const input = document.getElementById("promoInput");
+  const btn = document.getElementById("promoBtn");
+  const status = document.getElementById("promoStatus");
+  if (!input || !btn || !status || btn.dataset.bound) return;
+  btn.dataset.bound = "true";
+
+  const handleRedeem = async () => {
+    const code = (input.value || "").trim();
+    if (!code) {
+      status.style.display = "block";
+      status.style.background = "rgba(255, 107, 107, 0.15)";
+      status.style.color = "#ff6b6b";
+      status.textContent = "⚠️ Введите промокод!";
+      return;
+    }
+
+    btn.disabled = true;
+    btn.style.opacity = "0.6";
+    status.style.display = "block";
+    status.style.background = "rgba(255, 255, 255, 0.08)";
+    status.style.color = "rgba(255, 255, 255, 0.8)";
+    status.textContent = "⏳ Проверка промокода...";
+
+    const userId = window.LosyUser ? window.LosyUser.getUserId() : (localStorage.getItem("losyUserId") || "");
+    const tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user || {};
+    const username = tgUser.username || "";
+    const firstName = tgUser.first_name || "";
+
+    try {
+      const resp = await fetch("/api/bot/promo", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId, code, username, firstName })
+      });
+      const data = await resp.json();
+
+      if (data.ok) {
+        status.style.background = "rgba(81, 207, 102, 0.15)";
+        status.style.color = "#51cf66";
+        status.innerHTML = `🎉 <b>Промокод активирован!</b> +${Number(data.reward).toLocaleString("ru-RU")} 🪙<br><small style="color:rgba(255,255,255,0.7);">${data.desc || ""}</small>`;
+        input.value = "";
+        if (window.LosyUser && typeof data.newBalance === "number") {
+          window.LosyUser.setBalance(data.newBalance);
+        }
+      } else {
+        status.style.background = "rgba(255, 107, 107, 0.15)";
+        status.style.color = "#ff6b6b";
+        status.textContent = data.error || "Ошибка активации промокода";
+      }
+    } catch (e) {
+      status.style.background = "rgba(255, 107, 107, 0.15)";
+      status.style.color = "#ff6b6b";
+      status.textContent = "Не удалось подключиться к серверу";
+    } finally {
+      btn.disabled = false;
+      btn.style.opacity = "1";
+    }
+  };
+
+  btn.addEventListener("click", handleRedeem);
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") handleRedeem();
+  });
 }
 
 /* Баланс в топбаре — единая валюта (200 000 на старте). */
