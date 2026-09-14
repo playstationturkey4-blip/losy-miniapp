@@ -4478,10 +4478,6 @@ body {
   .skin-row, .catalog-card {
     cursor: pointer;
     -webkit-tap-highlight-color: transparent;
-    transform: translateZ(0);
-    -webkit-transform: translateZ(0);
-    backface-visibility: hidden;
-    -webkit-backface-visibility: hidden;
   }
   .ug-wheel .machine-arc .arc-win {
     filter: none !important; /* Убирает постоянный SVG drop-shadow при idle */
@@ -4489,7 +4485,35 @@ body {
   }
   .ug-wheel__art {
     transform: translateZ(0);
-    filter: drop-shadow(0 0 16px rgba(60, 140, 255, 0.22)) !important;
+    filter: drop-shadow(0 0 16px rgba(60, 140, 255, 0.22));
+    transition: filter 0.15s ease;
+  }
+  /* Ультра-плавный прокрут колеса (60/120 FPS): отключаем ресурсоемкие фильтры и изолируем слои */
+  .ug-wheel.is-spinning .ug-wheel__art {
+    filter: none !important;
+  }
+  .ug-wheel .machine-needle {
+    transform-origin: 50% 50% !important;
+    will-change: transform !important;
+    contain: strict !important;
+    backface-visibility: hidden !important;
+    -webkit-backface-visibility: hidden !important;
+  }
+  .ug-wheel .machine-needle .needle-img {
+    will-change: transform !important;
+    backface-visibility: hidden !important;
+    -webkit-backface-visibility: hidden !important;
+  }
+  .catalog-cols.is-spinning {
+    pointer-events: none !important;
+    opacity: 0.65 !important;
+    will-change: opacity !important;
+  }
+  .wheel-celebration-canvas {
+    display: none;
+  }
+  .wheel-celebration-canvas.active {
+    display: block;
   }
   .page {
     -webkit-overflow-scrolling: touch;
@@ -4695,27 +4719,48 @@ body {
         } catch (e) {}
       }
 
+      function playBackButtonSound() {
+        try {
+          if (typeof playSound === 'function') {
+            playSound('click', 1.0);
+          } else if (window.playSound) {
+            window.playSound('click', 1.0);
+          }
+        } catch (_) {}
+        try {
+          playTapSound();
+        } catch (_) {}
+        try {
+          const tg = window.Telegram?.WebApp?.HapticFeedback || window.parent?.Telegram?.WebApp?.HapticFeedback;
+          if (tg) tg.impactOccurred('medium');
+        } catch (_) {}
+      }
+
       function exitMode(e) {
         if (e && e.preventDefault) e.preventDefault();
-        playTapSound();
+        if (window._isExiting) return;
+        window._isExiting = true;
+
+        playBackButtonSound();
+
         try {
           if (window.Telegram && window.Telegram.WebApp) {
-            if (window.Telegram.WebApp.HapticFeedback) {
-              window.Telegram.WebApp.HapticFeedback.impactOccurred('light');
-            }
             if (window.Telegram.WebApp.BackButton) {
               window.Telegram.WebApp.BackButton.hide();
             }
           }
         } catch (_) {}
 
-        var cameFromApp = (window.history.length > 1);
-        if (cameFromApp) {
-          window.history.back();
-        } else {
-          window.location.replace('/');
-        }
+        setTimeout(function() {
+          var cameFromApp = (window.history.length > 1);
+          if (cameFromApp) {
+            window.history.back();
+          } else {
+            window.location.replace('/');
+          }
+        }, 140);
       }
+      window.exitMode = exitMode;
       try {
         if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.BackButton) {
           window.Telegram.WebApp.BackButton.show();
@@ -5571,36 +5616,32 @@ const LosyAudio = (() => {
     } catch (e) {}
   }
 
-  // Новый оптимизированный нежный звук прокрута колеса (0ms CPU, 0 jank, 60fps)
+  // Ультра-быстрый легкий звук тика колеса (0.01ms CPU, 0 reflow, стабильные 60/120 FPS)
   function playGentleTick(progress = 0) {
-    updateMasterMute();
-    if (!soundEnabled) return;
-    const c = ensureContext();
-    if (!c) return;
+    if (!soundEnabled || !ctx) return;
     try {
-      const t = c.currentTime;
-      const prog = Math.max(0, Math.min(1, progress));
-      const baseFreq = 540 - prog * 160;
+      const t = ctx.currentTime;
+      const prog = progress < 0 ? 0 : (progress > 1 ? 1 : progress);
+      const baseFreq = 520 - prog * 150;
 
-      const osc = c.createOscillator();
-      const gain = c.createGain();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
       osc.type = 'sine';
       osc.frequency.setValueAtTime(baseFreq, t);
-      osc.frequency.exponentialRampToValueAtTime(baseFreq * 0.85, t + 0.020);
+      osc.frequency.exponentialRampToValueAtTime(baseFreq * 0.85, t + 0.018);
 
       const vol = prog > 0.65 ? 0.12 * (1 - (prog - 0.65) * 0.35) : 0.12;
       gain.gain.setValueAtTime(0.0001, t);
       gain.gain.exponentialRampToValueAtTime(vol, t + 0.002);
-      gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.022);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.020);
 
       osc.connect(gain);
-      gain.connect(tickGain || limiter || c.destination);
+      gain.connect(tickGain || limiter || masterGain || ctx.destination);
 
       osc.start(t);
-      osc.stop(t + 0.024);
+      osc.stop(t + 0.022);
 
       tickCount++;
-      lastTickTime = Date.now();
     } catch (e) {}
   }
 
@@ -6944,22 +6985,25 @@ function doUpgrade() {
     }
   };
 
-  // Физически выверенная плавная кривая вращения рулетки:
-  // Мягкий старт (9% времени) + непрерывный степенной спад с идеальным балансом азарта и динамики
+  // Предрассчитанные константы кривой вращения (0 аллокаций в секунду)
+  const _t0 = 0.09;
+  const _gamma = 1.45;
+  const _a1 = 0.5 * _t0;
+  const _a2 = (1.0 - _t0) / (_gamma + 1.0);
+  const _V_max = 1.0 / (_a1 + _a2);
+  const _inv_t0 = 1.0 / _t0;
+  const _inv_rem = 1.0 / (1.0 - _t0);
+  const _pi = Math.PI;
+
   const easeSpin = (t) => {
     if (t <= 0) return 0;
     if (t >= 1) return 1;
-    const t0 = 0.09;
-    const gamma = 1.45;
-    const a1 = 0.5 * t0;
-    const a2 = (1.0 - t0) / (gamma + 1.0);
-    const V_max = 1.0 / (a1 + a2);
-    if (t <= t0) {
-      const s = t / t0;
-      return V_max * t0 * 0.5 * (s - Math.sin(Math.PI * s) / Math.PI);
+    if (t <= _t0) {
+      const s = t * _inv_t0;
+      return _V_max * _t0 * 0.5 * (s - Math.sin(_pi * s) / _pi);
     } else {
-      const u = (t - t0) / (1.0 - t0);
-      return (V_max * a1) + (V_max * a2 * (1.0 - Math.pow(1.0 - u, gamma + 1.0)));
+      const u = (t - _t0) * _inv_rem;
+      return (_V_max * _a1) + (_V_max * _a2 * (1.0 - Math.pow(1.0 - u, _gamma + 1.0)));
     }
   };
 
@@ -6982,19 +7026,20 @@ function doUpgrade() {
         lastTickTimestamp = now;
       }
       const elapsed = now - startTimestamp;
-      const p = Math.min(1, elapsed / UPGRADE_SPIN_DURATION);
+      const p = elapsed >= UPGRADE_SPIN_DURATION ? 1 : elapsed / UPGRADE_SPIN_DURATION;
       const eased = easeSpin(p);
       const ang = startRot + finalAngle * eased;
       needleCurrent = ang;
 
-      needleEl.style.transform = 'rotate(' + ang.toFixed(2) + 'deg) translateZ(0)';
+      // Аппаратная 3D-трансформация стрелки без рефлоу
+      needleEl.style.transform = 'rotate3d(0, 0, 1, ' + (Math.round(ang * 10) / 10) + 'deg)';
 
       // Нежный бархатный звук прокрута прямо внутри rAF (0 фризов, стабильные 60/120 FPS)
       if (p < 0.985) {
         let currentInterval;
         if (p < 0.10) {
           const u = p / 0.10;
-          currentInterval = 82 - 22 * Math.sin(u * Math.PI * 0.5); // разгон: 82мс -> 60мс
+          currentInterval = 82 - 22 * Math.sin(u * _pi * 0.5); // разгон: 82мс -> 60мс
         } else if (p < 0.32) {
           currentInterval = 60; // стабильный комфортный ход 16 тиков/сек
         } else {
@@ -7012,7 +7057,7 @@ function doUpgrade() {
         needleSpinRafId = requestAnimationFrame(frame);
       } else {
         needleSpinRafId = null;
-        needleEl.style.transform = 'rotate(' + ang.toFixed(2) + 'deg) translateZ(0)';
+        needleEl.style.transform = 'rotate3d(0, 0, 1, ' + (Math.round(ang * 10) / 10) + 'deg)';
         finishRound();
       }
     };
@@ -7048,6 +7093,8 @@ function clearCelebration() {
   
   const canvas = document.getElementById('wheelCelebrationCanvas');
   if (canvas) {
+    canvas.classList.remove('active');
+    canvas.style.display = 'none';
     const ctx = canvas.getContext('2d');
     if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
   }
@@ -7082,6 +7129,8 @@ function spawnCenterSalute(chance = 0.5, targetName = '') {
   const bannerSub = document.getElementById('winBannerSub');
   
   if (!wheelEl || !canvas) return;
+  canvas.classList.add('active');
+  canvas.style.display = 'block';
   
   // Telegram Haptic Feedback (синхронизировано со звуком)
   try {
@@ -7499,7 +7548,7 @@ function returnToTop() {
     const p = Math.min(1, (now - t0) / DUR);
     const eased = 0.5 - 0.5 * Math.cos(Math.PI * p);
     const a = from + (to - from) * eased;
-    needleEl.style.transform = 'rotate(' + a.toFixed(2) + 'deg) translateZ(0)';
+    needleEl.style.transform = 'rotate3d(0, 0, 1, ' + (Math.round(a * 10) / 10) + 'deg)';
     if (p < 1) { returnAnimId = requestAnimationFrame(step); }
     else {
       needleCurrent = to;
