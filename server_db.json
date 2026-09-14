@@ -49,8 +49,8 @@
     },
     "2137107477": {
       "id": "2137107477",
-      "username": "",
-      "firstName": "Игрок",
+      "username": "gomobob",
+      "firstName": "-",
       "balance": 200000,
       "spaceCoins": 0,
       "owned": [
@@ -480,6 +480,19 @@
       "visitedBots": [],
       "updatedAt": 1789386989402,
       "initialized": true
+    },
+    "1948508550": {
+      "id": "1948508550",
+      "username": "Misha6let",
+      "firstName": "МИХАИЛ67",
+      "balance": 0,
+      "spaceCoins": 0,
+      "owned": [
+        "pen"
+      ],
+      "promocodes": [],
+      "vpnKeys": [],
+      "visitedBots": []
     }
   },
   "sessions": {}
