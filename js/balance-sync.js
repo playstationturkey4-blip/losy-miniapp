@@ -9,6 +9,7 @@
   const STORAGE_KEY_BAL = 'losyBalance';
   const STORAGE_KEY_UID = 'losy_user_id';
   const STORAGE_KEY_INIT = 'losy_user_initialized';
+  const STORAGE_KEY_TIME = 'losy_balance_time';
   const INITIAL_BALANCE = 200000;
 
   // 1. Определение уникального User ID
@@ -100,41 +101,58 @@
       }
 
       // СТРОГО новый игрок: единоразовый стартовый баланс 200 000
+      const now = Date.now();
       localStorage.setItem(STORAGE_KEY_BAL, String(INITIAL_BALANCE));
       localStorage.setItem(STORAGE_KEY_BAL + '_' + uid, String(INITIAL_BALANCE));
       localStorage.setItem(STORAGE_KEY_INIT + '_' + uid, 'true');
       localStorage.setItem(STORAGE_KEY_INIT, 'true');
+      localStorage.setItem(STORAGE_KEY_TIME + '_' + uid, String(now));
+      localStorage.setItem(STORAGE_KEY_TIME, String(now));
       return INITIAL_BALANCE;
     } catch (e) {
       return INITIAL_BALANCE;
     }
   }
 
-  // 3. Сохранение баланса (локально + немедленная отправка на сервер)
+  // 3. Сохранение баланса (локально + Telegram CloudStorage + отправка на сервер)
   function saveBalance(newBal) {
     const num = Math.max(0, Math.floor(Number(newBal) || 0));
     const uid = getUserId();
+    const now = Date.now();
 
     try {
       localStorage.setItem(STORAGE_KEY_BAL, String(num));
       localStorage.setItem(STORAGE_KEY_BAL + '_' + uid, String(num));
       localStorage.setItem(STORAGE_KEY_INIT + '_' + uid, 'true');
       localStorage.setItem(STORAGE_KEY_INIT, 'true');
+      localStorage.setItem(STORAGE_KEY_TIME + '_' + uid, String(now));
+      localStorage.setItem(STORAGE_KEY_TIME, String(now));
+
+      // Облачное хранилище Telegram для 100% защиты от очистки браузерного кэша на телефоне
+      if (window.Telegram?.WebApp?.CloudStorage && !uid.startsWith('guest_')) {
+        try {
+          window.Telegram.WebApp.CloudStorage.setItem('losy_bal_' + uid, String(num), () => {});
+          window.Telegram.WebApp.CloudStorage.setItem('losy_time_' + uid, String(now), () => {});
+          window.Telegram.WebApp.CloudStorage.setItem('losy_init_' + uid, 'true', () => {});
+        } catch (csErr) {}
+      }
+
       window.dispatchEvent(new CustomEvent('losy:balance', {
         detail: { balance: num, userId: uid }
       }));
     } catch (e) {}
 
-    // Отправляем на сервер в фоне
-    syncToServer(num);
+    // Отправляем на сервер в фоне вместе с временной меткой
+    syncToServer(num, now);
     return num;
   }
 
-  function syncToServer(balanceToSync) {
+  function syncToServer(balanceToSync, timestamp) {
     const info = getUserInfo();
     const payload = {
       userId: info.id,
       balance: balanceToSync,
+      clientUpdatedAt: timestamp || Date.now(),
       firstName: info.firstName,
       username: info.username
     };
@@ -149,22 +167,42 @@
         },
         body: JSON.stringify(payload),
         keepalive: true
-      }).then(r => r.json()).then(data => {
-        if (data && data.ok && typeof data.balance === 'number') {
-          // Сервер подтвердил сохранение
-        }
-      }).catch(() => {
-        // Офлайн режим: локальный баланс сохранён
-      });
+      }).catch(() => {});
     } catch (e) {}
   }
 
-  // 4. Запрос актуального баланса с сервера при старте
+  // 4. Запрос актуального баланса с сервера при старте (с абсолютной защитой от сброса в 200k)
   async function fetchServerBalance() {
     const info = getUserInfo();
+    const uid = info.id;
+    const isInitialized = localStorage.getItem(STORAGE_KEY_INIT + '_' + uid) === 'true' || 
+                          localStorage.getItem(STORAGE_KEY_INIT) === 'true';
+    const currentBal = getBalance();
+    const localTime = parseInt(localStorage.getItem(STORAGE_KEY_TIME + '_' + uid) || localStorage.getItem(STORAGE_KEY_TIME) || '0', 10);
+
+    // Дополнительная проверка из Telegram CloudStorage, если локальный баланс подозрительно пуст
+    if (!isInitialized && window.Telegram?.WebApp?.CloudStorage && !uid.startsWith('guest_')) {
+      try {
+        await new Promise((resolve) => {
+          window.Telegram.WebApp.CloudStorage.getItem('losy_bal_' + uid, (err, val) => {
+            if (!err && val !== null && val !== undefined && val !== '') {
+              const cloudBal = parseInt(val, 10);
+              if (!isNaN(cloudBal) && cloudBal >= 0) {
+                localStorage.setItem(STORAGE_KEY_BAL, String(cloudBal));
+                localStorage.setItem(STORAGE_KEY_BAL + '_' + uid, String(cloudBal));
+                localStorage.setItem(STORAGE_KEY_INIT + '_' + uid, 'true');
+                localStorage.setItem(STORAGE_KEY_INIT, 'true');
+              }
+            }
+            resolve();
+          });
+        });
+      } catch (e) {}
+    }
+
     try {
       const initData = window.Telegram?.WebApp?.initData || '';
-      const res = await fetch('/api/user/balance?userId=' + encodeURIComponent(info.id), {
+      const res = await fetch('/api/user/balance?userId=' + encodeURIComponent(uid), {
         headers: {
           'X-Telegram-Init-Data': initData
         }
@@ -173,20 +211,44 @@
         const data = await res.json();
         if (data && data.ok && typeof data.balance === 'number' && !isNaN(data.balance)) {
           const serverBal = data.balance;
-          const currentBal = getBalance();
+          const serverTime = typeof data.updatedAt === 'number' ? data.updatedAt : (data.updatedAt ? new Date(data.updatedAt).getTime() : 0);
+
+          // КРИТИЧЕСКОЕ ПРАВИЛО ЗАЩИТЫ БАЛАНСА №1:
+          // Если сервер вернул дефолтные 200 000 (например, холодный старт бэкенда), а у пользователя уже есть реальный баланс — НЕ ПЕРЕЗАПИСЫВАТЬ!
+          if (serverBal === INITIAL_BALANCE && isInitialized && currentBal !== INITIAL_BALANCE) {
+            console.warn('🛡️ [LOSY Balance]: Сервер вернул дефолтные 200 000, сохраняем реальный баланс игрока:', currentBal);
+            syncToServer(currentBal, localTime || Date.now());
+            return currentBal;
+          }
+
+          // КРИТИЧЕСКОЕ ПРАВИЛО ЗАЩИТЫ БАЛАНСА №2:
+          // Если на клиенте время изменения свежее, чем на сервере — клиент побеждает:
+          if (localTime > (serverTime + 2000) && currentBal !== serverBal) {
+            console.log('🛡️ [LOSY Balance]: Локальный баланс свежее серверного, обновляем сервер:', currentBal);
+            syncToServer(currentBal, localTime);
+            return currentBal;
+          }
+
+          // В остальных случаях обновляем баланс с сервера (например, валидная игра с другого устройства или облачный апдейт)
           if (serverBal !== currentBal) {
             localStorage.setItem(STORAGE_KEY_BAL, String(serverBal));
-            localStorage.setItem(STORAGE_KEY_BAL + '_' + info.id, String(serverBal));
-            localStorage.setItem(STORAGE_KEY_INIT + '_' + info.id, 'true');
+            localStorage.setItem(STORAGE_KEY_BAL + '_' + uid, String(serverBal));
+            localStorage.setItem(STORAGE_KEY_INIT + '_' + uid, 'true');
             localStorage.setItem(STORAGE_KEY_INIT, 'true');
+            if (serverTime) {
+              localStorage.setItem(STORAGE_KEY_TIME + '_' + uid, String(serverTime));
+              localStorage.setItem(STORAGE_KEY_TIME, String(serverTime));
+            }
             window.dispatchEvent(new CustomEvent('losy:balance', {
-              detail: { balance: serverBal, userId: info.id }
+              detail: { balance: serverBal, userId: uid }
             }));
           }
           return serverBal;
         }
       }
-    } catch (e) {}
+    } catch (e) {
+      // Офлайн режим: работаем на локальном проверенном балансе
+    }
     return getBalance();
   }
 

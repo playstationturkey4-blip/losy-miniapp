@@ -64,7 +64,7 @@ function supabaseRequest(apiPath, method = 'GET', body = null, extraHeaders = {}
           'Content-Type': 'application/json',
           ...extraHeaders
         },
-        timeout: 2500
+        timeout: 10000
       }, (res) => {
         let data = '';
         res.on('data', c => data += c);
@@ -100,7 +100,7 @@ function syncUserToSupabase(user) {
     promocodes: user.promocodes || [],
     vpn_keys: user.vpnKeys || [],
     visited_bots: user.visitedBots || [],
-    updated_at: new Date().toISOString()
+    updated_at: new Date(user.updatedAt || Date.now()).toISOString()
   };
   supabaseRequest('/rest/v1/losy_users', 'POST', row, {
     'Prefer': 'resolution=merge-duplicates'
@@ -131,6 +131,9 @@ function saveDb() {
 }
 
 // Восстановление профилей из облака Supabase при старте сервера (защита от Render reset)
+let isHydrated = false;
+let hydratePromise = null;
+
 async function hydrateDbFromSupabase() {
   try {
     const res = await supabaseRequest('/rest/v1/losy_users?select=*', 'GET');
@@ -138,9 +141,9 @@ async function hydrateDbFromSupabase() {
       let restoredCount = 0;
       for (const row of res.data) {
         if (!row.id) continue;
-        const rowTime = new Date(row.updated_at).getTime();
+        const rowTime = row.updated_at ? new Date(row.updated_at).getTime() : 0;
         const localTime = db.users[row.id]?.updatedAt || 0;
-        if (!db.users[row.id] || rowTime > localTime) {
+        if (!db.users[row.id] || rowTime >= localTime) {
           const rowBal = (row.balance !== undefined && row.balance !== null && !isNaN(Number(row.balance))) ? Number(row.balance) : 200000;
           db.users[row.id] = {
             id: String(row.id),
@@ -152,7 +155,8 @@ async function hydrateDbFromSupabase() {
             promocodes: row.promocodes || [],
             vpnKeys: row.vpn_keys || [],
             visitedBots: row.visited_bots || [],
-            updatedAt: rowTime
+            updatedAt: rowTime || Date.now(),
+            initialized: true
           };
           restoredCount++;
         }
@@ -164,30 +168,21 @@ async function hydrateDbFromSupabase() {
     }
   } catch (err) {
     console.error('Supabase hydrate error:', err.message);
+  } finally {
+    isHydrated = true;
   }
 }
-hydrateDbFromSupabase();
+hydratePromise = hydrateDbFromSupabase();
 
-function getOrCreateUser(userData) {
+async function getOrCreateUser(userData) {
   const tid = String(userData.id);
-  if (!db.users[tid]) {
-    db.users[tid] = {
-      id: tid,
-      username: userData.username || '',
-      firstName: userData.first_name || userData.firstName || 'Игрок',
-      balance: 200000,
-      spaceCoins: 0,
-      owned: ['pen'],
-      promocodes: [],
-      vpnKeys: [],
-      visitedBots: [],
-      updatedAt: Date.now()
-    };
-    saveDb();
-    syncUserToSupabase(db.users[tid]);
-  } else {
-    if (userData.username) db.users[tid].username = userData.username;
-    if (userData.first_name || userData.firstName) db.users[tid].firstName = userData.first_name || userData.firstName;
+
+  // 1. Уже загружен в память
+  if (db.users[tid]) {
+    if (userData.username && !db.users[tid].username) db.users[tid].username = userData.username;
+    if ((userData.first_name || userData.firstName) && db.users[tid].firstName === 'Игрок') {
+      db.users[tid].firstName = userData.first_name || userData.firstName;
+    }
     if (typeof db.users[tid].balance !== 'number' || isNaN(db.users[tid].balance)) {
       db.users[tid].balance = 200000;
     }
@@ -195,7 +190,55 @@ function getOrCreateUser(userData) {
     if (!db.users[tid].promocodes) db.users[tid].promocodes = [];
     if (!db.users[tid].visitedBots) db.users[tid].visitedBots = [];
     if (!db.users[tid].owned) db.users[tid].owned = ['pen'];
+    return db.users[tid];
   }
+
+  // 2. Если в памяти нет и это не локальный гость — проверяем Supabase ПЕРЕД тем, как давать 200k!
+  if (!tid.startsWith('guest_')) {
+    try {
+      const res = await supabaseRequest(`/rest/v1/losy_users?id=eq.${encodeURIComponent(tid)}&select=*`, 'GET');
+      if (res.ok && Array.isArray(res.data) && res.data.length > 0) {
+        const row = res.data[0];
+        const rowBal = (row.balance !== undefined && row.balance !== null && !isNaN(Number(row.balance))) ? Number(row.balance) : 200000;
+        db.users[tid] = {
+          id: tid,
+          username: row.username || userData.username || '',
+          firstName: row.first_name || userData.first_name || userData.firstName || 'Игрок',
+          balance: rowBal,
+          spaceCoins: Number(row.space_coins || 0),
+          owned: row.owned || ['pen'],
+          promocodes: row.promocodes || [],
+          vpnKeys: row.vpn_keys || [],
+          visitedBots: row.visited_bots || [],
+          updatedAt: (row.updated_at ? new Date(row.updated_at).getTime() : Date.now()),
+          initialized: true
+        };
+        saveDb();
+        console.log(`👤 [USER RESTORE]: Пользователь ${tid} восстановлен из Supabase с балансом ${rowBal}`);
+        return db.users[tid];
+      }
+    } catch (err) {
+      console.error(`Error querying Supabase for user ${tid}:`, err.message);
+    }
+  }
+
+  // 3. Пользователь действительно новый: единоразовый приветственный баланс 200 000
+  db.users[tid] = {
+    id: tid,
+    username: userData.username || '',
+    firstName: userData.first_name || userData.firstName || 'Игрок',
+    balance: 200000,
+    spaceCoins: 0,
+    owned: ['pen'],
+    promocodes: [],
+    vpnKeys: [],
+    visitedBots: [],
+    updatedAt: Date.now(),
+    initialized: true
+  };
+  saveDb();
+  syncUserToSupabase(db.users[tid]);
+  console.log(`🎉 [NEW USER]: Зарегистрирован новый игрок ${tid} с приветственными 200 000`);
   return db.users[tid];
 }
 
@@ -372,9 +415,13 @@ const server = http.createServer((req, res) => {
   if (pathname.startsWith('/api/')) {
     let body = '';
     req.on('data', chunk => { body += chunk; });
-    req.on('end', () => {
+    req.on('end', async () => {
       let data = {};
       try { if (body) data = JSON.parse(body); } catch (e) {}
+
+      if (hydratePromise) {
+        try { await hydratePromise; } catch (e) {}
+      }
 
       const initData = req.headers['x-telegram-init-data'] || data.initData || parsedUrl.query.initData;
       let authUser = verifyTelegramWebAppData(initData);
@@ -394,7 +441,7 @@ const server = http.createServer((req, res) => {
         }
       }
 
-      const user = getOrCreateUser(authUser);
+      const user = await getOrCreateUser(authUser);
 
       // 1. Персональный баланс пользователя (получение и сохранение с сервера)
       if (pathname === '/api/user/balance') {
@@ -408,7 +455,7 @@ const server = http.createServer((req, res) => {
           }
           user.balance = Math.min(100000000, Math.max(0, newBal));
           user.initialized = true;
-          user.updatedAt = Date.now();
+          user.updatedAt = Number(data.clientUpdatedAt) || Date.now();
           saveDb();
           syncUserToSupabase(user);
 
@@ -428,6 +475,7 @@ const server = http.createServer((req, res) => {
           ok: true,
           userId: user.id,
           balance: user.balance,
+          updatedAt: user.updatedAt || Date.now(),
           firstName: user.firstName,
           username: user.username
         }));
@@ -557,7 +605,7 @@ const server = http.createServer((req, res) => {
           return;
         }
 
-        const targetUser = getOrCreateUser({ id: userId, username: data.username, first_name: data.firstName });
+        const targetUser = await getOrCreateUser({ id: userId, username: data.username, first_name: data.firstName });
         if (!targetUser.promocodes) targetUser.promocodes = [];
 
         if (targetUser.promocodes.includes(code)) {
@@ -585,7 +633,7 @@ const server = http.createServer((req, res) => {
 
       if (pathname === '/api/bot/user') {
         const userId = String(parsedUrl.query.userId || data.userId || authUser.id);
-        const targetUser = getOrCreateUser({ id: userId, username: data.username, first_name: data.firstName });
+        const targetUser = await getOrCreateUser({ id: userId, username: data.username, first_name: data.firstName });
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({
           ok: true,
@@ -607,7 +655,7 @@ const server = http.createServer((req, res) => {
       if (pathname === '/api/user/visit' && req.method === 'POST') {
         const botId = String(data.botId || '').trim().toLowerCase();
         const userId = String(data.userId || authUser.id);
-        const targetUser = getOrCreateUser({ id: userId, username: data.username, first_name: data.firstName });
+        const targetUser = await getOrCreateUser({ id: userId, username: data.username, first_name: data.firstName });
         if (!targetUser.visitedBots) targetUser.visitedBots = [];
         if (botId && !targetUser.visitedBots.includes(botId)) {
           targetUser.visitedBots.push(botId);
@@ -712,14 +760,16 @@ const server = http.createServer((req, res) => {
     if (parts.length >= 3) {
       const targetUserId = parts[1];
       const botId = parts[2].toLowerCase();
-      const targetUser = getOrCreateUser({ id: targetUserId });
-      if (!targetUser.visitedBots) targetUser.visitedBots = [];
-      if (botId && !targetUser.visitedBots.includes(botId)) {
-        targetUser.visitedBots.push(botId);
-        targetUser.updatedAt = Date.now();
-        saveDb();
-        syncUserToSupabase(targetUser);
-      }
+      (async () => {
+        const targetUser = await getOrCreateUser({ id: targetUserId });
+        if (!targetUser.visitedBots) targetUser.visitedBots = [];
+        if (botId && !targetUser.visitedBots.includes(botId)) {
+          targetUser.visitedBots.push(botId);
+          targetUser.updatedAt = Date.now();
+          saveDb();
+          syncUserToSupabase(targetUser);
+        }
+      })().catch(() => {});
       res.writeHead(302, { 'Location': `https://t.me/${botId}?start=losy` });
       res.end();
       return;
@@ -951,7 +1001,7 @@ server.listen(PORT, '0.0.0.0', async () => {
         menu_button: {
           type: 'web_app',
           text: '🚀 Играть',
-          web_app: { url: `${miniappUrl.replace(/\/$/, '')}/?v=92` }
+          web_app: { url: `${miniappUrl.replace(/\/$/, '')}/?v=95` }
         }
       });
       const req = https.request({
