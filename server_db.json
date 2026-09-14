@@ -62,8 +62,8 @@
     "8432034026": {
       "id": "8432034026",
       "username": "fowoges",
-      "firstName": "Игрок",
-      "balance": 199992,
+      "firstName": "­­",
+      "balance": 200160,
       "spaceCoins": 0,
       "owned": [
         "pen"
@@ -73,7 +73,7 @@
       "visitedBots": [
         "vpneucombot"
       ],
-      "updatedAt": 1789386882367
+      "updatedAt": 1789395281521
     },
     "user_test_aaa_111": {
       "id": "user_test_aaa_111",
@@ -371,9 +371,9 @@
     },
     "5539207376": {
       "id": "5539207376",
-      "username": "",
-      "firstName": "Игрок",
-      "balance": 184500,
+      "username": "rylet14",
+      "firstName": "Вано",
+      "balance": 0,
       "spaceCoins": 0,
       "owned": [
         "pen"
@@ -381,7 +381,7 @@
       "promocodes": [],
       "vpnKeys": [],
       "visitedBots": [],
-      "updatedAt": 1789361408069
+      "updatedAt": 1789394796101
     },
     "7560873891": {
       "id": "7560873891",
