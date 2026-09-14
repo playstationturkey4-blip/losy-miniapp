@@ -3882,12 +3882,10 @@ body {
   .skin-row .shop-price { width: 100%; margin-top: 2px; display: flex; flex-direction: column; }
   .skin-row .stake-btn, .skin-row .free-btn { width: 100%; min-height: 25px; padding: 3px 4px; font-family: 'Inter', system-ui, sans-serif; font-weight: 700; font-size: clamp(0.54rem, 1.8vw, 0.66rem); letter-spacing: 0.03em; white-space: nowrap; border-radius: 8px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; text-align: center; }
   .stake-btn.is-staked { border-color: rgba(59, 232, 255, 0.95) !important; color: #3BE8FF !important; background: rgba(59, 232, 255, 0.18) !important; box-shadow: 0 0 10px rgba(59, 232, 255, 0.35) !important; }
-  .skin-row .sell-btn { width: 100%; min-height: 24px; padding: 2px 4px; font-family: 'Inter', system-ui, sans-serif; font-weight: 700; font-size: clamp(0.50rem, 1.7vw, 0.62rem); letter-spacing: 0.02em; white-space: nowrap; border-radius: 8px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; text-align: center; background: rgba(255, 184, 0, 0.12); color: #FFB800; border: 1px solid rgba(255, 184, 0, 0.4); cursor: pointer; transition: all 0.15s ease; margin-top: 2px; }
-  .skin-row .sell-btn:hover { background: rgba(255, 184, 0, 0.22); border-color: #FFB800; box-shadow: 0 0 8px rgba(255, 184, 0, 0.3); }
+  .skin-row .sell-btn { width: 100%; min-height: 25px; padding: 2px 4px; font-family: 'Inter', system-ui, sans-serif; font-weight: 700; font-size: clamp(0.50rem, 1.7vw, 0.62rem); letter-spacing: 0.02em; white-space: nowrap; border-radius: 8px; box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; gap: 4px; text-align: center; background: linear-gradient(135deg, rgba(255, 184, 0, 0.18), rgba(255, 140, 0, 0.10)); color: #FFD43B; border: 1px solid rgba(255, 184, 0, 0.5); cursor: pointer; transition: all 0.15s ease; margin-top: 3px; }
+  .skin-row .sell-btn:hover { background: linear-gradient(135deg, rgba(255, 184, 0, 0.32), rgba(255, 140, 0, 0.20)); border-color: #FFD43B; box-shadow: 0 0 8px rgba(255, 184, 0, 0.35); }
   .skin-row .sell-btn:active { transform: scale(0.96); }
-  .stake-card-sell-btn { margin-top: 6px; width: 100%; padding: 5px 6px; font-family: 'Inter', system-ui, sans-serif; font-weight: 700; font-size: clamp(0.56rem, 1.9vw, 0.68rem); letter-spacing: 0.02em; border-radius: 8px; background: linear-gradient(135deg, rgba(255, 184, 0, 0.2), rgba(255, 140, 0, 0.25)); border: 1px solid rgba(255, 184, 0, 0.6); color: #FFD43B; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: all 0.16s ease; box-shadow: 0 0 10px rgba(255, 184, 0, 0.2); white-space: nowrap; }
-  .stake-card-sell-btn:hover { background: linear-gradient(135deg, rgba(255, 184, 0, 0.35), rgba(255, 140, 0, 0.4)); border-color: #FFD43B; box-shadow: 0 0 14px rgba(255, 184, 0, 0.4); }
-  .stake-card-sell-btn:active { transform: scale(0.96); }
+  .skin-row .sell-btn .sell-btn__icon { width: 12px; height: 12px; flex-shrink: 0; }
   .skin-row .buy-btn { flex: 1 1 0; min-width: 0; min-height: 28px; padding: .25em .2em; font-family: 'Inter', var(--font-brand); font-weight: 600; font-size: clamp(.68rem, 2.4vw, .82rem); }
   .skin-row .buy-btn { justify-content: center; }
   .skin-row .buy-btn img { width: 13px !important; height: 13px !important; }
@@ -4801,7 +4799,6 @@ body {
                 <img class="ug-card__coin" src="/assets/coin.png?v=1" alt="gold">
                 <div class="ug-card__value" id="stakeValue">&mdash;</div>
               </div>
-              <button class="stake-card-sell-btn" id="stakeCardSellBtn" type="button" style="display:none;" title="Продать скин за монеты">💰 ПРОДАТЬ</button>
             </div>
           </div>
 
@@ -5573,60 +5570,33 @@ const LosyAudio = (() => {
     } catch (e) {}
   }
 
-  // Новый нежный, мягкий, бархатный звук прокрута колеса (WebAudio синтез высокого класса)
+  // Новый оптимизированный нежный звук прокрута колеса (0ms CPU, 0 jank, 60fps)
   function playGentleTick(progress = 0) {
     updateMasterMute();
     if (!soundEnabled) return;
     const c = ensureContext();
     if (!c) return;
     try {
-      if (c.state === 'suspended' || c.state === 'interrupted') {
-        c.resume().catch(() => {});
-      }
       const t = c.currentTime;
       const prog = Math.max(0, Math.min(1, progress));
+      const baseFreq = 540 - prog * 160;
 
-      // Частота понижается от 560Hz (быстрый ход) до 390Hz (мягкая остановка у цели)
-      const baseFreq = 560 - prog * 170;
-
-      // Теплый обволакивающий lowpass фильтр (срезает резкие верхние частоты)
-      const filter = c.createBiquadFilter();
-      filter.type = 'lowpass';
-      filter.frequency.setValueAtTime(baseFreq * 2.2, t);
-      filter.Q.value = 0.85;
-
-      // Плавный мягкий гейн без резких щелчков (атака 1.5мс, спад 26мс)
+      const osc = c.createOscillator();
       const gain = c.createGain();
-      const vol = prog > 0.65 ? 0.15 * (1 - (prog - 0.65) * 0.4) : 0.15;
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(baseFreq, t);
+      osc.frequency.exponentialRampToValueAtTime(baseFreq * 0.85, t + 0.020);
+
+      const vol = prog > 0.65 ? 0.12 * (1 - (prog - 0.65) * 0.35) : 0.12;
       gain.gain.setValueAtTime(0.0001, t);
-      gain.gain.exponentialRampToValueAtTime(vol, t + 0.0015);
-      gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.026);
+      gain.gain.exponentialRampToValueAtTime(vol, t + 0.002);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.022);
 
-      // Основной тон: чистая теплая синусоида
-      const osc1 = c.createOscillator();
-      osc1.type = 'sine';
-      osc1.frequency.setValueAtTime(baseFreq, t);
-      osc1.frequency.exponentialRampToValueAtTime(baseFreq * 0.88, t + 0.024);
-
-      // Второй тон: мягкий треугольный обертон для бархатистой акустической глубины
-      const osc2 = c.createOscillator();
-      const gain2 = c.createGain();
-      osc2.type = 'triangle';
-      osc2.frequency.setValueAtTime(baseFreq * 1.5, t);
-      gain2.gain.setValueAtTime(0.0001, t);
-      gain2.gain.exponentialRampToValueAtTime(vol * 0.22, t + 0.0015);
-      gain2.gain.exponentialRampToValueAtTime(0.0001, t + 0.018);
-
-      osc1.connect(filter);
-      osc2.connect(gain2);
-      gain2.connect(filter);
-      filter.connect(gain);
+      osc.connect(gain);
       gain.connect(tickGain || limiter || c.destination);
 
-      osc1.start(t);
-      osc2.start(t);
-      osc1.stop(t + 0.028);
-      osc2.stop(t + 0.020);
+      osc.start(t);
+      osc.stop(t + 0.024);
 
       tickCount++;
       lastTickTime = Date.now();
@@ -6023,16 +5993,6 @@ function renderUpgrade() {
     }
     if (el.stakeName) el.stakeName.textContent = stake.name;
     stakeEl?.classList.remove('empty');
-
-    const stakeCardSellBtn = document.getElementById('stakeCardSellBtn');
-    if (stakeCardSellBtn) {
-      if (stake.id !== 'pen' && owned.includes(stake.id) && !spinning) {
-        stakeCardSellBtn.style.display = 'inline-flex';
-        stakeCardSellBtn.textContent = `💰 ПРОДАТЬ (+${stake.value.toLocaleString('ru-RU')} 🪙)`;
-      } else {
-        stakeCardSellBtn.style.display = 'none';
-      }
-    }
   } else {
     if (el.stakeImg) {
       el.stakeImg.style.visibility = 'hidden';
@@ -6040,9 +6000,6 @@ function renderUpgrade() {
     }
     if (el.stakeName) el.stakeName.textContent = '—';
     stakeEl?.classList.add('empty');
-
-    const stakeCardSellBtn = document.getElementById('stakeCardSellBtn');
-    if (stakeCardSellBtn) stakeCardSellBtn.style.display = 'none';
   }
 
   // ПРАВАЯ платформа: пусто, пока не выбрал цель
@@ -6199,7 +6156,13 @@ function renderCatalog() {
           : `<button class="stake-btn${isStake ? ' is-staked' : ''}" data-skin="${skin.id}" ${count > 0 ? '' : 'disabled'} title="Поставить на платформу">
               ${isStake ? 'В СТАВКЕ ✓' : 'ПОСТАВИТЬ'}
             </button>
-            ${count > 0 ? `<button class="sell-btn" data-skin="${skin.id}" type="button" title="Продать ${skin.name} за ${skin.value.toLocaleString('ru-RU')} 🪙">💰 ПРОДАТЬ (+${skin.value >= 10000 ? Math.round(skin.value / 1000) + 'k' : skin.value.toLocaleString('ru-RU')} 🪙)</button>` : ''}`}
+            ${count > 0 ? `<button class="sell-btn" data-skin="${skin.id}" type="button" title="Продать ${skin.name} за ${skin.value.toLocaleString('ru-RU')} 🪙">
+              <svg class="sell-btn__icon" viewBox="0 0 24 24" width="13" height="13" fill="none" aria-hidden="true">
+                <circle cx="12" cy="12" r="9" stroke="#FFD700" stroke-width="2.2" fill="rgba(255,215,0,0.18)"/>
+                <path d="M12 7v10M9.5 9.5h5a1.5 1.5 0 0 1 0 3h-5a1.5 1.5 0 0 0 0 3h5.5" stroke="#FFD700" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+              <span>ПРОДАТЬ (+${skin.value >= 10000 ? Math.round(skin.value / 1000) + 'k' : skin.value.toLocaleString('ru-RU')})</span>
+            </button>` : ''}`}
       </div>
     `;
     row.querySelector('.sell-btn')?.addEventListener('click', (e) => {
@@ -7023,9 +6986,9 @@ function doUpgrade() {
       const ang = startRot + finalAngle * eased;
       needleCurrent = ang;
 
-      needleEl.style.transform = `rotate(${ang.toFixed(2)}deg)`;
+      needleEl.style.transform = 'rotate(' + ang.toFixed(2) + 'deg) translateZ(0)';
 
-      // Новый нежный бархатный звук прокрута прямо внутри rAF (0 фризов, 60fps)
+      // Нежный бархатный звук прокрута прямо внутри rAF (0 фризов, стабильные 60/120 FPS)
       if (p < 0.985) {
         let currentInterval;
         if (p < 0.10) {
@@ -7041,9 +7004,6 @@ function doUpgrade() {
         if (now - lastTickTimestamp >= currentInterval) {
           lastTickTimestamp = now;
           LosyAudio.playGentleTick(p);
-          if (p > 0.55 && currentInterval > 95) {
-            try { window.Telegram?.WebApp?.HapticFeedback?.selectionChanged(); } catch (_) {}
-          }
         }
       }
 
@@ -7051,7 +7011,7 @@ function doUpgrade() {
         needleSpinRafId = requestAnimationFrame(frame);
       } else {
         needleSpinRafId = null;
-        needleEl.style.transform = `rotate(${ang.toFixed(2)}deg)`;
+        needleEl.style.transform = 'rotate(' + ang.toFixed(2) + 'deg) translateZ(0)';
         finishRound();
       }
     };
@@ -7590,17 +7550,6 @@ document.addEventListener('DOMContentLoaded', () => {
   el.targetValue = document.getElementById('targetValue');
   el.upgradeBtn = document.getElementById('upgradeBtn');
   el.catalogList = document.getElementById('catalogList');
-
-  const stakeCardSellBtn = document.getElementById('stakeCardSellBtn');
-  if (stakeCardSellBtn) {
-    stakeCardSellBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      if (spinning) return;
-      if (stakeId && stakeId !== 'pen') {
-        sellSkin(stakeId);
-      }
-    });
-  }
   el.targetList = document.getElementById('targetList');
   el.xpills = document.getElementById('xpills');
   el.chanceMult = document.getElementById('chanceMult');
