@@ -1001,7 +1001,7 @@ server.listen(PORT, '0.0.0.0', async () => {
         menu_button: {
           type: 'web_app',
           text: '🚀 Играть',
-          web_app: { url: `${miniappUrl.replace(/\/$/, '')}/?v=95` }
+          web_app: { url: `${miniappUrl.replace(/\/$/, '')}/?v=96` }
         }
       });
       const req = https.request({

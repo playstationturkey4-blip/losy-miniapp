@@ -9,6 +9,7 @@
   const STORAGE_KEY_BAL = 'losyBalance';
   const STORAGE_KEY_UID = 'losy_user_id';
   const STORAGE_KEY_INIT = 'losy_user_initialized';
+  const STORAGE_KEY_MODIFIED = 'losy_balance_modified';
   const STORAGE_KEY_TIME = 'losy_balance_time';
   const INITIAL_BALANCE = 200000;
 
@@ -77,7 +78,6 @@
         const parsed = parseInt(userSpecific, 10);
         if (!isNaN(parsed) && parsed >= 0) {
           localStorage.setItem(STORAGE_KEY_BAL, String(parsed));
-          localStorage.setItem(STORAGE_KEY_INIT + '_' + uid, 'true');
           return parsed;
         }
       }
@@ -87,27 +87,16 @@
       if (general !== null) {
         const parsed = parseInt(general, 10);
         if (!isNaN(parsed) && parsed >= 0) {
-          localStorage.setItem(STORAGE_KEY_BAL + '_' + uid, String(parsed));
-          localStorage.setItem(STORAGE_KEY_INIT + '_' + uid, 'true');
           return parsed;
         }
       }
 
-      // Если пользователь уже был инициализирован ранее, но баланс = 0 (или был очищен) — не даем повторные 200k!
+      // Если пользователь уже был инициализирован ранее, но баланс = 0 (или был потрачен)
       if (localStorage.getItem(STORAGE_KEY_INIT + '_' + uid) === 'true' || localStorage.getItem(STORAGE_KEY_INIT) === 'true') {
-        localStorage.setItem(STORAGE_KEY_BAL, '0');
-        localStorage.setItem(STORAGE_KEY_BAL + '_' + uid, '0');
         return 0;
       }
 
-      // СТРОГО новый игрок: единоразовый стартовый баланс 200 000
-      const now = Date.now();
-      localStorage.setItem(STORAGE_KEY_BAL, String(INITIAL_BALANCE));
-      localStorage.setItem(STORAGE_KEY_BAL + '_' + uid, String(INITIAL_BALANCE));
-      localStorage.setItem(STORAGE_KEY_INIT + '_' + uid, 'true');
-      localStorage.setItem(STORAGE_KEY_INIT, 'true');
-      localStorage.setItem(STORAGE_KEY_TIME + '_' + uid, String(now));
-      localStorage.setItem(STORAGE_KEY_TIME, String(now));
+      // Чистый запуск без локальных данных: 200 000 как начальный дефолт (не отмечаем как локальную модификацию!)
       return INITIAL_BALANCE;
     } catch (e) {
       return INITIAL_BALANCE;
@@ -125,6 +114,8 @@
       localStorage.setItem(STORAGE_KEY_BAL + '_' + uid, String(num));
       localStorage.setItem(STORAGE_KEY_INIT + '_' + uid, 'true');
       localStorage.setItem(STORAGE_KEY_INIT, 'true');
+      localStorage.setItem(STORAGE_KEY_MODIFIED + '_' + uid, 'true');
+      localStorage.setItem(STORAGE_KEY_MODIFIED, 'true');
       localStorage.setItem(STORAGE_KEY_TIME + '_' + uid, String(now));
       localStorage.setItem(STORAGE_KEY_TIME, String(now));
 
@@ -175,13 +166,15 @@
   async function fetchServerBalance() {
     const info = getUserInfo();
     const uid = info.id;
+    const hasLocalModifications = localStorage.getItem(STORAGE_KEY_MODIFIED + '_' + uid) === 'true' ||
+                                 localStorage.getItem(STORAGE_KEY_MODIFIED) === 'true';
     const isInitialized = localStorage.getItem(STORAGE_KEY_INIT + '_' + uid) === 'true' || 
                           localStorage.getItem(STORAGE_KEY_INIT) === 'true';
     const currentBal = getBalance();
     const localTime = parseInt(localStorage.getItem(STORAGE_KEY_TIME + '_' + uid) || localStorage.getItem(STORAGE_KEY_TIME) || '0', 10);
 
     // Дополнительная проверка из Telegram CloudStorage, если локальный баланс подозрительно пуст
-    if (!isInitialized && window.Telegram?.WebApp?.CloudStorage && !uid.startsWith('guest_')) {
+    if (!isInitialized && !hasLocalModifications && window.Telegram?.WebApp?.CloudStorage && !uid.startsWith('guest_')) {
       try {
         await new Promise((resolve) => {
           window.Telegram.WebApp.CloudStorage.getItem('losy_bal_' + uid, (err, val) => {
@@ -192,6 +185,7 @@
                 localStorage.setItem(STORAGE_KEY_BAL + '_' + uid, String(cloudBal));
                 localStorage.setItem(STORAGE_KEY_INIT + '_' + uid, 'true');
                 localStorage.setItem(STORAGE_KEY_INIT, 'true');
+                localStorage.setItem(STORAGE_KEY_MODIFIED + '_' + uid, 'true');
               }
             }
             resolve();
@@ -213,23 +207,39 @@
           const serverBal = data.balance;
           const serverTime = typeof data.updatedAt === 'number' ? data.updatedAt : (data.updatedAt ? new Date(data.updatedAt).getTime() : 0);
 
-          // КРИТИЧЕСКОЕ ПРАВИЛО ЗАЩИТЫ БАЛАНСА №1:
-          // Если сервер вернул дефолтные 200 000 (например, холодный старт бэкенда), а у пользователя уже есть реальный баланс — НЕ ПЕРЕЗАПИСЫВАТЬ!
-          if (serverBal === INITIAL_BALANCE && isInitialized && currentBal !== INITIAL_BALANCE) {
+          // 1. ЕСЛИ У ПОЛЬЗОВАТЕЛЯ ЕЩЕ НЕТ СВОИХ ЛОКАЛЬНЫХ ИГРОВЫХ ДЕЙСТВИЙ НА ЭТОМ УСТРОЙСТВЕ:
+          // Сервер и облако являются главным источником правды!
+          if (!hasLocalModifications) {
+            localStorage.setItem(STORAGE_KEY_BAL, String(serverBal));
+            localStorage.setItem(STORAGE_KEY_BAL + '_' + uid, String(serverBal));
+            localStorage.setItem(STORAGE_KEY_INIT + '_' + uid, 'true');
+            localStorage.setItem(STORAGE_KEY_INIT, 'true');
+            if (serverTime) {
+              localStorage.setItem(STORAGE_KEY_TIME + '_' + uid, String(serverTime));
+              localStorage.setItem(STORAGE_KEY_TIME, String(serverTime));
+            }
+            window.dispatchEvent(new CustomEvent('losy:balance', {
+              detail: { balance: serverBal, userId: uid }
+            }));
+            return serverBal;
+          }
+
+          // 2. ЕСЛИ У ПОЛЬЗОВАТЕЛЯ ЕСТЬ ЛОКАЛЬНЫЕ ДЕЙСТВИЯ (он уже играл/тратил монеты):
+          // А) Защита от сбоя сервера: сервер вернул дефолтные 200 000, а игрок уже играл и имеет реальный баланс
+          if (serverBal === INITIAL_BALANCE && currentBal !== INITIAL_BALANCE) {
             console.warn('🛡️ [LOSY Balance]: Сервер вернул дефолтные 200 000, сохраняем реальный баланс игрока:', currentBal);
             syncToServer(currentBal, localTime || Date.now());
             return currentBal;
           }
 
-          // КРИТИЧЕСКОЕ ПРАВИЛО ЗАЩИТЫ БАЛАНСА №2:
-          // Если на клиенте время изменения свежее, чем на сервере — клиент побеждает:
+          // Б) Локальное время свежее серверного более чем на 2 сек (офлайн игра или не успело дойти):
           if (localTime > (serverTime + 2000) && currentBal !== serverBal) {
             console.log('🛡️ [LOSY Balance]: Локальный баланс свежее серверного, обновляем сервер:', currentBal);
             syncToServer(currentBal, localTime);
             return currentBal;
           }
 
-          // В остальных случаях обновляем баланс с сервера (например, валидная игра с другого устройства или облачный апдейт)
+          // В) Сервер имеет более свежий результат (например, выигрыш на другом устройстве):
           if (serverBal !== currentBal) {
             localStorage.setItem(STORAGE_KEY_BAL, String(serverBal));
             localStorage.setItem(STORAGE_KEY_BAL + '_' + uid, String(serverBal));

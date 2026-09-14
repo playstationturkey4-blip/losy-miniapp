@@ -14,8 +14,7 @@
       "visitedBots": [
         "hitvpnbot"
       ],
-      "updatedAt": 1789303818733,
-      "initialized": true
+      "updatedAt": 1789303818733
     },
     "9999999": {
       "id": "9999999",
@@ -44,8 +43,7 @@
       "promocodes": [],
       "vpnKeys": [],
       "visitedBots": [],
-      "updatedAt": 1789383723892,
-      "initialized": true
+      "updatedAt": 1789383723892
     },
     "guest_local": {
       "id": "guest_local",
@@ -75,8 +73,7 @@
       "visitedBots": [
         "vpneucombot"
       ],
-      "updatedAt": 1789386527192,
-      "initialized": true
+      "updatedAt": 1789386882367
     },
     "user_test_aaa_111": {
       "id": "user_test_aaa_111",
@@ -272,8 +269,7 @@
       "promocodes": [],
       "vpnKeys": [],
       "visitedBots": [],
-      "updatedAt": 1789313530359,
-      "initialized": true
+      "updatedAt": 1789313530359
     },
     "8627946054": {
       "id": "8627946054",
@@ -287,8 +283,7 @@
       "promocodes": [],
       "vpnKeys": [],
       "visitedBots": [],
-      "updatedAt": 1789360762192,
-      "initialized": true
+      "updatedAt": 1789360762192
     },
     "guest_dputuxaamu03yydv": {
       "id": "guest_dputuxaamu03yydv",
@@ -358,8 +353,7 @@
       "promocodes": [],
       "vpnKeys": [],
       "visitedBots": [],
-      "updatedAt": 1789333336422,
-      "initialized": true
+      "updatedAt": 1789333336422
     },
     "player_1789333387": {
       "id": "player_1789333387",
@@ -373,8 +367,7 @@
       "promocodes": [],
       "vpnKeys": [],
       "visitedBots": [],
-      "updatedAt": 1789333392373,
-      "initialized": true
+      "updatedAt": 1789333392373
     },
     "5539207376": {
       "id": "5539207376",
@@ -388,8 +381,7 @@
       "promocodes": [],
       "vpnKeys": [],
       "visitedBots": [],
-      "updatedAt": 1789361408069,
-      "initialized": true
+      "updatedAt": 1789361408069
     },
     "7560873891": {
       "id": "7560873891",
@@ -403,8 +395,7 @@
       "promocodes": [],
       "vpnKeys": [],
       "visitedBots": [],
-      "updatedAt": 1789386479922,
-      "initialized": true
+      "updatedAt": 1789386479922
     },
     "test12345": {
       "id": "test12345",
@@ -418,8 +409,7 @@
       "promocodes": [],
       "vpnKeys": [],
       "visitedBots": [],
-      "updatedAt": 1789385589277,
-      "initialized": true
+      "updatedAt": 1789385589277
     },
     "test": {
       "id": "test",
@@ -433,11 +423,24 @@
       "promocodes": [],
       "vpnKeys": [],
       "visitedBots": [],
-      "updatedAt": 1789385864677,
-      "initialized": true
+      "updatedAt": 1789385864677
     },
     "new_player_test_1789386648": {
       "id": "new_player_test_1789386648",
+      "username": "",
+      "firstName": "Игрок",
+      "balance": 200000,
+      "spaceCoins": 0,
+      "owned": [
+        "pen"
+      ],
+      "promocodes": [],
+      "vpnKeys": [],
+      "visitedBots": [],
+      "updatedAt": 1789386649006
+    },
+    "new_player_test_1789386988": {
+      "id": "new_player_test_1789386988",
       "username": "",
       "firstName": "Игрок",
       "balance": 187654,
@@ -448,7 +451,7 @@
       "promocodes": [],
       "vpnKeys": [],
       "visitedBots": [],
-      "updatedAt": 1789386649007,
+      "updatedAt": 1789386989402,
       "initialized": true
     }
   },
