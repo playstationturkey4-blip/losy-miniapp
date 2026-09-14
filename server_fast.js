@@ -592,12 +592,42 @@ const server = http.createServer((req, res) => {
       // 5. API промокодов Telegram-бота и Mini App
       if ((pathname === '/api/bot/promo' || pathname === '/api/promo') && req.method === 'POST') {
         const PROMO_CODES = {
+          // Персональные промокоды (активируются строго указанными игроками)
+          'RYLET18M': {
+            reward: 18000000,
+            desc: '👑 Королевский VIP-бонус 18 000 000 монет эксклюзивно для @rylet14!',
+            allowedUserIds: ['5539207376'],
+            allowedUsernames: ['rylet14'],
+            allowedTargetName: '@rylet14'
+          },
+          'MISHA3M': {
+            reward: 3000000,
+            desc: '🚀 Специальный космический бонус 3 000 000 монет эксклюзивно для @Misha6let!',
+            allowedUserIds: ['1948508550'],
+            allowedUsernames: ['misha6let'],
+            allowedTargetName: '@Misha6let'
+          },
           'IVANGOAT': {
             reward: 1000000,
             desc: 'Эксклюзивный VIP-бонус 1 000 000 золота для @rylet14',
             allowedUserIds: ['5539207376'],
-            allowedUsernames: ['rylet14']
+            allowedUsernames: ['rylet14'],
+            allowedTargetName: '@rylet14'
           },
+
+          // 10 общих смешных промокодов (по 1 разу для каждого игрока)
+          'LOSIK_NE_GRUSTI': { reward: 150000, desc: 'Лосик не грусти, держи золотишко на баланс! 🫎' },
+          'SHAFURMA_V_NOCHI': { reward: 100000, desc: 'Сытная шавуха в 3 ночи для поднятия победного духа! 🌯' },
+          'RAKETA_NA_LUNU': { reward: 200000, desc: 'Высокооктановое ракетное топливо для бешеного полета! 🚀' },
+          'TAPOK_UDOP': { reward: 125000, desc: 'Легендарный батин тапок с критом на удачу! 🩴' },
+          'GOLOVOREZ52': { reward: 252000, desc: 'Фирменный питерский привет на 52 монеты и разгон! ✌️' },
+          'BABLO_PRIDI': { reward: 180000, desc: 'Древнейшее заклинание на мгновенный призыв монет! 💰' },
+          'KOSMO_BURGER': { reward: 110000, desc: 'Межгалактический сытный перекус космонавта! 🍔' },
+          'BEZ_PANIKI': { reward: 140000, desc: 'Главное сохранять спокойствие и крутить колесо! 🎯' },
+          'ZOLOTO_MAVRODI': { reward: 300000, desc: '100% профит без смс и регистраций! 🎟️' },
+          'FORTUNA_LOSYA': { reward: 500000, desc: 'Великий джекпот от самого Лося! 🍀' },
+
+          // Базовые промокоды
           'LOSY2026': { reward: 50000, desc: 'Приветственный бонус 50 000 золота' },
           'START': { reward: 25000, desc: 'Стартовый набор 25 000 золота' },
           'VPNWIN': { reward: 35000, desc: 'Бонус за интерес к VPN 35 000 золота' },
@@ -623,17 +653,16 @@ const server = http.createServer((req, res) => {
           let isAllowed = false;
           if (promo.allowedUserIds && promo.allowedUserIds.includes(userStrId)) {
             isAllowed = true;
-          } else if (promo.allowedUsernames && promo.allowedUsernames.map(u => u.toLowerCase()).includes(userUname)) {
-            if (!promo.allowedUserIds || promo.allowedUserIds.includes(userStrId)) {
-              isAllowed = true;
-            }
+          }
+          if (promo.allowedUsernames && promo.allowedUsernames.map(u => u.toLowerCase().replace(/^@/, '')).includes(userUname)) {
+            isAllowed = true;
           }
 
           if (!isAllowed) {
             res.writeHead(403, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({
               ok: false,
-              error: '⛔ Этот промокод персональный и недоступен для вашего аккаунта!'
+              error: `⛔ Этот промокод персональный и предназначен только для ${promo.allowedTargetName || 'указанного игрока'}!`
             }));
             return;
           }

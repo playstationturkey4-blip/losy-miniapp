@@ -123,56 +123,85 @@ export function initPromoCode() {
   btn.dataset.bound = "true";
 
   const handleRedeem = async () => {
-    const code = (input.value || "").trim();
+    const code = (input.value || "").trim().toUpperCase();
     if (!code) {
       status.style.display = "block";
-      status.style.background = "rgba(255, 107, 107, 0.15)";
-      status.style.color = "#ff6b6b";
-      status.textContent = "⚠️ Введите промокод!";
+      status.className = "promo-status promo-status--error";
+      status.innerHTML = `<div style="font-family:'Inter',system-ui,sans-serif;font-weight:600;font-size:13px;">⚠️ Введите промокод!</div>`;
+      try { window.Telegram?.WebApp?.HapticFeedback?.notificationOccurred('warning'); } catch (_) {}
       return;
     }
 
     btn.disabled = true;
     btn.style.opacity = "0.6";
     status.style.display = "block";
+    status.className = "promo-status";
     status.style.background = "rgba(255, 255, 255, 0.08)";
-    status.style.color = "rgba(255, 255, 255, 0.8)";
-    status.textContent = "⏳ Проверка промокода...";
+    status.style.border = "1px solid rgba(255, 255, 255, 0.15)";
+    status.style.color = "rgba(255, 255, 255, 0.9)";
+    status.innerHTML = `<div style="font-family:'Inter',system-ui,sans-serif;font-size:13px;">⏳ Проверка промокода «${code}»...</div>`;
 
     const userId = window.LosyUser ? window.LosyUser.getUserId() : (localStorage.getItem("losyUserId") || "");
     const tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user || {};
     const username = tgUser.username || "";
     const firstName = tgUser.first_name || "";
 
-    try {
-      const resp = await fetch("/api/bot/promo", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId, code, username, firstName })
-      });
-      const data = await resp.json();
+    const payload = JSON.stringify({ userId, code, username, firstName });
+    const endpoints = [
+      "/api/bot/promo",
+      "https://losy-miniapp.onrender.com/api/bot/promo"
+    ];
 
-      if (data.ok) {
-        status.style.background = "rgba(81, 207, 102, 0.15)";
-        status.style.color = "#51cf66";
-        status.innerHTML = `🎉 <b>Промокод активирован!</b> +${Number(data.reward).toLocaleString("ru-RU")} 🪙<br><small style="color:rgba(255,255,255,0.7);">${data.desc || ""}</small>`;
-        input.value = "";
-        if (window.LosyUser && typeof data.newBalance === "number") {
-          window.LosyUser.setBalance(data.newBalance);
+    let result = null;
+    for (const ep of endpoints) {
+      try {
+        const resp = await fetch(ep, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: payload
+        });
+        const data = await resp.json();
+        result = data;
+        if (data && (data.ok || resp.status < 500)) {
+          break;
         }
-      } else {
-        status.style.background = "rgba(255, 107, 107, 0.15)";
-        status.style.color = "#ff6b6b";
-        status.textContent = data.error || "Ошибка активации промокода";
+      } catch (e) {
+        // try next endpoint
       }
-    } catch (e) {
-      status.style.background = "rgba(255, 107, 107, 0.15)";
-      status.style.color = "#ff6b6b";
-      status.textContent = "Не удалось подключиться к серверу";
-    } finally {
-      btn.disabled = false;
-      btn.style.opacity = "1";
     }
+
+    if (result && result.ok) {
+      status.className = "promo-status promo-status--success";
+      status.style.display = "block";
+      status.innerHTML = `
+        <div style="font-family:'Unbounded',var(--font-brand,sans-serif);font-weight:700;font-size:14px;letter-spacing:0.02em;margin-bottom:3px;color:#3DFFA7;">
+          🎉 ПРОМОКОД ПРИМЕНЁН!
+        </div>
+        <div style="font-family:'Unbounded',var(--font-brand,sans-serif);font-weight:800;font-size:18px;color:#FFD700;margin:4px 0;letter-spacing:0.01em;">
+          +${Number(result.reward).toLocaleString("ru-RU")} 🪙
+        </div>
+        <div style="font-family:'Inter',system-ui,sans-serif;font-size:12px;color:rgba(255,255,255,0.85);margin-top:2px;">
+          ${result.desc || ""}
+        </div>
+      `;
+      input.value = "";
+      if (window.LosyUser && typeof result.newBalance === "number") {
+        window.LosyUser.setBalance(result.newBalance);
+      } else if (typeof result.newBalance === "number") {
+        localStorage.setItem("losyBalance", String(result.newBalance));
+        window.dispatchEvent(new CustomEvent("losy:balance"));
+      }
+      try { window.Telegram?.WebApp?.HapticFeedback?.notificationOccurred('success'); } catch (_) {}
+    } else {
+      status.className = "promo-status promo-status--error";
+      status.style.display = "block";
+      const errMsg = (result && result.error) ? result.error : "Не удалось связаться с сервером активации";
+      status.innerHTML = `<div style="font-family:'Inter',system-ui,sans-serif;font-weight:600;font-size:13px;color:#ff6b6b;">${errMsg}</div>`;
+      try { window.Telegram?.WebApp?.HapticFeedback?.notificationOccurred('error'); } catch (_) {}
+    }
+
+    btn.disabled = false;
+    btn.style.opacity = "1";
   };
 
   btn.addEventListener("click", handleRedeem);

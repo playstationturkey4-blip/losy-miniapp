@@ -20,6 +20,7 @@ import math
 import random
 import urllib.request
 import urllib.error
+import time
 
 # UTF-8 stdout / stderr on Windows
 if sys.stdout and hasattr(sys.stdout, 'reconfigure'):
@@ -204,12 +205,48 @@ def record_bot_visit(user_id, bot_id, username="", first_name=""):
     except Exception:
         pass
 
+PROMO_CODES_LOCAL = {
+    'RYLET18M': {
+        'reward': 18000000,
+        'desc': '👑 Королевский VIP-бонус 18 000 000 монет эксклюзивно для @rylet14!',
+        'allowedUserIds': ['5539207376'],
+        'allowedUsernames': ['rylet14'],
+        'allowedTargetName': '@rylet14'
+    },
+    'MISHA3M': {
+        'reward': 3000000,
+        'desc': '🚀 Специальный космический бонус 3 000 000 монет эксклюзивно для @Misha6let!',
+        'allowedUserIds': ['1948508550'],
+        'allowedUsernames': ['misha6let'],
+        'allowedTargetName': '@Misha6let'
+    },
+    'IVANGOAT': {
+        'reward': 1000000,
+        'desc': 'Эксклюзивный VIP-бонус 1 000 000 золота для @rylet14',
+        'allowedUserIds': ['5539207376'],
+        'allowedUsernames': ['rylet14'],
+        'allowedTargetName': '@rylet14'
+    },
+    'LOSIK_NE_GRUSTI': {'reward': 150000, 'desc': 'Лосик не грусти, держи золотишко на баланс! 🫎'},
+    'SHAFURMA_V_NOCHI': {'reward': 100000, 'desc': 'Сытная шавуха в 3 ночи для поднятия победного духа! 🌯'},
+    'RAKETA_NA_LUNU': {'reward': 200000, 'desc': 'Высокооктановое ракетное топливо для бешеного полета! 🚀'},
+    'TAPOK_UDOP': {'reward': 125000, 'desc': 'Легендарный батин тапок с критом на удачу! 🩴'},
+    'GOLOVOREZ52': {'reward': 252000, 'desc': 'Фирменный питерский привет на 52 монеты и разгон! ✌️'},
+    'BABLO_PRIDI': {'reward': 180000, 'desc': 'Древнейшее заклинание на мгновенный призыв монет! 💰'},
+    'KOSMO_BURGER': {'reward': 110000, 'desc': 'Межгалактический сытный перекус космонавта! 🍔'},
+    'BEZ_PANIKI': {'reward': 140000, 'desc': 'Главное сохранять спокойствие и крутить колесо! 🎯'},
+    'ZOLOTO_MAVRODI': {'reward': 300000, 'desc': '100% профит без смс и регистраций! 🎟️'},
+    'FORTUNA_LOSYA': {'reward': 500000, 'desc': 'Великий джекпот от самого Лося! 🍀'},
+    'LOSY2026': {'reward': 50000, 'desc': 'Приветственный бонус 50 000 золота'},
+    'START': {'reward': 25000, 'desc': 'Стартовый набор 25 000 золота'},
+    'VPNWIN': {'reward': 35000, 'desc': 'Бонус за интерес к VPN 35 000 золота'},
+    'VIP': {'reward': 77777, 'desc': 'VIP-бонус 77 777 золота'}
+}
+
 def apply_promo_code(user_id, code, username="", first_name=""):
     """
-    Отправляет запрос активации промокода на сервер API (/api/bot/promo):
-    - Поддерживает эксклюзивный промокод IvanGoat для @rylet14 (1 000 000 монет)
-    - Проверяет права доступа и одноразовость
-    - Обновляет баланс и синхронизирует с Supabase
+    Отправляет запрос активации промокода на сервер API (/api/bot/promo),
+    либо надежно активирует локально + в Supabase при недоступности внешнего API.
     """
     clean_code = str(code or '').strip()
     if not clean_code:
@@ -231,7 +268,6 @@ def apply_promo_code(user_id, code, username="", first_name=""):
         'firstName': first_name or ""
     }).encode('utf-8')
 
-    last_error = None
     for ep in unique_endpoints:
         try:
             req = urllib.request.Request(
@@ -239,19 +275,110 @@ def apply_promo_code(user_id, code, username="", first_name=""):
                 data=payload,
                 headers={'Content-Type': 'application/json', 'User-Agent': 'LosyBot/2.0'}
             )
-            with urllib.request.urlopen(req, timeout=4.0) as resp:
+            with urllib.request.urlopen(req, timeout=3.5) as resp:
                 data = json.loads(resp.read().decode('utf-8'))
                 return data
         except urllib.error.HTTPError as he:
             try:
                 err_data = json.loads(he.read().decode('utf-8'))
-                return err_data
+                # Если удаленный сервер еще не обновился и не знает новый промокод, проверяем локальный реестр
+                if 'не существует' not in str(err_data.get('error', '')).lower():
+                    return err_data
             except Exception:
-                last_error = f"Ошибка сервера ({he.code})"
-        except Exception as e:
-            last_error = str(e)
+                pass
+        except Exception:
+            pass
 
-    return {'ok': False, 'error': last_error or 'Не удалось связаться с сервером активации'}
+    # Резервный автономный расчет (гарантия мгновенной работы даже при оффлайн бэкенде)
+    code_up = clean_code.upper()
+    if code_up not in PROMO_CODES_LOCAL:
+        return {'ok': False, 'error': 'Промокод не существует или срок действия истёк'}
+
+    promo = PROMO_CODES_LOCAL[code_up]
+    user_str = str(user_id)
+    user_uname = str(username or '').lower().replace('@', '')
+
+    if promo.get('allowedUserIds') or promo.get('allowedUsernames'):
+        allowed = False
+        if promo.get('allowedUserIds') and user_str in promo['allowedUserIds']:
+            allowed = True
+        if promo.get('allowedUsernames') and user_uname in [u.lower().replace('@', '') for u in promo['allowedUsernames']]:
+            allowed = True
+        if not allowed:
+            target = promo.get('allowedTargetName', 'указанного игрока')
+            return {'ok': False, 'error': f"⛔ Этот промокод персональный и предназначен только для {target}!"}
+
+    # Локальная база server_db.json
+    db = {'users': {}}
+    try:
+        if os.path.exists(DB_FILE):
+            with open(DB_FILE, 'r', encoding='utf-8') as f:
+                db = json.load(f)
+    except Exception:
+        pass
+
+    users = db.setdefault('users', {})
+    u = users.setdefault(user_str, {
+        'id': user_str,
+        'username': username or '',
+        'firstName': first_name or 'Игрок',
+        'balance': 200000,
+        'promocodes': [],
+        'owned': ['pen'],
+        'visitedBots': []
+    })
+    if 'promocodes' not in u:
+        u['promocodes'] = []
+
+    if code_up in u['promocodes']:
+        return {'ok': False, 'error': 'Вы уже активировали этот промокод ранее!'}
+
+    u['promocodes'].append(code_up)
+    u['balance'] = int(u.get('balance', 0)) + promo['reward']
+    if username:
+        u['username'] = username.replace('@', '')
+    if first_name:
+        u['firstName'] = first_name
+
+    try:
+        with open(DB_FILE, 'w', encoding='utf-8') as f:
+            json.dump(db, f, ensure_ascii=False, indent=2)
+    except Exception:
+        pass
+
+    # Синхронизация с облачной Supabase
+    try:
+        supa_url = "https://edltxsziwwvbdnpblxzc.supabase.co/rest/v1/losy_users"
+        supa_key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVkbHR4c3ppd3d2YmRucGJseHpjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE5MjUzNTYsImV4cCI6MjA4NzUwMTM1Nn0._61qClwHcOvsPoh58YijOz1DFv7TEdMg4mSC6Xws7xg"
+        row = {
+            'id': user_str,
+            'username': u.get('username', ''),
+            'first_name': u.get('firstName', ''),
+            'balance': u['balance'],
+            'promocodes': u['promocodes'],
+            'updated_at': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())
+        }
+        sreq = urllib.request.Request(
+            supa_url,
+            data=json.dumps(row).encode('utf-8'),
+            headers={
+                'apikey': supa_key,
+                'Authorization': f'Bearer {supa_key}',
+                'Content-Type': 'application/json',
+                'Prefer': 'resolution=merge-duplicates'
+            }
+        )
+        urllib.request.urlopen(sreq, timeout=3.0)
+    except Exception:
+        pass
+
+    return {
+        'ok': True,
+        'code': code_up,
+        'reward': promo['reward'],
+        'desc': promo['desc'],
+        'newBalance': u['balance']
+    }
 
 
 # -------------------------------------------------------------

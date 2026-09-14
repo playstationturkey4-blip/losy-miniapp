@@ -3882,10 +3882,11 @@ body {
   .skin-row .shop-price { width: 100%; margin-top: 2px; display: flex; flex-direction: column; }
   .skin-row .stake-btn, .skin-row .free-btn { width: 100%; min-height: 25px; padding: 3px 4px; font-family: 'Inter', system-ui, sans-serif; font-weight: 700; font-size: clamp(0.54rem, 1.8vw, 0.66rem); letter-spacing: 0.03em; white-space: nowrap; border-radius: 8px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; text-align: center; }
   .stake-btn.is-staked { border-color: rgba(59, 232, 255, 0.95) !important; color: #3BE8FF !important; background: rgba(59, 232, 255, 0.18) !important; box-shadow: 0 0 10px rgba(59, 232, 255, 0.35) !important; }
-  .skin-row .sell-btn { width: 100%; min-height: 25px; padding: 2px 4px; font-family: 'Inter', system-ui, sans-serif; font-weight: 700; font-size: clamp(0.50rem, 1.7vw, 0.62rem); letter-spacing: 0.02em; white-space: nowrap; border-radius: 8px; box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; gap: 4px; text-align: center; background: linear-gradient(135deg, rgba(255, 184, 0, 0.18), rgba(255, 140, 0, 0.10)); color: #FFD43B; border: 1px solid rgba(255, 184, 0, 0.5); cursor: pointer; transition: all 0.15s ease; margin-top: 3px; }
-  .skin-row .sell-btn:hover { background: linear-gradient(135deg, rgba(255, 184, 0, 0.32), rgba(255, 140, 0, 0.20)); border-color: #FFD43B; box-shadow: 0 0 8px rgba(255, 184, 0, 0.35); }
+  .skin-row .sell-btn { width: 100%; max-width: 100%; min-height: 21px; padding: 1px 3px; font-family: 'Inter', system-ui, sans-serif; font-weight: 700; font-size: clamp(0.42rem, 1.35vw, 0.52rem); letter-spacing: 0.01em; white-space: nowrap; border-radius: 6px; box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; gap: 3px; text-align: center; background: linear-gradient(135deg, rgba(255, 184, 0, 0.16), rgba(255, 140, 0, 0.08)); color: #FFD43B; border: 1px solid rgba(255, 184, 0, 0.45); cursor: pointer; transition: all 0.15s ease; margin-top: 2px; overflow: hidden; text-overflow: ellipsis; }
+  .skin-row .sell-btn:hover { background: linear-gradient(135deg, rgba(255, 184, 0, 0.28), rgba(255, 140, 0, 0.16)); border-color: #FFD43B; box-shadow: 0 0 6px rgba(255, 184, 0, 0.3); }
   .skin-row .sell-btn:active { transform: scale(0.96); }
-  .skin-row .sell-btn .sell-btn__icon { width: 12px; height: 12px; flex-shrink: 0; }
+  .skin-row .sell-btn .sell-btn__icon { width: 10px; height: 10px; flex-shrink: 0; }
+  .skin-row .sell-btn span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .skin-row .buy-btn { flex: 1 1 0; min-width: 0; min-height: 28px; padding: .25em .2em; font-family: 'Inter', var(--font-brand); font-weight: 600; font-size: clamp(.68rem, 2.4vw, .82rem); }
   .skin-row .buy-btn { justify-content: center; }
   .skin-row .buy-btn img { width: 13px !important; height: 13px !important; }
@@ -5167,9 +5168,9 @@ const LosyAudio = (() => {
       tickGain.gain.value = 0.60;
       tickGain.connect(limiter);
 
-      // Celebration bus: dedicated full volume for victory salute fireworks (gain = 1.0)
+      // Celebration bus: dedicated comfortable volume for victory salute fireworks (gain = 0.40)
       celebrationGain = c.createGain();
-      celebrationGain.gain.value = 1.0;
+      celebrationGain.gain.value = 0.40;
       celebrationGain.connect(limiter);
     } catch (e) {}
   }
@@ -5453,7 +5454,7 @@ const LosyAudio = (() => {
       if (resolvedName === 'click' || resolvedName === 'tap') finalVol = 0.45;
       else if (resolvedName === 'start') finalVol = 0.85;
       else if (resolvedName === 'lose') finalVol = 0.90;
-      else if (resolvedName === 'salute') finalVol = 1.0;
+      else if (resolvedName === 'salute') finalVol = 0.40;
     }
 
     const targetBus = (resolvedName === 'salute') ? celebrationGain : sfxGain;
@@ -5621,11 +5622,11 @@ const LosyAudio = (() => {
     isSalutePlaying = true;
     let played = false;
     if (buffers['salute']) {
-      const src = playBufferNode('salute', buffers['salute'], celebrationGain, 1.0);
+      const src = playBufferNode('salute', buffers['salute'], celebrationGain, 0.40);
       if (src) played = true;
     }
     if (!played) {
-      tryPlayHtmlAudio('salute', 1.0);
+      tryPlayHtmlAudio('salute', 0.40);
       synthWin();
     }
 
@@ -6157,11 +6158,11 @@ function renderCatalog() {
               ${isStake ? 'В СТАВКЕ ✓' : 'ПОСТАВИТЬ'}
             </button>
             ${count > 0 ? `<button class="sell-btn" data-skin="${skin.id}" type="button" title="Продать ${skin.name} за ${skin.value.toLocaleString('ru-RU')} 🪙">
-              <svg class="sell-btn__icon" viewBox="0 0 24 24" width="13" height="13" fill="none" aria-hidden="true">
+              <svg class="sell-btn__icon" viewBox="0 0 24 24" width="10" height="10" fill="none" aria-hidden="true">
                 <circle cx="12" cy="12" r="9" stroke="#FFD700" stroke-width="2.2" fill="rgba(255,215,0,0.18)"/>
                 <path d="M12 7v10M9.5 9.5h5a1.5 1.5 0 0 1 0 3h-5a1.5 1.5 0 0 0 0 3h5.5" stroke="#FFD700" stroke-width="2" stroke-linecap="round"/>
               </svg>
-              <span>ПРОДАТЬ (+${skin.value >= 10000 ? Math.round(skin.value / 1000) + 'k' : skin.value.toLocaleString('ru-RU')})</span>
+              <span>ПРОДАТЬ (+${skin.value >= 1000000 ? (skin.value / 1000000).toFixed(skin.value % 1000000 === 0 ? 0 : 1) + 'M' : skin.value >= 10000 ? Math.round(skin.value / 1000) + 'k' : skin.value.toLocaleString('ru-RU')})</span>
             </button>` : ''}`}
       </div>
     `;
