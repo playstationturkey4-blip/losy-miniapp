@@ -21,7 +21,7 @@ export const MODES = [
     id: "rocket",
     name: "Ракета",
     desc: "Успей забрать ставку до того, как ракета уйдёт.",
-    url: "/modes/losy-rocket.html?v=70",
+    url: "/modes/losy-rocket.html?v=99",
     cover: "/assets/covers/rocket.webp",
     accent: "rocket",
   },

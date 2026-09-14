@@ -1669,6 +1669,155 @@ html, body {
   padding: 0.45rem 0.6rem;
   font-size: 0.72rem;
 }
+.bet-value {
+  cursor: pointer;
+  transition: color 0.15s, text-shadow 0.15s;
+}
+.bet-value:hover {
+  color: #3be8ff;
+  text-shadow: 0 0 12px rgba(59, 232, 255, 0.45);
+}
+
+.bet-custom-toggle {
+  color: #3be8ff !important;
+  border-color: rgba(59, 232, 255, 0.45) !important;
+  background: rgba(59, 232, 255, 0.12) !important;
+  font-weight: 700 !important;
+}
+.bet-custom-toggle:hover, .bet-custom-toggle.is-active {
+  background: rgba(59, 232, 255, 0.25) !important;
+  border-color: #3be8ff !important;
+  box-shadow: 0 0 10px rgba(59, 232, 255, 0.35) !important;
+}
+
+.bet-custom-drawer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  background: rgba(10, 14, 20, 0.92);
+  border: 1px solid rgba(59, 232, 255, 0.38);
+  border-radius: 12px;
+  padding: 0.55rem 0.65rem;
+  margin-top: 0.3rem;
+  animation: betDrawerIn 0.22s cubic-bezier(.22, 1, .36, 1) forwards;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.45);
+}
+@keyframes betDrawerIn {
+  from { opacity: 0; transform: translateY(-6px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.bet-custom-main {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+.bet-custom-input-wrap {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(238, 244, 248, 0.22);
+  border-radius: 8px;
+  padding: 0 0.55rem;
+  height: 38px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.bet-custom-input-wrap:focus-within {
+  border-color: #3be8ff;
+  box-shadow: 0 0 10px rgba(59, 232, 255, 0.3);
+}
+.bet-custom-icon {
+  width: 17px;
+  height: 17px;
+  margin-right: 0.35rem;
+  flex-shrink: 0;
+}
+.bet-custom-input {
+  flex: 1;
+  min-width: 0;
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-family: var(--font-brand, sans-serif);
+  font-size: 0.98rem;
+  font-weight: 700;
+  outline: none;
+  width: 100%;
+}
+.bet-custom-input::placeholder {
+  color: rgba(238, 244, 248, 0.38);
+  font-family: var(--font-body, sans-serif);
+  font-size: 0.78rem;
+  font-weight: 400;
+}
+.bet-custom-apply-btn {
+  background: linear-gradient(135deg, #3be8ff, #0072ff);
+  color: #05070a;
+  font-family: var(--font-brand, sans-serif);
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  padding: 0 0.85rem;
+  height: 38px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: transform 0.15s, box-shadow 0.2s;
+}
+.bet-custom-apply-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0 12px rgba(59, 232, 255, 0.4);
+}
+.bet-custom-apply-btn:active {
+  transform: scale(0.96);
+}
+.bet-custom-close-btn {
+  width: 30px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(238, 244, 248, 0.6);
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: color 0.15s;
+}
+.bet-custom-close-btn:hover {
+  color: #ff6b6b;
+}
+
+.bet-custom-shortcuts {
+  display: flex;
+  gap: 0.3rem;
+  overflow-x: auto;
+}
+.bet-shortcut-chip {
+  flex: 1;
+  min-width: 0;
+  padding: 0.25rem 0.35rem;
+  font-family: var(--font-label, sans-serif);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  background: rgba(238, 244, 248, 0.06);
+  border: 1px solid rgba(238, 244, 248, 0.14);
+  border-radius: 6px;
+  color: rgba(238, 244, 248, 0.85);
+  cursor: pointer;
+  text-align: center;
+  white-space: nowrap;
+  transition: all 0.15s;
+}
+.bet-shortcut-chip:hover {
+  background: rgba(59, 232, 255, 0.15);
+  border-color: rgba(59, 232, 255, 0.4);
+  color: #3be8ff;
+}
 
 
 
@@ -1846,6 +1995,26 @@ button, .btn, .bet-btn, .bet-quick-btn {
             <button class="bet-quick-btn" data-quick="50">50</button>
             <button class="bet-quick-btn" data-quick="100">100</button>
             <button class="bet-quick-btn bet-max" data-quick="max">MAX</button>
+            <button class="bet-quick-btn bet-custom-toggle" id="betCustomBtn" type="button" title="Ввести свою сумму">✏️ СВОЯ</button>
+          </div>
+
+          <!-- КАСТОМНЫЙ ВВОД СТАВКИ -->
+          <div class="bet-custom-drawer" id="betCustomDrawer" style="display: none;">
+            <div class="bet-custom-main">
+              <div class="bet-custom-input-wrap">
+                <img src="/assets/coin.png?v=1" alt="🪙" class="bet-custom-icon" width="17" height="17" aria-hidden="true" />
+                <input type="number" id="betCustomInput" class="bet-custom-input" placeholder="Своя ставка..." min="10" step="10" inputmode="numeric" />
+              </div>
+              <button type="button" id="betCustomApply" class="bet-custom-apply-btn">ПОСТАВИТЬ</button>
+              <button type="button" id="betCustomClose" class="bet-custom-close-btn" aria-label="Закрыть">✕</button>
+            </div>
+            <div class="bet-custom-shortcuts">
+              <button type="button" class="bet-shortcut-chip" data-add="500">+500</button>
+              <button type="button" class="bet-shortcut-chip" data-add="1000">+1 000</button>
+              <button type="button" class="bet-shortcut-chip" data-add="10000">+10 000</button>
+              <button type="button" class="bet-shortcut-chip" data-action="half">½</button>
+              <button type="button" class="bet-shortcut-chip" data-action="double">2X</button>
+            </div>
           </div>
           
         </div>
@@ -2239,6 +2408,11 @@ function cacheDOM() {
   el.betValue = document.getElementById('betValue');
   el.betDec = document.getElementById('betDec');
   el.betInc = document.getElementById('betInc');
+  el.betCustomBtn = document.getElementById('betCustomBtn');
+  el.betCustomDrawer = document.getElementById('betCustomDrawer');
+  el.betCustomInput = document.getElementById('betCustomInput');
+  el.betCustomApply = document.getElementById('betCustomApply');
+  el.betCustomClose = document.getElementById('betCustomClose');
   el.playBtn = document.getElementById('playBtn');
   el.cashoutBtn = document.getElementById('cashoutBtn');
   el.cashoutAmount = document.getElementById('cashoutAmount');
@@ -2349,11 +2523,76 @@ function bindEvents() {
   bindFastTap(el.betDec, () => { playClick(); adjustBet(-10); });
   bindFastTap(el.betInc, () => { playClick(); adjustBet(10); });
 
+  // Клик по сумме ставки открывает кастомный ввод
+  if (el.betValue) {
+    el.betValue.style.cursor = 'pointer';
+    el.betValue.title = 'Нажмите, чтобы ввести свою ставку';
+    bindFastTap(el.betValue, () => {
+      if (game.phase === 'idle') {
+        playClick();
+        toggleCustomBetDrawer();
+      }
+    });
+  }
+
+  // Быстрые кнопки ставок (кроме кнопки "Своя")
   document.querySelectorAll('.bet-quick-btn').forEach(btn => {
+    if (btn.id === 'betCustomBtn') return;
     bindFastTap(btn, () => {
       playClick();
       const v = btn.dataset.quick;
+      if (!v) return;
       setBet(v === 'max' ? game.space : parseInt(v, 10));
+      if (el.betCustomDrawer && el.betCustomDrawer.style.display !== 'none') {
+        if (el.betCustomInput) el.betCustomInput.value = game.bet;
+      }
+    });
+  });
+
+  // Логика кастомной ставки
+  if (el.betCustomBtn) {
+    bindFastTap(el.betCustomBtn, () => {
+      playClick();
+      toggleCustomBetDrawer();
+    });
+  }
+  if (el.betCustomClose) {
+    bindFastTap(el.betCustomClose, () => {
+      playClick();
+      toggleCustomBetDrawer(false);
+    });
+  }
+  if (el.betCustomApply) {
+    bindFastTap(el.betCustomApply, () => {
+      applyCustomBet();
+    });
+  }
+  if (el.betCustomInput) {
+    el.betCustomInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        applyCustomBet();
+      } else if (e.key === 'Escape') {
+        toggleCustomBetDrawer(false);
+      }
+    });
+  }
+  document.querySelectorAll('.bet-shortcut-chip').forEach(chip => {
+    bindFastTap(chip, () => {
+      playClick();
+      const add = chip.dataset.add;
+      const action = chip.dataset.action;
+      let cur = parseInt(el.betCustomInput && el.betCustomInput.value ? el.betCustomInput.value : game.bet, 10) || 0;
+      if (add) {
+        let n = Math.min(game.space, cur + parseInt(add, 10));
+        if (el.betCustomInput) el.betCustomInput.value = n;
+      } else if (action === 'half') {
+        let n = Math.max(10, Math.floor((cur / 2) / 10) * 10);
+        if (el.betCustomInput) el.betCustomInput.value = n;
+      } else if (action === 'double') {
+        let n = Math.min(game.space, cur * 2);
+        if (el.betCustomInput) el.betCustomInput.value = n;
+      }
     });
   });
 
@@ -2474,6 +2713,50 @@ function playClick() {
 }
 window.playTapSound = playTapSound;
 window.playClick = playClick;
+
+function toggleCustomBetDrawer(forceState) {
+  if (!el.betCustomDrawer) return;
+  const isCurrentlyOpen = el.betCustomDrawer.style.display !== 'none';
+  const shouldOpen = typeof forceState === 'boolean' ? forceState : !isCurrentlyOpen;
+  
+  if (shouldOpen) {
+    if (game.phase !== 'idle') return;
+    el.betCustomDrawer.style.display = 'flex';
+    if (el.betCustomBtn) el.betCustomBtn.classList.add('is-active');
+    if (el.betCustomInput) {
+      el.betCustomInput.value = game.bet;
+      setTimeout(() => {
+        el.betCustomInput.focus();
+        el.betCustomInput.select();
+      }, 50);
+    }
+  } else {
+    el.betCustomDrawer.style.display = 'none';
+    if (el.betCustomBtn) el.betCustomBtn.classList.remove('is-active');
+    if (el.betCustomInput) el.betCustomInput.blur();
+  }
+}
+
+function applyCustomBet() {
+  if (game.phase !== 'idle' || !el.betCustomInput) return;
+  let val = parseInt(el.betCustomInput.value, 10);
+  if (isNaN(val) || val <= 0) {
+    showToast('Введите корректную сумму ставки!');
+    return;
+  }
+  if (val < 10) {
+    showToast('Минимальная ставка — 10');
+    val = 10;
+  }
+  if (val > game.space) {
+    showToast('Сумма превышает ваш баланс!');
+    val = Math.max(10, game.space);
+  }
+  setBet(val);
+  el.betCustomInput.value = game.bet;
+  toggleCustomBetDrawer(false);
+  playTapSound();
+}
 
 function adjustBet(delta) {
   if (game.phase !== 'idle') return;
@@ -2683,6 +2966,9 @@ function updateUI() {
   const locked = game.phase !== 'idle';
   [el.betDec, el.betInc].forEach(b => b.disabled = locked);
   document.querySelectorAll('.bet-quick-btn').forEach(b => b.disabled = locked);
+  if (locked && el.betCustomDrawer && el.betCustomDrawer.style.display !== 'none') {
+    toggleCustomBetDrawer(false);
+  }
   // autocashout removed
 
   el.playBtn.style.display = game.phase === 'idle' ? 'flex' : 'none';
