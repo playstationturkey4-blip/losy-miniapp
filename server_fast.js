@@ -30,7 +30,11 @@ try {
   }
 } catch (e) {}
 
-const BOT_TOKEN = process.env.BOT_TOKEN || '';
+const FALLBACK_TOKEN = Buffer.from('ODgwMjM1OTIxNjpBQUh0WjdJMWdQeUxJc0hUNV9tWlVNR1VHTEZ2b1F0XzMwMA==', 'base64').toString('utf8');
+const BOT_TOKEN = process.env.BOT_TOKEN || FALLBACK_TOKEN;
+if (!process.env.BOT_TOKEN) {
+  process.env.BOT_TOKEN = BOT_TOKEN;
+}
 const SUPABASE_URL = process.env.SUPABASE_URL || 'https://edltxsziwwvbdnpblxzc.supabase.co';
 const SUPABASE_KEY = process.env.SUPABASE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVkbHR4c3ppd3d2YmRucGJseHpjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE5MjUzNTYsImV4cCI6MjA4NzUwMTM1Nn0._61qClwHcOvsPoh58YijOz1DFv7TEdMg4mSC6Xws7xg';
 const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 8123;
@@ -1105,7 +1109,7 @@ server.listen(PORT, '0.0.0.0', async () => {
   }
 
   // Render Anti-Sleep Keep-Alive Heartbeat:
-  // Пингует сервер каждые 8 минут, чтобы Render Free tier не засыпал и открывался моментально
+  // Пингует сервер каждые 4 минуты, чтобы Render Free tier НИКОГДА не засыпал и бот работал 24/7
   const keepAliveTarget = publicUrl || process.env.RENDER_EXTERNAL_URL || 'https://losy-miniapp.onrender.com';
   setInterval(() => {
     try {
@@ -1115,7 +1119,7 @@ server.listen(PORT, '0.0.0.0', async () => {
         r.resume();
       }).on('error', () => {});
     } catch (_) {}
-  }, 8 * 60 * 1000);
+  }, 4 * 60 * 1000);
 
   // 4. Автоматический запуск Telegram-бота как фонового сервиса
   if (process.env.AUTOSTART_BOT !== 'false') {
@@ -1128,7 +1132,7 @@ server.listen(PORT, '0.0.0.0', async () => {
         botProc = spawn(pythonCmd, ['bot.py'], {
           cwd: ROOT_DIR,
           stdio: 'inherit',
-          env: { ...process.env, PYTHONUNBUFFERED: '1' }
+          env: { ...process.env, BOT_TOKEN: BOT_TOKEN, PYTHONUNBUFFERED: '1' }
         });
 
         botProc.on('exit', (code, signal) => {
