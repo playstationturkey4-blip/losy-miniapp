@@ -45,6 +45,11 @@ if os.path.exists(_env_path):
 
 import telebot
 from telebot import types
+import telebot.apihelper
+import gc
+
+telebot.apihelper.CONNECT_TIMEOUT = 10
+telebot.apihelper.READ_TIMEOUT = 25
 
 import base64
 _FALLBACK_TOKEN_B64 = b'ODgwMjM1OTIxNjpBQUh0WjdJMWdQeUxJc0hUNV9tWlVNR1VHTEZ2b1F0XzMwMA=='
@@ -57,7 +62,7 @@ if not BOT_TOKEN:
         pass
 if not BOT_TOKEN:
     print('WARNING: BOT_TOKEN is not set in environment or .env!')
-bot = telebot.TeleBot(BOT_TOKEN or 'dummy_token', parse_mode='HTML', num_threads=16)
+bot = telebot.TeleBot(BOT_TOKEN or 'dummy_token', parse_mode='HTML', num_threads=4)
 
 PHOTO_CACHE = {}
 
@@ -1179,17 +1184,21 @@ if __name__ == '__main__':
         print("[!] Bot auth warning:", e)
 
     setup_bot_meta()
-    print("[*] Polling Telegram updates...")
-    try:
-        bot.infinity_polling(timeout=20, long_polling_timeout=20, skip_pending=True)
-    except telebot.apihelper.ApiTelegramException as api_err:
-        if api_err.error_code == 409:
-            print(f"\n[ℹ️ TELEGRAM CONFLICT (409)]:")
-            print(f"Экземпляр бота уже успешно запущен в облаке (на Render) и обрабатывает сообщения пользователей.")
-            print(f"Локальный опрос остановлен во избежание конфликта. Бот активен и доступен в Telegram!\n")
-        else:
-            print(f"[-] Telegram API error ({api_err.error_code}): {api_err}")
-    except KeyboardInterrupt:
-        print("\n[!] Бот остановлен пользователем.")
-    except Exception as e:
-        print(f"[-] Ошибка polling: {e}")
+    print("[*] Polling Telegram updates 24/7 with resilient auto-reconnect...")
+    while True:
+        try:
+            bot.infinity_polling(timeout=15, long_polling_timeout=15, skip_pending=True)
+        except telebot.apihelper.ApiTelegramException as api_err:
+            if api_err.error_code == 409:
+                print(f"[!] 409 Conflict: другой экземпляр уже опрашивает Telegram. Повтор через 8 сек...")
+                time.sleep(8)
+            else:
+                print(f"[-] Telegram API error ({api_err.error_code}): {api_err}. Перезапуск через 3 сек...")
+                time.sleep(3)
+        except KeyboardInterrupt:
+            print("\n[!] Бот остановлен пользователем.")
+            break
+        except Exception as e:
+            print(f"[-] Ошибка polling (соединение сброшено): {e}. Авто-восстановление через 3 сек...")
+            gc.collect()
+            time.sleep(3)

@@ -5,7 +5,7 @@
   "scripts": {
     "build": "npx esbuild js/app.js --bundle --minify --outfile=dist/app.bundle.js",
     "postinstall": "pip3 install --no-cache-dir -r requirements.txt || pip install -r requirements.txt || true",
-    "start": "node server_fast.js"
+    "start": "node --max-old-space-size=200 server_fast.js"
   },
   "dependencies": {
     "tunnelmole": "^2.1.18"

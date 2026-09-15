@@ -13,6 +13,14 @@ const { tunnelmole } = require('tunnelmole');
 
 const https = require('https');
 
+// Crash Prevention: keep server alive even on network blips or unhandled promise rejections
+process.on('uncaughtException', (err) => {
+  console.error('🛡️ [CRASH PREVENTED - UNCAUGHT EXCEPTION]:', err && err.message ? err.message : err);
+});
+process.on('unhandledRejection', (reason) => {
+  console.error('🛡️ [CRASH PREVENTED - UNHANDLED REJECTION]:', reason && reason.message ? reason.message : reason);
+});
+
 // Securely load local .env without committing credentials
 try {
   const envPath = path.join(__dirname, '.env');

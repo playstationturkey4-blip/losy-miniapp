@@ -1,0 +1,18 @@
+﻿name: Keep-Alive Render Bot & Mini App
+
+on:
+  schedule:
+    # Запуск каждые 10 минут круглосуточно
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
+
+jobs:
+  keepalive:
+    runs-on: ubuntu-latest
+    steps:
+      - name: External Ping to Render
+        run: |
+          echo "Sending external keep-alive ping to Render..."
+          curl -s -S -f --connect-timeout 20 --max-time 60 https://losy-miniapp.onrender.com/health || echo "Ping failed or sleeping, retrying..."
+          sleep 3
+          curl -s -S -f --connect-timeout 20 --max-time 60 https://losy-miniapp.onrender.com/health
