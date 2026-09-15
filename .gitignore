@@ -6,3 +6,15 @@ temp_*
 .DS_Store
 __pycache__/
 *.pyc
+
+# Environment & Secrets (NEVER COMMIT TO GIT)
+.env
+.env.*
+*.env
+
+# Local Database & Cache
+server_db.json
+
+# Local debug images & screenshots
+proof/
+*.png

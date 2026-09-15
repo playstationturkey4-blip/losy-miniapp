@@ -28,11 +28,27 @@ if sys.stdout and hasattr(sys.stdout, 'reconfigure'):
 if sys.stderr and hasattr(sys.stderr, 'reconfigure'):
     sys.stderr.reconfigure(encoding='utf-8')
 
+# Securely load local .env without committing credentials
+_env_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '.env')
+if os.path.exists(_env_path):
+    try:
+        with open(_env_path, 'r', encoding='utf-8') as _ef:
+            for _line in _ef:
+                _line = _line.strip()
+                if _line and not _line.startswith('#') and '=' in _line:
+                    _k, _v = _line.split('=', 1)
+                    if _k.strip() not in os.environ:
+                        os.environ[_k.strip()] = _v.strip()
+    except Exception:
+        pass
+
 import telebot
 from telebot import types
 
-BOT_TOKEN = os.environ.get('BOT_TOKEN', '8873699108:AAExuaVHd3bKOj-3mWdGw2So94U7so2fxcM')
-bot = telebot.TeleBot(BOT_TOKEN, parse_mode='HTML')
+BOT_TOKEN = os.environ.get('BOT_TOKEN', '')
+if not BOT_TOKEN:
+    print('WARNING: BOT_TOKEN is not set in environment or .env!')
+bot = telebot.TeleBot(BOT_TOKEN or 'dummy_token', parse_mode='HTML')
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 ASSETS_DIR = os.path.join(BASE_DIR, 'assets', 'bot')

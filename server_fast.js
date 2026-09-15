@@ -13,7 +13,24 @@ const { tunnelmole } = require('tunnelmole');
 
 const https = require('https');
 
-const BOT_TOKEN = process.env.BOT_TOKEN || '8873699108:AAExuaVHd3bKOj-3mWdGw2So94U7so2fxcM';
+// Securely load local .env without committing credentials
+try {
+  const envPath = path.join(__dirname, '.env');
+  if (fs.existsSync(envPath)) {
+    const lines = fs.readFileSync(envPath, 'utf8').split('\n');
+    for (const line of lines) {
+      const trimmed = line.trim();
+      if (trimmed && !trimmed.startsWith('#') && trimmed.includes('=')) {
+        const eqIdx = trimmed.indexOf('=');
+        const k = trimmed.slice(0, eqIdx).trim();
+        const v = trimmed.slice(eqIdx + 1).trim();
+        if (!process.env[k]) process.env[k] = v;
+      }
+    }
+  }
+} catch (e) {}
+
+const BOT_TOKEN = process.env.BOT_TOKEN || '';
 const SUPABASE_URL = process.env.SUPABASE_URL || 'https://edltxsziwwvbdnpblxzc.supabase.co';
 const SUPABASE_KEY = process.env.SUPABASE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVkbHR4c3ppd3d2YmRucGJseHpjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE5MjUzNTYsImV4cCI6MjA4NzUwMTM1Nn0._61qClwHcOvsPoh58YijOz1DFv7TEdMg4mSC6Xws7xg';
 const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 8123;
