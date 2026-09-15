@@ -1079,7 +1079,7 @@ server.listen(PORT, '0.0.0.0', async () => {
     // Автоматически синхронизируем кнопку 'Играть' в Telegram боте (v=98 на Vercel)
     try {
       const https = require('https');
-      const miniappUrl = process.env.MINIAPP_URL || 'https://losy-miniapp.vercel.app';
+      const miniappUrl = process.env.MINIAPP_URL || 'https://losy-miniapp.onrender.com';
       const payload = JSON.stringify({
         menu_button: {
           type: 'web_app',
