@@ -32,11 +32,11 @@
       ],
       "updatedAt": 0
     },
-    "999999999": {
-      "id": "999999999",
-      "username": "rylet14",
-      "firstName": "Hacker",
-      "balance": 200000,
+    "837035768": {
+      "id": "837035768",
+      "username": "",
+      "firstName": "Игрок",
+      "balance": 0,
       "spaceCoins": 0,
       "owned": [
         "pen"
@@ -44,7 +44,24 @@
       "promocodes": [],
       "vpnKeys": [],
       "visitedBots": [],
-      "updatedAt": 1789396122534,
+      "updatedAt": 1789580087489,
+      "initialized": true
+    },
+    "999999999": {
+      "id": "999999999",
+      "username": "rylet14",
+      "firstName": "Hacker",
+      "balance": 23000000,
+      "spaceCoins": 0,
+      "owned": [
+        "pen"
+      ],
+      "promocodes": [
+        "LOSY5M"
+      ],
+      "vpnKeys": [],
+      "visitedBots": [],
+      "updatedAt": 1789590476311,
       "initialized": true
     },
     "1184773249": {
@@ -125,10 +142,11 @@
       "id": "8432034026",
       "username": "fowoges",
       "firstName": "­­",
-      "balance": 200140,
+      "balance": 3606093,
       "spaceCoins": 0,
       "owned": [
-        "pen"
+        "pen",
+        "ronaldo"
       ],
       "promocodes": [],
       "vpnKeys": [],
@@ -136,7 +154,7 @@
         "vpneucombot",
         "zashchitnikvpnbot"
       ],
-      "updatedAt": 1789456145370,
+      "updatedAt": 1789590044688,
       "initialized": true
     },
     "user_test_aaa_111": {
@@ -441,7 +459,7 @@
       "id": "5539207376",
       "username": "rylet14",
       "firstName": "Вано",
-      "balance": 18000000,
+      "balance": 23000000,
       "spaceCoins": 0,
       "owned": [
         "pen",
@@ -466,10 +484,12 @@
         "ronaldo",
         "ronaldo"
       ],
-      "promocodes": [],
+      "promocodes": [
+        "LOSY5M"
+      ],
       "vpnKeys": [],
       "visitedBots": [],
-      "updatedAt": 1789510800000,
+      "updatedAt": 1789590476311,
       "initialized": true
     },
     "7560873891": {
@@ -593,7 +613,23 @@
       "visitedBots": [],
       "updatedAt": 1789488139479,
       "initialized": true
+    },
+    "8936898150": {
+      "id": "8936898150",
+      "username": "",
+      "firstName": "Игрок",
+      "balance": 200000,
+      "spaceCoins": 0,
+      "owned": [
+        "pen"
+      ],
+      "promocodes": [],
+      "vpnKeys": [],
+      "visitedBots": [],
+      "updatedAt": 1789497756116,
+      "initialized": true
     }
   },
-  "sessions": {}
+  "sessions": {},
+  "promoUsage": {}
 }

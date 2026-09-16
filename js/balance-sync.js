@@ -167,7 +167,23 @@
         },
         body: JSON.stringify(payload),
         keepalive: true
-      }).catch(() => {});
+      })
+      .then(r => r.json())
+      .then(data => {
+        if (data && data.ok && typeof data.balance === 'number') {
+          if (data.forcedUpdate || data.balance > getBalance()) {
+            console.log('🛡️ [LOSY Balance]: Сервер применил актуальный баланс (бонус/промокод):', data.balance);
+            localStorage.setItem(STORAGE_KEY_BAL, String(data.balance));
+            localStorage.setItem(STORAGE_KEY_BAL + '_' + info.id, String(data.balance));
+            localStorage.setItem(STORAGE_KEY_TIME + '_' + info.id, String(data.updatedAt || Date.now()));
+            localStorage.setItem(STORAGE_KEY_TIME, String(data.updatedAt || Date.now()));
+            window.dispatchEvent(new CustomEvent('losy:balance', {
+              detail: { balance: data.balance, userId: info.id }
+            }));
+          }
+        }
+      })
+      .catch(() => {});
     } catch (e) {}
   }
 
@@ -216,7 +232,26 @@
           const serverBal = data.balance;
           const serverTime = typeof data.updatedAt === 'number' ? data.updatedAt : (data.updatedAt ? new Date(data.updatedAt).getTime() : 0);
 
-          // 1. ЕСЛИ У ПОЛЬЗОВАТЕЛЯ ЕЩЕ НЕТ СВОИХ ЛОКАЛЬНЫХ ИГРОВЫХ ДЕЙСТВИЙ НА ЭТОМ УСТРОЙСТВЕ:
+          // 1. ПРИОРИТЕТ ПРОМОКОДОВ И НАЧИСЛЕНИЙ:
+          // Если баланс на сервере БОЛЬШЕ локального, это 100% начисление промокода в боте,
+          // бонус, подарок администратора или победа на другом устройстве.
+          // Клиент ОБЯЗАН безоговорочно принять увеличенный баланс!
+          if (serverBal > currentBal) {
+            console.log('💎 [LOSY Balance]: Получен увеличенный баланс с сервера (промокод/бонус):', serverBal);
+            localStorage.setItem(STORAGE_KEY_BAL, String(serverBal));
+            localStorage.setItem(STORAGE_KEY_BAL + '_' + uid, String(serverBal));
+            localStorage.setItem(STORAGE_KEY_INIT + '_' + uid, 'true');
+            localStorage.setItem(STORAGE_KEY_INIT, 'true');
+            const newTime = Math.max(serverTime || Date.now(), Date.now());
+            localStorage.setItem(STORAGE_KEY_TIME + '_' + uid, String(newTime));
+            localStorage.setItem(STORAGE_KEY_TIME, String(newTime));
+            window.dispatchEvent(new CustomEvent('losy:balance', {
+              detail: { balance: serverBal, userId: uid }
+            }));
+            return serverBal;
+          }
+
+          // 2. ЕСЛИ У ПОЛЬЗОВАТЕЛЯ ЕЩЕ НЕТ СВОИХ ЛОКАЛЬНЫХ ИГРОВЫХ ДЕЙСТВИЙ НА ЭТОМ УСТРОЙСТВЕ:
           // Сервер и облако являются главным источником правды!
           if (!hasLocalModifications) {
             localStorage.setItem(STORAGE_KEY_BAL, String(serverBal));
@@ -233,7 +268,7 @@
             return serverBal;
           }
 
-          // 2. ЕСЛИ У ПОЛЬЗОВАТЕЛЯ ЕСТЬ ЛОКАЛЬНЫЕ ДЕЙСТВИЯ (он уже играл/тратил монеты):
+          // 3. ЕСЛИ У ПОЛЬЗОВАТЕЛЯ ЕСТЬ ЛОКАЛЬНЫЕ ДЕЙСТВИЯ (он уже играл/тратил монеты):
           // А) Защита от сбоя сервера: сервер вернул дефолтные 200 000, а игрок уже играл и имеет реальный баланс
           if (serverBal === INITIAL_BALANCE && currentBal !== INITIAL_BALANCE) {
             console.warn('🛡️ [LOSY Balance]: Сервер вернул дефолтные 200 000, сохраняем реальный баланс игрока:', currentBal);

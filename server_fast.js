@@ -208,6 +208,30 @@ async function getOrCreateUser(userData) {
 
   // 1. Уже загружен в память
   if (db.users[tid]) {
+    // Проверяем, не обновил ли bot.py или внешний процесс server_db.json на диске
+    try {
+      if (fs.existsSync(DB_FILE)) {
+        const stat = fs.statSync(DB_FILE);
+        if (!db._lastMtime || stat.mtimeMs > db._lastMtime) {
+          db._lastMtime = stat.mtimeMs;
+          const diskDb = JSON.parse(fs.readFileSync(DB_FILE, 'utf8'));
+          if (diskDb.users && diskDb.users[tid]) {
+            const du = diskDb.users[tid];
+            if (typeof du.balance === 'number' && du.balance > db.users[tid].balance) {
+              db.users[tid].balance = du.balance;
+              db.users[tid].updatedAt = du.updatedAt || Date.now();
+            }
+            if (Array.isArray(du.promocodes)) {
+              db.users[tid].promocodes = Array.from(new Set([...(db.users[tid].promocodes || []), ...du.promocodes]));
+            }
+          }
+          if (diskDb.promoUsage) {
+            db.promoUsage = { ...db.promoUsage, ...diskDb.promoUsage };
+          }
+        }
+      }
+    } catch (_) {}
+
     if (userData.username && !db.users[tid].username) db.users[tid].username = userData.username;
     if ((userData.first_name || userData.firstName) && db.users[tid].firstName === 'Игрок') {
       db.users[tid].firstName = userData.first_name || userData.firstName;
@@ -481,9 +505,33 @@ const server = http.createServer((req, res) => {
             res.end(JSON.stringify({ ok: false, error: 'Некорректный баланс' }));
             return;
           }
+
+          const clientTime = Number(data.clientUpdatedAt) || 0;
+          const serverTime = Number(user.updatedAt) || 0;
+
+          // ЗАЩИТА: Запрет занижения серверного баланса устаревшим клиентом.
+          // Если сервер обновлялся позже клиента (начисление промокода, админ-бонус)
+          // ИЛИ если клиент присылает дефолтные 200 000, а на сервере уже реальный баланс:
+          const isDowngrade = user.balance > newBal;
+          const serverIsNewer = serverTime > (clientTime + 500);
+          const isDefaultReset = (newBal === 200000 && user.balance !== 200000);
+
+          if (isDowngrade && (serverIsNewer || isDefaultReset)) {
+            console.log(`🛡️ [SERVER GUARD]: Отклонено занижение баланса игрока ${user.id} (${newBal} < ${user.balance}). Сервер обновлен позже. Отправляем актуальный баланс.`);
+            res.writeHead(200, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({
+              ok: true,
+              userId: user.id,
+              balance: user.balance,
+              updatedAt: user.updatedAt,
+              forcedUpdate: true
+            }));
+            return;
+          }
+
           user.balance = Math.min(100000000, Math.max(0, newBal));
           user.initialized = true;
-          user.updatedAt = Number(data.clientUpdatedAt) || Date.now();
+          user.updatedAt = Math.max(clientTime, Date.now());
           if (Array.isArray(data.owned)) {
             user.owned = data.owned;
           }
@@ -518,10 +566,14 @@ const server = http.createServer((req, res) => {
         const clientBalance = parseInt(data.clientBalance, 10);
         // Если передан флаг прямого обновления (например, syncAction === 'set'):
         if (data.syncAction === 'set' && !isNaN(clientBalance) && clientBalance >= 0) {
-          user.balance = Math.min(100000000, clientBalance);
-          user.updatedAt = Date.now();
-          saveDb();
-          syncUserToSupabase(user);
+          if (clientBalance >= user.balance || !user.balance) {
+            user.balance = Math.min(100000000, clientBalance);
+            user.updatedAt = Date.now();
+            saveDb();
+            syncUserToSupabase(user);
+          } else {
+            console.log(`🛡️ [SERVER GUARD]: Защита от занижения в /api/user/sync для ${user.id} (${clientBalance} < ${user.balance})`);
+          }
         }
 
         res.writeHead(200, { 'Content-Type': 'application/json' });

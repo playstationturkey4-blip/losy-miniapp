@@ -110,7 +110,7 @@ def get_app_url(user_id=None):
     
     # Обязательный trailing slash перед query-параметрами для соответствия RFC и WebApp
     clean_base = base.rstrip('/') + '/'
-    url = f"{clean_base}?v=98"
+    url = f"{clean_base}?v=99"
     if user_id:
         url += f"&userId={user_id}"
     return url
@@ -120,12 +120,33 @@ def get_app_url(user_id=None):
 # -------------------------------------------------------------
 def get_user_data(user_id, username="", first_name=""):
     """
-    Мгновенное получение данных пользователя из локальной базы данных (0.1 мс).
-    Без блокирующих сетевых запросов и таймаутов.
+    Мгновенное получение данных пользователя из оперативной памяти сервера или локальной базы.
     """
     uid_str = str(user_id)
 
-    # 1. Мгновенное чтение server_db.json
+    # 1. Запрос у локального сервера server_fast.js (самые актуальные данные в RAM)
+    port = os.environ.get('PORT', '3000')
+    try:
+        url = f"http://127.0.0.1:{port}/api/bot/user?userId={uid_str}"
+        req = urllib.request.Request(url, headers={'User-Agent': 'LosyBot/2.0'})
+        with urllib.request.urlopen(req, timeout=1.0) as resp:
+            if resp.status == 200:
+                d = json.loads(resp.read().decode('utf-8'))
+                if d.get('ok') and d.get('user'):
+                    u = d['user']
+                    return {
+                        'id': uid_str,
+                        'firstName': u.get('firstName', first_name or "Игрок"),
+                        'username': u.get('username', username or ""),
+                        'balance': int(u.get('balance', 200000)),
+                        'ownedCount': len(u.get('owned', [])),
+                        'promosUsed': len(u.get('promocodes', [])),
+                        'visitedBots': list(u.get('visitedBots', []))
+                    }
+    except Exception:
+        pass
+
+    # 2. Мгновенное чтение server_db.json
     try:
         if os.path.exists(DB_FILE):
             with open(DB_FILE, 'r', encoding='utf-8') as f:
@@ -145,7 +166,7 @@ def get_user_data(user_id, username="", first_name=""):
     except Exception:
         pass
 
-    # 2. Дефолтный новый пользователь
+    # 3. Дефолтный новый пользователь
     return {
         'id': uid_str,
         'firstName': first_name or "Игрок",
@@ -293,11 +314,45 @@ def _sync_promo_to_supabase(user_str, u):
 def apply_promo_code(user_id, code, username="", first_name=""):
     """
     Мгновенная валидация и начисление промокода (0.5 мс)
-    с фоновой синхронизацией в облачную Supabase и строгим лимитом активаций.
+    через сервер Node.js (память + диск + Supabase) или резервную прямую синхронизацию.
     """
     clean_code = str(code or '').strip()
     if not clean_code:
         return {'ok': False, 'error': 'Промокод не может быть пустым!'}
+
+    # 1. Попытка начислить через локальный HTTP сервер server_fast.js
+    # Это гарантирует мгновенное обновление оперативной памяти Node.js сервера и базы!
+    port = os.environ.get('PORT', '3000')
+    local_url = f"http://127.0.0.1:{port}/api/bot/promo"
+    try:
+        payload = json.dumps({
+            'userId': str(user_id),
+            'code': clean_code,
+            'username': username or '',
+            'firstName': first_name or ''
+        }).encode('utf-8')
+        req = urllib.request.Request(
+            local_url,
+            data=payload,
+            headers={'Content-Type': 'application/json', 'User-Agent': 'LosyBot/2.0'}
+        )
+        with urllib.request.urlopen(req, timeout=2.5) as resp:
+            if resp.status == 200:
+                res_data = json.loads(resp.read().decode('utf-8'))
+                if res_data.get('ok'):
+                    return res_data
+                elif res_data.get('error'):
+                    return {'ok': False, 'error': res_data['error']}
+    except urllib.error.HTTPError as he:
+        try:
+            err_data = json.loads(he.read().decode('utf-8'))
+            if err_data.get('error'):
+                return {'ok': False, 'error': err_data['error']}
+        except Exception:
+            pass
+    except Exception:
+        # Сервер недоступен локально — переходим к прямому начислению через файл и Supabase
+        pass
 
     code_up = clean_code.upper()
     if code_up not in PROMO_CODES_LOCAL:
@@ -365,7 +420,8 @@ def apply_promo_code(user_id, code, username="", first_name=""):
     u['promocodes'].append(usage_key)
     if user_str not in code_usage['users']:
         code_usage['users'].append(user_str)
-    u['balance'] = int(u.get('balance', 0)) + promo['reward']
+    u['balance'] = int(u.get('balance', 200000)) + promo['reward']
+    u['updatedAt'] = int(time.time() * 1000)
     if username:
         u['username'] = username.replace('@', '')
     if first_name:
