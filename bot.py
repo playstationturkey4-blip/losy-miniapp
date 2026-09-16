@@ -213,6 +213,20 @@ def record_bot_visit(user_id, bot_id, username="", first_name=""):
     threading.Thread(target=_sync_visit_to_cloud, args=(uid_str, clean_bot_id, username, first_name), daemon=True).start()
 
 PROMO_CODES_LOCAL = {
+    # Многоразовый промокод на 5 млн (ровно 25 активаций суммарно, по 1 разу каждому игроку)
+    'LOSY5M': {
+        'reward': 5000000,
+        'desc': '🔥 Мега-бонус 5 000 000 монет! (Лимит: 25 активаций)',
+        'maxGlobalUses': 25
+    },
+    'BONUS5M': {
+        'reward': 5000000,
+        'desc': '🔥 Мега-бонус 5 000 000 монет! (Лимит: 25 активаций)',
+        'maxGlobalUses': 25,
+        'aliasOf': 'LOSY5M'
+    },
+
+    # Персональные промокоды
     'RYLET18M': {
         'reward': 18000000,
         'desc': '👑 Королевский VIP-бонус 18 000 000 монет эксклюзивно для @rylet14!',
@@ -279,7 +293,7 @@ def _sync_promo_to_supabase(user_str, u):
 def apply_promo_code(user_id, code, username="", first_name=""):
     """
     Мгновенная валидация и начисление промокода (0.5 мс)
-    с фоновой синхронизацией в облачную Supabase.
+    с фоновой синхронизацией в облачную Supabase и строгим лимитом активаций.
     """
     clean_code = str(code or '').strip()
     if not clean_code:
@@ -290,6 +304,7 @@ def apply_promo_code(user_id, code, username="", first_name=""):
         return {'ok': False, 'error': 'Промокод не существует или срок действия истёк'}
 
     promo = PROMO_CODES_LOCAL[code_up]
+    usage_key = promo.get('aliasOf') or code_up
     user_str = str(user_id)
     user_uname = str(username or '').lower().replace('@', '')
 
@@ -325,10 +340,31 @@ def apply_promo_code(user_id, code, username="", first_name=""):
     if 'promocodes' not in u:
         u['promocodes'] = []
 
-    if code_up in u['promocodes']:
+    # 1. Анти-абуз: проверка повторной активации тем же игроком
+    if usage_key in u['promocodes'] or (promo.get('aliasOf') and promo['aliasOf'] in u['promocodes']):
         return {'ok': False, 'error': 'Вы уже активировали этот промокод ранее!'}
 
-    u['promocodes'].append(code_up)
+    # 2. Глобальный реестр использований многоразовых промокодов
+    promo_usage = db.setdefault('promoUsage', {})
+    code_usage = promo_usage.setdefault(usage_key, {'users': []})
+
+    # Синхронизируем счетчик со всеми существующими игроками в локальной базе
+    existing_users = set(code_usage.get('users', []))
+    for uid_key, usr in users.items():
+        user_promos = usr.get('promocodes', [])
+        if usage_key in user_promos or (promo.get('aliasOf') and promo['aliasOf'] in user_promos):
+            existing_users.add(str(uid_key))
+    code_usage['users'] = list(existing_users)
+
+    # 3. Анти-абуз: проверка лимита 25 активаций
+    max_uses = promo.get('maxGlobalUses')
+    if max_uses and len(code_usage['users']) >= max_uses:
+        return {'ok': False, 'error': f'⛔ Лимит активаций промокода исчерпан! Все {max_uses} бонусов уже разобрали другие игроки.'}
+
+    # 4. Успешное начисление
+    u['promocodes'].append(usage_key)
+    if user_str not in code_usage['users']:
+        code_usage['users'].append(user_str)
     u['balance'] = int(u.get('balance', 0)) + promo['reward']
     if username:
         u['username'] = username.replace('@', '')
@@ -344,12 +380,18 @@ def apply_promo_code(user_id, code, username="", first_name=""):
     # Фоновая синхронизация с облачной Supabase (0 мс задержки!)
     threading.Thread(target=_sync_promo_to_supabase, args=(user_str, u), daemon=True).start()
 
+    left_uses = max_uses - len(code_usage['users']) if max_uses else None
+    desc_str = promo['desc']
+    if left_uses is not None:
+        desc_str += f" (Осталось активаций: {left_uses} из {max_uses})"
+
     return {
         'ok': True,
-        'code': code_up,
+        'code': usage_key,
         'reward': promo['reward'],
-        'desc': promo['desc'],
-        'newBalance': u['balance']
+        'desc': desc_str,
+        'newBalance': u['balance'],
+        'leftUses': left_uses
     }
 
 # -------------------------------------------------------------

@@ -621,6 +621,19 @@ const server = http.createServer((req, res) => {
       // 5. API промокодов Telegram-бота и Mini App
       if ((pathname === '/api/bot/promo' || pathname === '/api/promo') && req.method === 'POST') {
         const PROMO_CODES = {
+          // Многоразовый промокод на 5 млн (ровно 25 активаций суммарно, по 1 разу каждому игроку)
+          'LOSY5M': {
+            reward: 5000000,
+            desc: '🔥 Мега-бонус 5 000 000 монет! (Лимит: 25 активаций)',
+            maxGlobalUses: 25
+          },
+          'BONUS5M': {
+            reward: 5000000,
+            desc: '🔥 Мега-бонус 5 000 000 монет! (Лимит: 25 активаций)',
+            maxGlobalUses: 25,
+            aliasOf: 'LOSY5M'
+          },
+
           // Персональные промокоды (активируются строго указанными игроками)
           'RYLET18M': {
             reward: 18000000,
@@ -673,6 +686,20 @@ const server = http.createServer((req, res) => {
         }
 
         const targetUser = await getOrCreateUser({ id: userId, username: data.username, first_name: data.firstName });
+        const usageKey = promo.aliasOf || code;
+
+        // Глобальный реестр использований многоразовых промокодов
+        if (!db.promoUsage) db.promoUsage = {};
+        if (!db.promoUsage[usageKey]) db.promoUsage[usageKey] = { users: [] };
+
+        // Синхронизируем счетчик со всеми существующими пользователями в памяти базы
+        const setUsers = new Set(db.promoUsage[usageKey].users);
+        for (const u of Object.values(db.users)) {
+          if (u.promocodes && (u.promocodes.includes(usageKey) || (promo.aliasOf && u.promocodes.includes(promo.aliasOf)))) {
+            setUsers.add(String(u.id));
+          }
+        }
+        db.promoUsage[usageKey].users = Array.from(setUsers);
 
         // Проверка персонального ограничения промокода:
         if (promo.allowedUserIds || promo.allowedUsernames) {
@@ -699,25 +726,47 @@ const server = http.createServer((req, res) => {
 
         if (!targetUser.promocodes) targetUser.promocodes = [];
 
-        if (targetUser.promocodes.includes(code)) {
+        // 1. Анти-абуз: проверка повторной активации тем же игроком
+        if (targetUser.promocodes.includes(usageKey) || (promo.aliasOf && targetUser.promocodes.includes(promo.aliasOf))) {
           res.writeHead(400, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ ok: false, error: 'Вы уже активировали этот промокод ранее!' }));
           return;
         }
 
-        targetUser.promocodes.push(code);
+        // 2. Анти-абуз: проверка глобального лимита активаций (25 активаций)
+        if (promo.maxGlobalUses && db.promoUsage[usageKey].users.length >= promo.maxGlobalUses) {
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({
+            ok: false,
+            error: `⛔ Лимит активаций промокода исчерпан! Все ${promo.maxGlobalUses} бонусов уже забрали другие игроки.`
+          }));
+          return;
+        }
+
+        // 3. Успешное начисление
+        targetUser.promocodes.push(usageKey);
+        if (!db.promoUsage[usageKey].users.includes(String(targetUser.id))) {
+          db.promoUsage[usageKey].users.push(String(targetUser.id));
+        }
         targetUser.balance = (targetUser.balance || 0) + promo.reward;
         targetUser.updatedAt = Date.now();
         saveDb();
         syncUserToSupabase(targetUser);
 
+        const leftCount = promo.maxGlobalUses ? Math.max(0, promo.maxGlobalUses - db.promoUsage[usageKey].users.length) : null;
+        let successDesc = promo.desc;
+        if (leftCount !== null) {
+          successDesc += ` (Осталось активаций: ${leftCount} из ${promo.maxGlobalUses})`;
+        }
+
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({
           ok: true,
-          code: code,
+          code: usageKey,
           reward: promo.reward,
-          desc: promo.desc,
-          newBalance: targetUser.balance
+          desc: successDesc,
+          newBalance: targetUser.balance,
+          leftUses: leftCount
         }));
         return;
       }
