@@ -4643,7 +4643,223 @@ body {
     0% { transform: translateY(0) scale(0.5); opacity: 0; }
     20% { opacity: 0.95; }
     80% { opacity: 0.75; }
-    100% { transform: translateY(110px) scale(1.1); opacity: 0; }
+  /* ============================================================
+     CASE-BATTLE CASINO GAMBLING SYSTEM STYLES
+     ============================================================ */
+
+  /* 1. Селектор сторон сектора */
+  .sector-direction-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin: 8px auto 12px auto;
+    padding: 6px 10px;
+    background: rgba(10, 16, 26, 0.85);
+    border: 1px solid rgba(59, 232, 255, 0.25);
+    border-radius: 14px;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+    max-width: 380px;
+    width: 92%;
+    box-sizing: border-box;
+    position: relative;
+    z-index: 5;
+  }
+  .sector-dir-label {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: var(--ink-dim, #8ba2b5);
+    margin-right: 4px;
+    text-transform: uppercase;
+  }
+  .sector-dir-btn {
+    flex: 1;
+    min-height: 32px;
+    padding: 4px 6px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 9px;
+    color: #c9d7e3;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-weight: 700;
+    font-size: clamp(0.58rem, 2vw, 0.70rem);
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    white-space: nowrap;
+  }
+  .sector-dir-btn:hover {
+    background: rgba(59, 232, 255, 0.12);
+    border-color: rgba(59, 232, 255, 0.45);
+    color: #fff;
+  }
+  .sector-dir-btn.active {
+    background: linear-gradient(135deg, rgba(61, 255, 167, 0.35), rgba(31, 191, 122, 0.20));
+    border-color: #3DFFA7;
+    color: #3DFFA7;
+    box-shadow: 0 0 12px rgba(61, 255, 167, 0.45);
+    transform: scale(1.02);
+  }
+
+  /* 2. Шкала Азарта / «Залёт-Метр» (Fever / Hype Meter) */
+  .fever-meter-wrap {
+    width: 92%;
+    max-width: 380px;
+    margin: 8px auto 12px auto;
+    padding: 8px 12px;
+    background: linear-gradient(180deg, rgba(16, 22, 34, 0.85), rgba(8, 12, 20, 0.95));
+    border: 1px solid rgba(255, 170, 0, 0.25);
+    border-radius: 14px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    box-sizing: border-box;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    z-index: 5;
+  }
+  .fever-meter-wrap.is-fever {
+    border-color: #FFD43B;
+    box-shadow: 0 0 25px rgba(255, 212, 59, 0.45), inset 0 0 15px rgba(255, 212, 59, 0.15);
+    animation: feverPulse 1.6s ease-in-out infinite alternate;
+  }
+  @keyframes feverPulse {
+    0% { transform: scale(1); border-color: rgba(255, 212, 59, 0.7); }
+    100% { transform: scale(1.02); border-color: #FF7A00; box-shadow: 0 0 35px rgba(255, 122, 0, 0.6); }
+  }
+  .fever-meter-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 5px;
+  }
+  .fever-title {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 0.66rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    color: #FFB800;
+    text-shadow: 0 0 8px rgba(255, 184, 0, 0.5);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .fever-val {
+    font-family: 'Unbounded', monospace;
+    font-size: 0.72rem;
+    font-weight: 800;
+    color: #fff;
+    font-variant-numeric: tabular-nums;
+  }
+  .fever-bar {
+    width: 100%;
+    height: 9px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 6px;
+    overflow: hidden;
+    position: relative;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+  }
+  .fever-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #FF9900, #FF5500, #FFD700);
+    border-radius: 6px;
+    transition: width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: 0 0 10px rgba(255, 153, 0, 0.6);
+  }
+  .fever-meter-wrap.is-fever .fever-fill {
+    background: linear-gradient(90deg, #FF3B00, #FFB800, #3DFFA7);
+    box-shadow: 0 0 15px rgba(61, 255, 167, 0.8);
+  }
+  .fever-hint {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.62rem;
+    color: var(--ink-dim, #8ba2b5);
+    margin-top: 4px;
+    text-align: center;
+    line-height: 1.2;
+    transition: color 0.2s ease;
+  }
+  .fever-meter-wrap.is-fever .fever-hint {
+    color: #FFD43B;
+    font-weight: 700;
+    text-shadow: 0 0 8px rgba(255, 212, 59, 0.5);
+  }
+
+  /* 3. Плашка комбо-стрика (Combo Streak) */
+  .combo-streak-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 10px;
+    background: linear-gradient(135deg, rgba(255, 85, 0, 0.35), rgba(255, 184, 0, 0.25));
+    border: 1px solid #FF7A00;
+    border-radius: 20px;
+    font-family: 'Unbounded', sans-serif;
+    font-size: 0.64rem;
+    font-weight: 800;
+    color: #FFA41F;
+    box-shadow: 0 0 12px rgba(255, 122, 0, 0.5);
+    animation: comboBounce 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    margin-bottom: 6px;
+  }
+  @keyframes comboBounce {
+    0% { transform: scale(0.6); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  /* 4. Кэшбек тост при проигрыше */
+  .cashback-toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(30px);
+    background: linear-gradient(135deg, #101924, #0b1118);
+    border: 1px solid #FFD43B;
+    color: #FFD43B;
+    padding: 9px 18px;
+    border-radius: 14px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 0.78rem;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.8), 0 0 15px rgba(255, 212, 59, 0.3);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    z-index: 10000;
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    pointer-events: none;
+  }
+  .cashback-toast.show {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+  }
+
+  /* 5. Тег буста на колесе шанса */
+  .chance-boost-tag {
+    display: inline-block;
+    font-size: 0.52em;
+    color: #FFD43B;
+    background: rgba(255, 184, 0, 0.22);
+    border: 1px solid rgba(255, 212, 59, 0.6);
+    border-radius: 6px;
+    padding: 1px 5px;
+    margin-left: 4px;
+    vertical-align: middle;
+    letter-spacing: 0.04em;
+    text-shadow: 0 0 6px rgba(255, 212, 59, 0.6);
+    animation: tagPulse 1.2s ease-in-out infinite alternate;
+  }
+  @keyframes tagPulse {
+    0% { transform: scale(0.95); opacity: 0.85; }
+    100% { transform: scale(1.05); opacity: 1; filter: brightness(1.2); }
   }
 </style>
 </head>
@@ -4829,6 +5045,27 @@ body {
           </div>
         </div>
 
+        <!-- СЕЛЕКТОР СТОРОНЫ СЕКТОРА (CASE-BATTLE РЕЖИМ) -->
+        <div class="sector-direction-bar" id="sectorDirectionBar">
+          <span class="sector-dir-label">СЕКТОР:</span>
+          <button type="button" class="sector-dir-btn" data-dir="bottom" title="Сектор снизу">⬇️ НИЗ</button>
+          <button type="button" class="sector-dir-btn" data-dir="left" title="Сектор слева">⬅️ ЛЕВО</button>
+          <button type="button" class="sector-dir-btn active" data-dir="right" title="Сектор справа">➡️ ПРАВО</button>
+          <button type="button" class="sector-dir-btn" data-dir="top" title="Сектор сверху">⬆️ ВЕРХ</button>
+        </div>
+
+        <!-- ШКАЛА АЗАРТА / ЗАЛЁТ-МЕТР (FEVER METER) -->
+        <div class="fever-meter-wrap" id="feverMeterWrap">
+          <div class="fever-meter-header">
+            <span class="fever-title">🔥 ШКАЛА ЗАЛЁТА</span>
+            <span class="fever-val" id="feverVal">0%</span>
+          </div>
+          <div class="fever-bar">
+            <div class="fever-fill" id="feverFill" style="width: 0%;"></div>
+          </div>
+          <div class="fever-hint" id="feverHint">Каждая неудача заряжает залёт +25%!</div>
+        </div>
+
         <!-- ДВЕ БОЛЬШИЕ КАРТОЧКИ ПОД КОЛЕСОМ (ЭРГОНОМИЧНЫЙ ДИЗАЙН) -->
         <div class="ug-cards">
           <div class="ug-card ug-card--stake machine-rocket rocket-left">
@@ -4870,10 +5107,12 @@ body {
         <div class="ug-controls">
           <button class="machine-upgrade btn--no-target" id="upgradeBtn" disabled aria-disabled="true">ВЫБЕРИ ЦЕЛЬ</button>
           <div class="machine-xpills" id="xpills">
+            <button class="xpill" data-mult="1.5">1.5x</button>
             <button class="xpill" data-mult="2">2x</button>
             <button class="xpill" data-mult="3">3x</button>
             <button class="xpill" data-mult="5">5x</button>
             <button class="xpill" data-mult="10">10x</button>
+            <button class="xpill" data-mult="20">20x</button>
             <button class="xpill xpill--percent" id="chancePercentBtn" type="button" title="Выбрать свой шанс %">%</button>
           </div>
           <div class="percent-popover" id="percentPopover">
@@ -4974,6 +5213,7 @@ body {
     </main>
 
     <div id="upgradeToast" class="game-toast"></div>
+    <div id="cashbackToast" class="cashback-toast" aria-hidden="true"></div>
     <div id="saluteLayer"></div>
   </div>
 
@@ -5050,8 +5290,8 @@ const SKINS = [
   { id: 'venom',          name: 'Веном',          value: 22000, img: '/assets/items/venom.webp',          chance: null },
 ];
 
-const RTP_UP = 1;         // ТОЧНАЯ математика: шанс = цена ставки / цена цели (500→1000 = ровно 50%)
-const MAX_CHANCE = 0.75;  // потолок шанса — как на кейс-сайтах
+const RTP_UP = 1;         // Базовый честный RTP (1.0)
+const MAX_CHANCE = 0.88;  // Потолок шанса на Case-Battle расширен до 88% для сочных залётов!
 
 const STORE = {
   gold: 'losyBalance',
@@ -5060,8 +5300,50 @@ const STORE = {
   bought: 'losyBoughtRockets',
   stake: 'losyStake',
   target: 'losyTarget',
-  active: 'losyActiveRocket'
+  active: 'losyActiveRocket',
+  sectorDir: 'losySectorDir',
+  lossStreak: 'losyLossStreak',
+  winStreak: 'losyWinStreak',
+  feverCharge: 'losyFeverCharge'
 };
+
+// Case-Battle азартное состояние
+let sectorDir = localStorage.getItem(STORE.sectorDir) || 'right';
+let lossStreak = parseInt(localStorage.getItem(STORE.lossStreak) || '0', 10);
+let winStreak = parseInt(localStorage.getItem(STORE.winStreak) || '0', 10);
+let feverCharge = parseInt(localStorage.getItem(STORE.feverCharge) || '0', 10);
+let feverActive = feverCharge >= 100;
+
+function getSectorCenter(dir) {
+  switch (dir) {
+    case 'left': return 270;
+    case 'right': return 90;
+    case 'top': return 0;
+    case 'bottom':
+    default: return 180;
+  }
+}
+
+function getGamblingChance(stake, target) {
+  if (!stake || !target || stake.id === target.id || target.value <= stake.value) return 0;
+  const base = Math.min(MAX_CHANCE, (RTP_UP * stake.value) / target.value);
+  let boost = 0;
+  if (feverCharge >= 100) {
+    // РЕЖИМ ЗАЛЁТА (FEVER): мощный буст шанса
+    boost = Math.max(0.40, base * 1.5 + 0.30);
+  } else if (lossStreak === 1) {
+    boost = Math.max(0.06, base * 0.25 + 0.05);
+  } else if (lossStreak === 2) {
+    boost = Math.max(0.14, base * 0.50 + 0.12);
+  } else if (lossStreak >= 3) {
+    boost = Math.max(0.25, base * 0.85 + 0.20);
+  }
+  // Лоу-процентная магия (18% шанс на случайный занос при шансах ниже 15%)
+  if (base <= 0.15 && Math.random() < 0.18) {
+    boost = Math.max(boost, 0.45);
+  }
+  return Math.min(0.92, Math.max(0.01, base + boost));
+}
 
 /* ===== PROFESSIONAL AUDIO MANAGER (WebAudio Architecture) =====
    - Unified single-source audio: loads MP3s directly from /assets/sounds/*.mp3 via Fetch + WebAudio
@@ -5898,6 +6180,13 @@ function save() {
   // Скин для режима «Ракета» = то, что стоит на платформе
   if (stakeId) localStorage.setItem(STORE.active, stakeId);
   else localStorage.removeItem(STORE.active);
+  // Case-Battle параметры
+  try {
+    localStorage.setItem(STORE.sectorDir, sectorDir);
+    localStorage.setItem(STORE.lossStreak, String(lossStreak));
+    localStorage.setItem(STORE.winStreak, String(winStreak));
+    localStorage.setItem(STORE.feverCharge, String(feverCharge));
+  } catch (e) {}
 }
 
 function showToast(message) {
@@ -5908,6 +6197,36 @@ function showToast(message) {
   toast.classList.add('show');
   clearTimeout(showToast._t);
   showToast._t = setTimeout(() => toast.classList.remove('show'), 2200);
+}
+
+function showCashbackToast(amount) {
+  const toast = document.getElementById('cashbackToast');
+  if (!toast) return;
+  toast.innerHTML = `💸 Кэшбек: <b>+${amount.toLocaleString('ru-RU')}</b> 🪙 возвращено на баланс!`;
+  toast.classList.remove('show');
+  void toast.offsetWidth;
+  toast.classList.add('show');
+  clearTimeout(showCashbackToast._t);
+  showCashbackToast._t = setTimeout(() => toast.classList.remove('show'), 3500);
+}
+
+function updateFeverUI() {
+  const fill = document.getElementById('feverFill');
+  const val = document.getElementById('feverVal');
+  const wrap = document.getElementById('feverMeterWrap');
+  const hint = document.getElementById('feverHint');
+  if (fill) fill.style.width = feverCharge + '%';
+  if (val) val.textContent = feverCharge + '%';
+  if (wrap) wrap.classList.toggle('is-fever', feverCharge >= 100);
+  if (hint) {
+    if (feverCharge >= 100) {
+      hint.textContent = '⚡ РЕЖИМ ЗАЛЁТА АКТИВЕН! СЛЕДУЮЩИЙ СПИН ПОЛУЧАЕТ СУПЕР-БУСТ! ⚡';
+    } else if (lossStreak >= 2) {
+      hint.textContent = `🔥 ПОЛОСА АЗАРТА (${lossStreak} промаха)! Шанс залёта повышен!`;
+    } else {
+      hint.textContent = 'Каждая неудача заряжает залёт +25%!';
+    }
+  }
 }
 
 function handleImgError(img) {
@@ -6067,17 +6386,21 @@ function renderUpgrade() {
     targetEl?.classList.add('empty');
   }
 
-  // Шанс только когда выбраны обе РАЗНЫЕ ракеты
-  if (stake && target && stake.id !== target.id) {
-    const chance = Math.min(MAX_CHANCE, RTP_UP * stake.value / target.value);
-    el.chanceValue.textContent = (chance * 100).toFixed(2) + '%';
+  // Шанс только когда выбраны обе РАЗНЫЕ ракеты и цель дороже ставки
+  if (stake && target && stake.id !== target.id && target.value > stake.value) {
+    const baseChance = Math.min(MAX_CHANCE, (RTP_UP * stake.value) / target.value);
+    const chance = getGamblingChance(stake, target);
+    const isBoosted = chance > baseChance + 0.005;
+
+    el.chanceValue.innerHTML = (chance * 100).toFixed(2) + '%' + (isBoosted ? ' <span class="chance-boost-tag">🔥БУСТ</span>' : '');
     if (el.stakeValue) el.stakeValue.textContent = stake.value.toLocaleString('ru-RU');
     if (el.targetValue) el.targetValue.textContent = target.value.toLocaleString('ru-RU');
-    el.chanceValue.className = 'gauge-value';
+    el.chanceValue.className = 'gauge-value' + (isBoosted ? ' is-boosted' : '');
     const mult = target.value / stake.value;
     if (el.chanceMult) el.chanceMult.textContent = '×' + (mult ? mult.toFixed(2) : '1.00');
-    const deg = chance * 360; // дуга = шанс × весь круг: 71% = 71% кольца
-    const greenStart = 180 - deg / 2; // зона центрирована на 6 часах (180°)
+    const deg = chance * 360; // дуга = шанс × весь круг
+    const center = getSectorCenter(sectorDir);
+    const greenStart = center - deg / 2; // зона центрирована на выбранном направлении
     const C = 2 * Math.PI * 43.35;
     el.gaugeWin.setAttribute('stroke-dasharray', `${(deg / 360 * C).toFixed(2)} ${C.toFixed(2)}`);
     el.gaugeWin.setAttribute('transform', `rotate(${(greenStart - 90).toFixed(2)} 50 50)`);
@@ -6093,6 +6416,12 @@ function renderUpgrade() {
       el.gaugeWin.setAttribute('visibility', 'hidden'); // никакой зелёной точки в простое
     }
   }
+
+  // Обновляем состояние кнопок направления сектора и шкалы азарта
+  document.querySelectorAll('#sectorDirectionBar .sector-dir-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.dir === sectorDir);
+  });
+  updateFeverUI();
 
   const canUpgrade = !spinning && !!stake && !!target && stake.id !== target.id && target.value > stake.value;
   if (el.upgradeBtn) {
@@ -6795,14 +7124,15 @@ function doUpgrade() {
     save();
   }
 
-  const chance = Math.min(MAX_CHANCE, RTP_UP * stake.value / target.value);
+  const chance = getGamblingChance(stake, target);
   const willWin = Math.random() < chance;
 
-  // Геометрия шкалы (зона выигрыша центрирована на 180° / 6 часах)
-  const deg = chance * 360;            // угловая ширина зоны выигрыша
-  const greenStart = 180 - deg / 2;    // начало выигрышной зоны (по часовой)
-  const greenEnd = 180 + deg / 2;      // конец выигрышной зоны (по часовой)
-  const loseDeg = 360 - deg;           // угловая ширина зоны проигрыша
+  // Геометрия шкалы (зона выигрыша центрирована по выбранному направлению сектора)
+  const deg = chance * 360;                      // угловая ширина зоны выигрыша
+  const centerAngle = getSectorCenter(sectorDir); // центр выбранного сектора
+  const greenStart = centerAngle - deg / 2;       // начало выигрышной зоны
+  const greenEnd = centerAngle + deg / 2;         // конец выигрышной зоны
+  const loseDeg = 360 - deg;                     // угловая ширина зоны проигрыша
 
   // Честная остановка стрелки по шансам:
   // Стрелка может остановиться В ЛЮБОМ МЕСТЕ круга [0..360°),
@@ -6822,6 +7152,7 @@ function doUpgrade() {
       const pad = Math.min(0.25, deg * 0.04);
       targetAngle = greenStart + pad + Math.random() * (deg - 2 * pad);
     }
+    targetAngle = ((targetAngle % 360) + 360) % 360;
   } else {
     // ПРОИГРЫШ: стрелка обязана остановиться вне [greenStart, greenEnd]
     const isNearMiss = Math.random() < 0.32; // ~32% драматичных near-miss прямо у границы
@@ -6876,7 +7207,14 @@ function doUpgrade() {
       clearLostState();
       const wonItem = target;
       owned.push(wonItem.id);
+
+      // Азартное состояние Case-Battle: сброс лузстрика, стрик побед, частичная разрядка Fever
+      lossStreak = 0;
+      winStreak++;
+      feverCharge = Math.max(0, feverCharge - 50);
+      feverActive = feverCharge >= 100;
       save();
+      updateFeverUI();
 
       // Подсветить каталожную строку выигранного скина и показать бейдж «ПОЛУЧЕНО»
       lastWonSkinId = wonItem.id;
@@ -6886,7 +7224,12 @@ function doUpgrade() {
       playResult('win');
       spawnCenterSalute(chance, wonItem.name);
       spawnInventoryPop(wonItem.id);
-      showToast(`Апгрейд удался: ${wonItem.name}!`);
+
+      let streakBadge = '';
+      if (winStreak >= 2) {
+        streakBadge = ` 🔥 ЗАЛЁТ x${winStreak} ПОДРЯД!`;
+      }
+      showToast(`Апгрейд удался: ${wonItem.name}!${streakBadge}`);
 
       // Карточка цели танцует в победном ритме + искрится лёгкими салютами внутри
       targetEl.classList.add('won', 'has-win-shimmer');
@@ -6947,6 +7290,25 @@ function doUpgrade() {
       stakeEl.classList.add('lost', 'is-loss-gray');
       spawnDefeatEmbers(stakeEl);
       playResult('lose');
+
+      // Азартное состояние Case-Battle:
+      lossStreak++;
+      winStreak = 0;
+      feverCharge = Math.min(100, feverCharge + 25);
+      feverActive = feverCharge >= 100;
+
+      // Кэшбек утешения 15% от стоимости ставки на баланс монет
+      let cbAmount = 0;
+      if (stake && stake.value > 0) {
+        cbAmount = Math.max(1, Math.round(stake.value * 0.15));
+        gold += cbAmount;
+        renderBalances();
+      }
+      save();
+      updateFeverUI();
+      if (cbAmount > 0) {
+        showCashbackToast(cbAmount);
+      }
 
       if (el.upgradeBtn) {
         el.upgradeBtn.disabled = true;
@@ -7737,6 +8099,22 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
   }
+
+  // Переключение стороны сектора (Case-Battle)
+  document.querySelectorAll('#sectorDirectionBar .sector-dir-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (spinning) return;
+      const newDir = btn.dataset.dir;
+      if (!newDir || newDir === sectorDir) return;
+      sectorDir = newDir;
+      save();
+      playSound('click', 0.25);
+      try {
+        (window.Telegram?.WebApp?.HapticFeedback || window.parent?.Telegram?.WebApp?.HapticFeedback)?.selectionChanged();
+      } catch (e) {}
+      renderUpgrade();
+    });
+  });
 
   // Бесшумная разблокировка и предзагрузка WebAudio на первом пользовательском взаимодействии
   let audioUnlocked = false;
