@@ -66,6 +66,10 @@
     {
       "source": "/health",
       "destination": "https://losy-miniapp.onrender.com/health"
+    },
+    {
+      "source": "/ping",
+      "destination": "https://losy-miniapp.onrender.com/ping"
     }
   ]
 }

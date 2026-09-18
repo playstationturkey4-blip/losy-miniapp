@@ -1,18 +1,22 @@
-﻿name: Keep-Alive Render Bot & Mini App
+name: Keep-Alive 24/7 Render Bot & Mini App
 
 on:
   schedule:
-    # Запуск каждые 10 минут круглосуточно
-    - cron: '*/10 * * * *'
+    # Запуск каждые 15 минут
+    - cron: '*/15 * * * *'
   workflow_dispatch:
 
 jobs:
   keepalive:
     runs-on: ubuntu-latest
     steps:
-      - name: External Ping to Render
+      - name: Active 24/7 Keep-Alive Loop (stays alive for 40 minutes)
         run: |
-          echo "Sending external keep-alive ping to Render..."
-          curl -s -S -f --connect-timeout 20 --max-time 60 https://losy-miniapp.onrender.com/health || echo "Ping failed or sleeping, retrying..."
-          sleep 3
-          curl -s -S -f --connect-timeout 20 --max-time 60 https://losy-miniapp.onrender.com/health
+          echo "Starting active keep-alive loop at $(date)..."
+          for i in {1..8}; do
+            echo "Ping #$i to Render..."
+            curl -s -S -f --connect-timeout 15 --max-time 30 https://losy-miniapp.onrender.com/health || echo "Render ping error"
+            curl -s -S -f --connect-timeout 15 --max-time 30 https://losy-miniapp.vercel.app/ping || echo "Vercel proxy ping error"
+            sleep 270
+          done
+          echo "Keepalive cycle finished."

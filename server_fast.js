@@ -1185,15 +1185,15 @@ server.listen(PORT, '0.0.0.0', async () => {
 
     const info = `LOCAL: http://localhost:${PORT}\nPUBLIC: ${publicUrl}\n`;
 
-    // Автоматически синхронизируем кнопку 'Играть' в Telegram боте (v=98 на Vercel)
+    // Автоматически синхронизируем кнопку 'Играть' в Telegram боте (v=102 на Vercel)
     try {
       const https = require('https');
-      const miniappUrl = process.env.MINIAPP_URL || 'https://losy-miniapp.onrender.com';
+      const miniappUrl = process.env.MINIAPP_URL || 'https://losy-miniapp.vercel.app';
       const payload = JSON.stringify({
         menu_button: {
           type: 'web_app',
           text: '🚀 Играть',
-          web_app: { url: `${miniappUrl.replace(/\/$/, '')}/?v=98` }
+          web_app: { url: `${miniappUrl.replace(/\/$/, '')}/?v=102` }
         }
       });
       const req = https.request({

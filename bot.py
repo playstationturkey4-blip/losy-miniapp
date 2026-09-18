@@ -104,13 +104,13 @@ load_vpn_bots()
 ITEMS_PER_PAGE = 6
 
 def get_app_url(user_id=None):
-    """Возвращает актуальный URL Mini App с обязательным trailing slash и параметром userId"""
-    base = os.environ.get("MINIAPP_URL") or "https://losy-miniapp.onrender.com"
+    """Возвращает актуальный URL Mini App с обязательным trailing slash и параметром userId (высокоскоростной Vercel CDN 24/7)"""
+    base = os.environ.get("MINIAPP_URL") or "https://losy-miniapp.vercel.app"
     base = base.rstrip('/')
     
     # Обязательный trailing slash перед query-параметрами для соответствия RFC и WebApp
     clean_base = base.rstrip('/') + '/'
-    url = f"{clean_base}?v=99"
+    url = f"{clean_base}?v=102"
     if user_id:
         url += f"&userId={user_id}"
     return url
