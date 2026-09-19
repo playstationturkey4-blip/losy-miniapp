@@ -5050,8 +5050,8 @@ const SKINS = [
   { id: 'venom',          name: 'Веном',          value: 22000, img: '/assets/items/venom.webp',          chance: null },
 ];
 
-const RTP_UP = 1;         // ТОЧНАЯ математика: шанс = цена ставки / цена цели (500→1000 = ровно 50%)
-const MAX_CHANCE = 0.75;  // потолок шанса — как на кейс-сайтах
+const RTP_UP = 1.20;      // Повышенный шанс (+20% к шансу выигрыша)
+const MAX_CHANCE = 0.80;  // Потолок шанса повышен до 80%
 
 const STORE = {
   gold: 'losyBalance',
@@ -6442,7 +6442,7 @@ function startChanceEdit(badge, list) {
 function applyChance(inp, stakeSkin, list) {
   const p = parseFloat(inp.value);
   if (!isFinite(p) || p <= 0 || p > 100) { render(); return; }
-  const want = stakeSkin.value * 100 / p; // идеальная цена цели под введённый шанс
+  const want = RTP_UP * stakeSkin.value * 100 / p; // идеальная цена цели под введённый шанс
   const candidates = list.filter(s => s.id !== stakeSkin.id)
     .sort((a, b2) => Math.abs(a.value - want) - Math.abs(b2.value - want));
   if (!candidates.length) { showToast('Нет доступных целей'); render(); return; }
@@ -7652,7 +7652,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const rawP = forcedPct !== undefined ? forcedPct : parseFloat(document.getElementById('chanceQuick')?.value);
     if (!isFinite(rawP) || rawP <= 0 || rawP > 100) { showToast('Введи шанс от 0.1 до 100'); return; }
     const p = Math.min(rawP, MAX_CHANCE * 100);
-    const want = stakeSkin.value * 100 / p;
+    const want = RTP_UP * stakeSkin.value * 100 / p;
     const candidates = SKINS.filter(sk => sk.id !== stakeSkin.id && sk.id !== 'pen' && sk.value > stakeSkin.value)
       .sort((x, y) => Math.abs(x.value - want) - Math.abs(y.value - want));
     if (!candidates.length) { showToast('Нет доступных целей дороже ставки'); return; }
@@ -7662,7 +7662,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (percentBtn) {
       el.xpills?.querySelectorAll('.xpill').forEach(x => x.classList.toggle('selected', x === percentBtn));
     }
-    const realChance = Math.min(MAX_CHANCE * 100, (stakeSkin.value / best.value) * 100);
+    const realChance = Math.min(MAX_CHANCE * 100, (RTP_UP * stakeSkin.value / best.value) * 100);
     showToast('Цель: ' + best.name + ' — шанс ' + realChance.toFixed(2) + '%');
   };
   window.applyQuickChance = applyQuickChance;
